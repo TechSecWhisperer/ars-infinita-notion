@@ -2,6 +2,21 @@
 
 All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here. Dates are UTC.
 
+## v1.2.0 — 2026-07-23
+
+**Added**
+- **📅 System Calendar** — a new database in the Player Template. Your daily briefings, weekly reviews, reminders, and due follow-ups now also land here as dated rows, so you can see them in your own Notion calendar view alongside everything else. It's a delivery channel only — your Quest Board and Daily Log remain the source of truth for anything also written here. `/awaken` creates it automatically if your workspace doesn't have it yet (safe to re-run, never duplicates it).
+- `/report`, `/grind`, and `/recruit` now mirror a due follow-up into System Calendar when they set or surface one, so reminders show up on your calendar without you doing anything extra.
+
+**Changed**
+- **Gatecrasher I** now unlocks after **2 submitted applications** (cumulative), up from 1. This only affects players who haven't unlocked it yet — if you already have it, it stays unlocked; nothing is ever revoked or re-judged retroactively.
+- Levels 1–4 are now formally named the **Tutorial Arc** in the Operating Manual and Welcome Protocol wording. Once you're past it, a normal active day tends to earn roughly **40–60 XP** — useful as a rough compass, not a quota.
+
+**Unchanged promises**
+- New mechanics never rewrite your history.
+- XP is never re-scored.
+- Your data lives in your Notion workspace and never leaves it.
+
 ## Alpha 2 — Marketplace release — 2026-07-23
 
 The repo link is now the whole install path: no separate download, no side-loaded files. Duplicate the Seed, connect Notion, install the plugin from this repo, and run `/awaken`.
