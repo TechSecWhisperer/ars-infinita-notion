@@ -1,0 +1,31 @@
+# leak_check.py allowlist
+#
+# Format: one entry per line, "relative/path:line_number", optionally
+# followed by a "# justification" comment. Blank lines and lines
+# starting with '#' are ignored by the checker.
+#
+# Every entry here is a KNOWN, ACCEPTED exception — not a place to dump
+# false positives without review. If leak_check.py flags something new,
+# default to fixing the source file. Only add an entry here when there's
+# a real justification, and flag it to the admin for a ruling if the
+# justification is "pending a decision" rather than "definitely fine."
+#
+# See MAINTAINERS.md > "Known pending items" for the current status of
+# both entries below.
+
+# Forge Roulette: the exact 1-in-3 odds and +15 XP bonus value are
+# spelled out in the shipped player skill so the mechanic is
+# transparent and auditable by players (it's a real random roll they
+# can see fire). Pending admin ruling on whether these exact values
+# should move out of the player-facing skill file into something
+# resolved at runtime instead. Knowingly present — see MAINTAINERS.md.
+plugins/the-system-player/skills/forge/SKILL.md:32  # 1-in-3 roll odds, pending admin ruling
+plugins/the-system-player/skills/forge/SKILL.md:33  # +15 XP roulette drop value, pending admin ruling
+
+# "Class Engine" is named in passing while explaining why side-quest
+# calibration questions matter during intake. No engine internals,
+# preconditions, or formulas are disclosed — just the name of a system
+# whose player-visible behavior (Side-Quest Calibration) is already
+# documented in this same skill. Pending admin ruling on whether the
+# bare name should be reworded out of player-facing copy entirely.
+plugins/the-system-player/skills/intake/SKILL.md:21  # bare "Class Engine" name mention, pending admin ruling
