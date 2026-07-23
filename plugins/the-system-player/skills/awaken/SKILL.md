@@ -75,12 +75,27 @@ Run /appraise on that quest. **Milestone 5 — "Awakening: First appraisal compl
 
 Write the player's first Daily Log entry (today, domains touched, mood if offered, `Welcome # Delivered` = 1). **Milestone 6 — "Awakening: First day logged" · +50 XP.**
 
+## Step 6.5 — set up your daily rhythm
+
+Before the finale, make the daily-briefing promise actually real — don't just offer it and leave the player unscheduled.
+
+1. **Probe for scheduled-task tools** (e.g. via `ToolSearch` for `create_trigger` / a scheduled-task or cron-trigger tool — on Cowork and Claude Code sessions these are usually available; a plain claude.ai chat or mobile session usually won't have them).
+2. **If available:**
+   - **List existing scheduled tasks first.** If one already named "Daily Quest Briefing" exists, skip creation entirely — idempotent, never a duplicate.
+   - Otherwise, offer (never impose) to create **one** scheduled task: **"Daily Quest Briefing"**, weekdays at roughly the player's local 8am. Compute the cron in UTC from the Kernel's Player timezone — if the UTC conversion crosses midnight, shift the day-of-week field accordingly so it still lands on the player's weekday morning, not the wrong day in UTC.
+   - The scheduled prompt must be **self-contained** (each firing starts a fresh session with no memory of this one): boot from the player's own 🧬 Kernel (resolve the Boot Card/Kernel page IDs from there, same as any other session), run the daily briefing duties per the live `KERNEL:Operating Manual`, write today's Daily Log entry, add a 📅 System Calendar row (`Type: Daily Briefing`), and close with a concise briefing summary.
+   - Recommend the player turn on notifications for it, so the briefing actually reaches them instead of sitting unread.
+3. **If scheduled-task tools are NOT available** (app-only / mobile-only session): degrade gracefully, don't fail silently.
+   - Tell the player plainly, in one short line: their daily rhythm is manual here — open the app each weekday morning and say "run my daily briefing."
+   - Log an Open Question in the player's System Log (Type: Open Question, Area: Agent Behaviour) noting that scheduled-task setup was skipped on this surface, so a later `/doctor` run on a capable surface can revisit it.
+
+No XP — this is plumbing, not a milestone. (Friday `/levelup` can be scheduled the same way, on request, using the same probe/idempotency pattern above — this step's mandate is the Daily Quest Briefing specifically.)
+
 ## Step 7 — register the Hunter (Milestone 7)
 
 1. Ask the player to choose a **handle** (self-chosen alias; real name optional and off by default).
 2. Submit it via the Petition form (link in the Kernel): title "HANDLE REGISTRATION: <handle>", Category: Other, with Seed version and current level. If the form is unreachable, draft the registration text for the player to send to the Game Admin directly. Handles are admin-registered (no duplicates) — tell the player the Game Admin may come back with a conflict, and the registration stands once confirmed.
 3. Record handle + registration date in the Kernel.
-4. Offer (never impose) scheduled tasks: weekday-morning Daily Quest Briefing (~8am their time) and Friday /levelup. Set up whichever they want.
 
 **Milestone 7 — ledger key "Awakening: Hunter registered" · +75 XP · ⚔️ LEVEL 4 ceremony — the Awakening is complete.**
 
@@ -116,4 +131,4 @@ Record the outcome on the Kernel so `/vitals` and capability-gating reflect it. 
 
 ## Migration mode
 
-When a Patch Feed entry marked **Migration-required** directs a re-run: run steps 1–2 only (inventory, schema changes described in the patch applied idempotently, Kernel version bump), then re-run Step 7.5 (CLAUDE.md) and Step 7.6 (agent-browser probe) if this session can. Milestones already earned stay earned — the ledger keys see to that. Never re-run intake or re-ask settled questions during a migration.
+When a Patch Feed entry marked **Migration-required** directs a re-run: run steps 1–2 only (inventory, schema changes described in the patch applied idempotently, Kernel version bump), then re-run Step 6.5 (daily rhythm probe — idempotent, so it only fills in a missing schedule), Step 7.5 (CLAUDE.md), and Step 7.6 (agent-browser probe) if this session can. Milestones already earned stay earned — the ledger keys see to that. Never re-run intake or re-ask settled questions during a migration.
