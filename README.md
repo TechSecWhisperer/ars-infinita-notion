@@ -110,7 +110,7 @@ In Claude Code, or the desktop app's plugin panel, run:
 Then install the plugin from that marketplace:
 
 ```
-/plugin install the-system-player@ars-infinita
+/plugin install the-system-player@ars-infinita-notion
 ```
 
 If a plugin-details/confirm view opens, accept it, then run `/reload-plugins` (or restart your session) so the new commands are active.
