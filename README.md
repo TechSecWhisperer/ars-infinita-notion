@@ -38,6 +38,7 @@ Your workspace is a set of linked Notion databases the System reads and writes f
 - **Hunter Network** — your contacts, with follow-up timing handled for you.
 - **Gate Intel** — reusable company research.
 - **Battle Log · XP Ledger · Achievements · Daily Log** — the record of everything you've done and earned.
+- **📅 System Calendar** — your briefings, reminders, and due follow-ups, as dated rows you can see in your own Notion calendar view. It's a delivery channel, not a source of truth — the Quest Board and Daily Log stay authoritative.
 
 ---
 
