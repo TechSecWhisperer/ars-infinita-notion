@@ -37,9 +37,10 @@ Search the player's Notion for "The System — Job Search HQ" and a "🧬 Kernel
 
 ## Step 1 — inventory & repair (Milestone 1)
 
-Check each entity in `references/template-schemas.md` exists and matches schema: Hub, Operating Manual, Status Window, Guild Hall, Patch Notes, Theme Registry, Kernel (pages) · Quest Board, Hunter Network, Battle Log, Gate Intel, Story Bank, Competency Matrix, XP Ledger, 🗒 Agent Notes, Daily Log, Networking Events, Achievements, Questions & Feedback Log (databases).
+Check each entity in `references/template-schemas.md` exists and matches schema: Hub, Operating Manual, Status Window, Guild Hall, Patch Notes, Theme Registry, Kernel (pages) · Quest Board, Hunter Network, Battle Log, Gate Intel, Story Bank, Competency Matrix, XP Ledger, 🗒 Agent Notes, Daily Log, Networking Events, Achievements, Questions & Feedback Log, 📅 System Calendar (databases).
 
 - Missing database → create it per the reference schema (relations wired per the dependency order there). Missing page → recreate its skeleton per the reference.
+- **📅 System Calendar is a delivery/record channel, not a source of truth** — it holds dated rows (briefings, reminders, due follow-ups, events) so the player has a calendar view of what's coming up; the Daily Log and Quest Board remain authoritative for anything also written here. Idempotent: if a player's duplicate already has it, verify schema and leave it alone; if missing, create it fresh and register its IDs on the Kernel like every other entity.
 - Never delete or rename anything that exists; never touch rows that carry player data.
 
 **Milestone 1 — ledger key "Awakening: The System comes online" · +100 XP · ⚔️ LEVEL 2 ceremony.**

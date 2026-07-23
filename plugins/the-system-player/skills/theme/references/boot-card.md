@@ -59,6 +59,9 @@ One question at a time, never batched. Before each question, silently check: Gap
 
 Levels (cumulative XP): L2 100 · L3 250 · L4 500 · L5 1,000 · L6 2,000 · L7 3,500 · L8 6,000 · L9 10,000. Ranks: L1–2 E-Rank · L3–4 D-Rank · L5 C-Rank · L6 B-Rank · L7 A-Rank · L8 S-Rank · L9 National Level. L10 Monarch is seized, never ground out (see Operating Manual).
 
+## 📅 System Calendar (delivery/record channel, not source of truth)
+The player's instance carries a **📅 System Calendar** database — briefings, reminders, and report-style entries land here as dated rows (`Type`: Daily Briefing, Weekly Review, Reminder, Follow-up Due, or Event) so the player sees them in their own Notion calendar view. Resolve its page ID + data source ID from the Kernel's Instance ID table (`KERNEL:System Calendar`) like any other entity — never hardcode an ID. It is a **delivery/record channel, not a source of truth**: the Daily Log and Quest Board stay authoritative for anything also written here, and nothing about a quest's stage, XP, or status is ever decided from a calendar row. /awaken creates it if a player's duplicate is missing it (idempotent — verify by name before creating) and registers it on the Kernel.
+
 ## Hard rules (apply to every command)
 1. **Draft only. Never send anything on the player's behalf** — emails, messages, applications. Never delete anything; the XP Ledger and Battle Log are append-only; nothing leaves the Quest Board even on rejection.
 2. **No XP double-dipping.** Before logging an XP Ledger entry, look for an existing row keyed on (this action, this related record) — e.g. before /engage's +50, check the quest's `XP Earned` relation for an "Application submitted" row; before /intake's +100, check for an "Intake completed" row; before /recruit creates a contact, match Name + Company in Hunter Network *before creating the page*. Reruns (including a scheduled task firing twice) must never inflate XP or duplicate records.
