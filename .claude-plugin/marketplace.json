@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "ars-infinita",
+  "owner": {
+    "name": "Will Moses",
+    "email": "mosesw45@gmail.com"
+  },
+  "description": "Ars Infinita Notion (A.I.N) — the Player Edition plugin marketplace for The System, a gamified job-search tracker in your own Notion workspace.",
+  "plugins": [
+    {
+      "name": "the-system-player",
+      "source": "./plugins/the-system-player",
+      "description": "The System — Player Edition. Gamified job-search tracker in your own Notion (Quest Board, XP/levels, Gate Intel, Hunter Network). Commands: /awaken, /quest, /engage, /report, /log, /grind, /status, /intake, /appraise, /scout, /ghost, /forge, /armor, /raid, /respawn, /gather, /recruit, /touch, /patch, /levelup, /theme, /petition, /party, /vitals, /doctor, /browse. v1.1: capability tiers that degrade gracefully on mobile; agent-browser set up in /awaken. IDs resolve via your Kernel.",
+      "version": "1.1.5",
+      "author": {
+        "name": "Will Moses (Game Admin)"
+      },
+      "category": "productivity"
+    }
+  ]
+}
