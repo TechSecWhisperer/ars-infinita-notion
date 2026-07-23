@@ -16,7 +16,7 @@ Creates Hunter Network entries → light public-source research on each → draf
 
 3. **Draft a personalised follow-up** per person, grounded in the actual conversation notes — a generic "great meeting you" message defeats the point of banking what they talked about. Draft only; never send.
 
-4. **Set the follow-up ladder**: `Follow-up Ladder: T+2d Thank You` to start, with `date:Next Follow-up:start` set accordingly.
+4. **Set the follow-up ladder**: `Follow-up Ladder: T+2d Thank You` to start, with `date:Next Follow-up:start` set accordingly. Mirror that due date into 📅 System Calendar (`Type: Follow-up Due`, `Notes` naming the contact, `Date` = the follow-up date) — idempotent: check for an existing Calendar row for this contact with that same date before creating one. Hunter Network's `Next Follow-up` stays the source of truth; the Calendar row is only a delivery copy.
 
 5. **Log XP**: +25 per new contact (`Category: Networking`). If this batch is tied to a `/gather`-logged event and the event-level +75 hasn't been logged yet, add that too (once per event, not once per person).
 
