@@ -2,7 +2,7 @@
 """
 leak_check.py — Admin leak-verification gate for ars-infinita-notion.
 
-Scans every player-facing file in this repo (README.md, docs/**, and
+Scans every player-facing file in this repo (README.md, feed.json, docs/**, and
 plugins/the-system-player/**) for sealed-mechanics leaks: admin-only
 terminology, exact formula values, admin agent names, and raw admin
 page IDs that must never reach a published, player-facing surface.
@@ -33,6 +33,7 @@ ALLOWLIST_PATH = REPO_ROOT / "tools" / "leak_allowlist.txt"
 # must never contain sealed admin mechanics.
 SCAN_TARGETS = [
     REPO_ROOT / "README.md",
+    REPO_ROOT / "feed.json",
     REPO_ROOT / "docs",
     REPO_ROOT / "plugins" / "the-system-player",
 ]
