@@ -15,6 +15,7 @@ Run each; report PASS / WARN / FAIL with a one-line specific:
 2. **Kernel integrity** — does the 🧬 Kernel page exist with a complete Instance ID table + Player + Versions + Nexus links? Missing/empty → not initialised. Partial → note which sections are missing.
 3. **Rule-surface / Sigil Check** — compare local rule surfaces against the Nexus 📜 Rule Manifest (needs feed reachability). Drift → WARN, name the surface. Restore is always FROM the Manifest.
 4. **Schedules** — enumerate the session's scheduled tasks and compare against what the player opted into (recorded in the Kernel's schedules note, or the System Log setup entry). Missing where expected → WARN. If there's no opt-in record to compare against, report "unknown" — don't guess.
+   - **Daily Quest Briefing check (where tools allow):** if scheduled-task tools are available this session, specifically check whether a "Daily Quest Briefing" scheduled task exists. Missing (and the player didn't decline one during /awaken or a later ask) → WARN, and offer to run /awaken's Step 6.5 daily-rhythm setup to create it. On a surface without scheduled-task tools, skip this sub-check as "needs a capable surface" rather than WARN or FAIL.
 5. **Player-Card ↔ XP-Ledger reconcile** — does displayed Total XP equal the Ledger sum? Mismatch → WARN (recompute FROM the ledger, visibly, never a silent rewrite).
 6. **Mechanics Version vs Patch-Feed head** — behind → WARN (a head-check / migration is due).
 
