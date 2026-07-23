@@ -1,0 +1,14 @@
+{
+  "name": "the-system-player",
+  "version": "1.1.5",
+  "description": "The System — Player Edition. Gamified job-search tracker in your own Notion (Quest Board, XP/levels, Gate Intel, Hunter Network). Commands: /awaken, /quest, /engage, /report, /log, /grind, /status, /intake, /appraise, /scout, /ghost, /forge, /armor, /raid, /respawn, /gather, /recruit, /touch, /patch, /levelup, /theme, /petition, /party, /vitals, /doctor, /browse. v1.1: capability tiers that degrade gracefully on mobile; agent-browser set up in /awaken. IDs resolve via your Kernel.",
+  "author": {
+    "name": "Will Moses (Game Admin)"
+  },
+  "keywords": [
+    "job-search",
+    "notion",
+    "gamification",
+    "career"
+  ]
+}
