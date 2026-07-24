@@ -11,21 +11,21 @@
 # justification is "pending a decision" rather than "definitely fine."
 #
 # See MAINTAINERS.md > "Known pending items" for the current status of
-# both entries below.
+# items sealed in this session (below).
 
-# Forge Roulette: the exact 1-in-3 odds and +15 XP bonus value are
-# spelled out in the shipped player skill so the mechanic is
-# transparent and auditable by players (it's a real random roll they
-# can see fire). Pending admin ruling on whether these exact values
-# should move out of the player-facing skill file into something
-# resolved at runtime instead. Knowingly present — see MAINTAINERS.md.
-plugins/the-system-player/skills/forge/SKILL.md:32  # 1-in-3 roll odds, pending admin ruling
-plugins/the-system-player/skills/forge/SKILL.md:33  # +15 XP roulette drop value, pending admin ruling
-
-# "Class Engine" is named in passing while explaining why side-quest
-# calibration questions matter during intake. No engine internals,
-# preconditions, or formulas are disclosed — just the name of a system
-# whose player-visible behavior (Side-Quest Calibration) is already
-# documented in this same skill. Pending admin ruling on whether the
-# bare name should be reworded out of player-facing copy entirely.
-plugins/the-system-player/skills/intake/SKILL.md:21  # bare "Class Engine" name mention, pending admin ruling
+# [SEALED 2026-07-24 via warden/seal-forge-odds-and-class-engine]
+#
+# Forge Roulette odds: the exact "1-in-3" odds have been removed from
+# player-facing skill documentation (forge/SKILL.md steps 2-4). Players
+# still see the mechanic fire at runtime with the payout value, but the
+# odds are not pre-announced in the docs. Moved to boot-card Sealed Codex
+# reference only. Implements the admin ruling: sealed mechanics are hidden
+# by absence in player surfaces, not by obscure access patterns.
+#
+# Class Engine name: removed from intake/SKILL.md step 2. Reworded from
+# "Class Engine's daily menu" to "System's adaptive quest recommendations"
+# to avoid naming sealed internals while keeping meaningful context
+# (calibration questions help align quests to actual player needs).
+#
+# If either sealed value appears again in player-facing surfaces, it is
+# an unintended leak — grep should find it with leak_check.py unchanged.
