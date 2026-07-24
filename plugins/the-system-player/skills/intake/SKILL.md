@@ -18,7 +18,7 @@ An interview-style session that builds or updates the Status Window (page `KERNE
 
 1. **Figure out scope.** Read the current Status Window first. If this is the first-ever intake, it's a full build (Positioning, Experience Ledger, Metrics Bank, Education/Certs, CV/LinkedIn versions, Interview Q&A prep, Side-Quest Calibration). If the Status Window already exists, ask the player what prompted this — a specific new fact to bank, or a fuller refresh — and scope the interview to that.
 
-2. **Ask, one at a time**, following the Interrogation Protocol above. Good targets: unbanked metrics (numbers behind vague CV claims), un-probed scope details ("*probe: team size, endpoints count*" style markers already in the Experience Ledger), thin-evidence competencies flagged on the Stat Sheet, or side-quest calibration (what actually recharges them, so the Class Engine's daily menu stays honest).
+2. **Ask, one at a time**, following the Interrogation Protocol above. Good targets: unbanked metrics (numbers behind vague CV claims), un-probed scope details ("*probe: team size, endpoints count*" style markers already in the Experience Ledger), thin-evidence competencies flagged on the Stat Sheet, or side-quest calibration (what actually recharges them, so the System's adaptive quest recommendations stay aligned to your needs).
 
 3. **Write answers into the right place as you go**: factual/positioning updates → Status Window sections directly (`update_content` for targeted edits, not a full page rewrite); numeric proof points → the Metrics Bank table with Context/Role/Verified columns; competency evidence → the Stat Sheet.
 
