@@ -10,7 +10,7 @@ Scans Hunter Network for 🔔 Due contacts, each with a suggested reason to reac
 
 ## Steps
 
-1. **Query Hunter Network** (data source `KERNEL:Hunter Network`) — use its "🔔 Follow-ups Due" view if it exists (check via `notion-fetch` on the database for available views), or compute manually against `date:Next Follow-up:start` / `Follow-up Ladder` if not.
+1. **Query Hunter Network** (data source `KERNEL:Hunter Network`) — use its "🔔 Follow-ups Due" view if it exists, or compute manually against `date:Next Follow-up:start` / `Follow-up Ladder` if not. Probe for that view at most **once per session** and reuse the answer — per the boot card's "don't re-fetch a page already read this session" rule, this is not a per-run lookup.
 
 2. **For each due contact**, pull `Conversation Notes` and `Notes` to ground a *specific* reason to reach out (something they mentioned, a shared interest, relevant news since) rather than a generic "just checking in." If there's nothing specific to say, note that honestly — a forced reason is worse than a plain one.
 
