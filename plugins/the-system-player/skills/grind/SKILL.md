@@ -10,7 +10,16 @@ A pipeline scan: what's overdue, what's stale, what's next — nothing more.
 
 ## Steps
 
-1. **Query the Quest Board** (data source `KERNEL:Quest Board`) via `notion-query-database-view` on its default view, or a filtered view if one exists for active quests. Pull `Role`, `Company`, `Stage`, `date:Last Activity:start`, `Next Action`, `date:Next Action Due:start`, `Priority`.
+1. **Query the Quest Board** (data source `KERNEL:Quest Board`) with a narrow, filtered read — never a whole-board pull filtered client-side:
+
+   ```sql
+   SELECT Role, Company, Stage, "date:Last Activity:start", "Next Action",
+          "date:Next Action Due:start", Priority
+   FROM "KERNEL:Quest Board"
+   WHERE Stage NOT IN ('Rejected', 'Closed – No Response', 'Withdrawn')
+   ```
+
+   Two things that will bite you: date properties are only queryable as their expanded columns (`"date:Last Activity:start"`, never `"Last Activity"` — that errors with *no such column*), and `SLA Status`/`Days Silent` are formulas that cannot be selected in SQL at all (see step 2 — you compute those yourself anyway). Note `Offer` is deliberately **not** excluded here: a live offer still belongs in a pipeline scan.
 
 2. **Compute against today (the player's timezone, from the Kernel)**, not the formula columns (`SLA Status`/`Days Silent` are noted in the boot card as live approximations — your own date math is authoritative):
    - 🟠 **Follow-up due**: 2+ business days since `Last Activity` on any quest not in a terminal stage (Rejected/Closed – No Response/Withdrawn/Offer).
