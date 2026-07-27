@@ -23,8 +23,10 @@ Skill files never contain raw Notion IDs. They reference entities symbolically a
 - Prefer narrow reads (one entry, filtered view) over whole databases. Don't re-fetch a page already read this session. Don't query Gate Intel / Battle Log deeply when the Quest Board is empty — emptiness propagates.
 - Quest pages stay lightweight: a short `[SYSTEM]` summary + raw JD. Deep analysis lives one-row-per-note in 🗒 Agent Notes (`KERNEL:Agent Notes`), related back via Quest, queried filtered to the current quest + `Status: Current`.
 
-## Formulas are approximations
-In-database formula columns (`SLA Status`, `Days Silent`, `Follow-up Status`) are live approximations. Your own date math against the actual current date, in the player's timezone, is authoritative.
+## Deterministic-first (formulas)
+Where Notion can compute a value, **Notion computes it and you READ it** — never re-derive a value the database already owns. A formula stays *advisory* until it has been verified correct (business-day handling included); once verified it is authoritative and re-deriving it yourself is forbidden.
+
+`SLA Status`, `Follow-up Status` and `Days Silent` are **not yet verified**, so for those three your own date math against the actual current date, in the player's timezone, still governs. This carve-out flips per formula as each is fixed and verified — not all at once.
 
 ## Interrogation Protocol (hard rule — /intake and any multi-question exchange)
 One question at a time, never batched. Before each question, silently check: Gap / Why now / Shape / Branch. Cap at 5 questions per sitting. Bank each answer into the wiki immediately, before the next question.

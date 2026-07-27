@@ -10,7 +10,7 @@ Mirror of the Seed v1.0.0 Player Template. Used to verify an instance and rebuil
 - **🏰 Guild Hall** — networking flow + follow-up ladder + Parties note · child db: Networking Events.
 - **🩹 Patch Notes** — how patches/corrections work · child db: Questions & Feedback Log.
 - **🎭 Theme Registry** — skin-not-skeleton callout + 3-theme name mapping + switch procedure.
-- **🧬 Kernel** — Instance ID table · Player · Versions · Nexus links · Sharing toggles · Party links · Sealed Ledger.
+- **🧬 Kernel** — Instance ID table · Player · Theme · Versions · Nexus links · Sharing toggles · Party links · Sealed Ledger. (**Theme** records the theme chosen at the /awaken Step 0.5 gate; it is the field that makes the gate idempotent across re-runs. A Kernel written before the gate existed has no Theme — that is expected, and Migration mode leaves it alone rather than re-asking.)
 
 ## Databases (dependency order)
 
