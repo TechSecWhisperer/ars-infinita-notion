@@ -50,17 +50,43 @@ SCAN_TARGETS = [
     REPO_ROOT / "tools",
 ]
 
-# The gate's own source cannot be scanned by itself: a pattern-based
-# detector must name the things it detects, so scanning these two files
-# would flag the detector's own vocabulary on every run. This exclusion is
-# safe ONLY because no sealed VALUE is stored in either file any more —
-# page IDs are hashed (below) and numeric mechanics are matched by shape.
-# If you ever put a literal sealed value back into one of these files,
-# this exclusion becomes a hole. Don't.
-SELF_EXCLUDE = {
-    REPO_ROOT / "tools" / "leak_check.py",
+# The gate's own source cannot be fully scanned by itself: a pattern-based
+# detector must name the things it detects, so the NAME patterns would flag
+# the detector's own vocabulary on every run.
+#
+# These two files are therefore scanned in VALUE-ONLY mode, not skipped.
+# Skipping them outright was a real, demonstrated hole: the allowlist is
+# exactly where a maintainer quotes a sealed value "as justification", and
+# the allowlist on main did precisely that. Value checks (hashed IDs +
+# numeric shapes) are safe to run here because neither the digest constants
+# nor the regex sources match themselves.
+# leak_allowlist.txt gets the full VALUE battery. It is prose, contains no
+# regex source, and is the file where a maintainer is most likely to quote a
+# secret "as justification" — the copy on main literally did exactly that.
+VALUE_ONLY_FILES = {
     REPO_ROOT / "tools" / "leak_allowlist.txt",
 }
+
+# leak_check.py gets the ID-hash check ONLY. It cannot be scanned with the
+# numeric shape patterns, because it *contains those patterns as source text*
+# and a shape pattern reliably matches its own definition — that produced a
+# self-trip that failed CI on a clean tree. The hash check is immune (a 64-hex
+# digest is not a 32-hex Notion ID) and is the check that actually matters
+# here: it is what stops a live admin ID being pasted back into this file.
+HASH_ONLY_FILES = {
+    REPO_ROOT / "tools" / "leak_check.py",
+}
+
+# Categories that describe a sealed VALUE rather than a mere NAME. Only these
+# run against value-only files and against binaries.
+VALUE_CATEGORIES = frozenset({
+    "awakening-xp-split-sequence",
+    "awakening-xp-split-total",
+    "forge-roulette-odds-value",
+    "sealed-odds-as-code",
+    "forge-roulette-bonus-xp-value",
+    "engagement-watch-cadence-numbers",
+})
 
 # The sealed admin page IDs (Petition DB / Hunter Registry / Nexus and
 # related admin-only Notion pages). Raw appearance of any of these IDs
@@ -86,10 +112,19 @@ SEALED_ADMIN_PAGE_ID_HASHES = {
 
 # Any 32-hex Notion ID, dashed or undashed. Deliberately broad — it is a
 # candidate extractor, not a matcher; the hash comparison decides.
-NOTION_ID_CANDIDATE = re.compile(
-    r"\b[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?"
-    r"[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}\b"
+_ID_BODY = (
+    r"[0-9a-fA-F]{8}-?[0-9a-fA-F]{4}-?[0-9a-fA-F]{4}-?"
+    r"[0-9a-fA-F]{4}-?[0-9a-fA-F]{12}"
 )
+NOTION_ID_CANDIDATE = re.compile(r"\b" + _ID_BODY + r"\b")
+
+# Binary variant: no word boundaries, and a lookahead so matches may overlap.
+# Compiled bytecode packs string constants against length prefixes and against
+# each other, so a sealed ID frequently sits inside a longer run of word
+# characters where \b never holds — the anchored regex found ZERO candidates in
+# a real .pyc that demonstrably contained an ID. Non-overlapping matching would
+# also stride past an ID starting mid-run, hence the lookahead.
+NOTION_ID_CANDIDATE_BINARY = re.compile(r"(?=(" + _ID_BODY + r"))")
 
 
 def _id_digest(raw):
@@ -107,20 +142,31 @@ PATTERNS = [
     ),
     (
         "awakening-xp-split-sequence",
-        # Matched by SHAPE, not by value: any run of six or more 2-3 digit
+        # Matched by SHAPE, not by value: a run of six or more 2-3 digit
         # numbers joined by slashes. The literal split used to live here,
         # which meant this public file published the sequence it existed to
-        # suppress. The shape is specific enough to be a reliable tell and
-        # carries no secret.
-        re.compile(r"\b\d{2,3}(?:\s*/\s*\d{2,3}){5,}\b"),
+        # suppress.
+        #
+        # Context-gated, because the bare shape matches ordinary tabular data
+        # — "12 / 15 / 18 / 22 / 25 / 30 applications" and "01/02/03/04/05/06"
+        # both tripped an earlier ungated version and would have blocked CI on
+        # a harmless docs edit.
+        re.compile(
+            r"((?:awaken\w*|\bxp\b|milestone|split|grant|award)[\s\S]{0,160}\b\d{2,3}(?:\s*/\s*\d{2,3}){5,}\b)"
+            r"|(\b\d{2,3}(?:\s*/\s*\d{2,3}){5,}\b[\s\S]{0,160}(?:awaken\w*|\bxp\b|milestone|split|grant|award))",
+            re.IGNORECASE,
+        ),
     ),
     (
         "awakening-xp-split-total",
         # A 3-4 digit total within ~80 chars of "awaken" in either order.
         # Generalised from the exact total for the same reason as above:
         # catches the tell without naming the number.
+        # Requires an XP context within 40 chars of the number as well, so an
+        # ordinary "after you awaken, target = 400 items" does not block CI.
         re.compile(
-            r"(awaken\w*[\s\S]{0,80}=\s*\d{3,4}\b)|(=\s*\d{3,4}\b[\s\S]{0,80}awaken\w*)",
+            r"(awaken\w*[\s\S]{0,80}=\s*\d{3,4}\b(?=[\s\S]{0,40}\bxp\b))"
+            r"|(\bxp\b[\s\S]{0,40}=\s*\d{3,4}\b[\s\S]{0,80}awaken\w*)",
             re.IGNORECASE,
         ),
     ),
@@ -150,7 +196,33 @@ PATTERNS = [
         # mechanic is fine (players see it fire); any stated odds are the
         # detail this gate is after. Matched as "<n>-in-<n>" by shape so the
         # real odds are not written down here.
-        re.compile(r"\b\d+\s*-\s*in\s*-\s*\d+\b", re.IGNORECASE),
+        #
+        # PROXIMITY-GATED, and it must stay that way: a bare "<n>-in-<n>"
+        # matches ordinary English ("a 2-in-1 tracker", "a 1-in-5 shot") and
+        # an ungated version blocks CI on innocent prose. Requires an odds
+        # context word within 200 chars in either direction.
+        re.compile(
+            r"((?:forge\s+roulette|roulette|\broll\b|\bodds\b)[\s\S]{0,200}\b\d+\s*-\s*in\s*-\s*\d+\b)"
+            r"|(\b\d+\s*-\s*in\s*-\s*\d+\b[\s\S]{0,200}(?:forge\s+roulette|roulette|\broll\b|\bodds\b))",
+            re.IGNORECASE,
+        ),
+    ),
+    (
+        "sealed-odds-as-code",
+        # A rewording pass can dodge a prose pattern while keeping the secret:
+        # a modulus against a small literal leaks the odds as completely as
+        # writing them out, because $((RANDOM % n)) tells you n.
+        #
+        # Scoped to the NAMED mechanic, not to randomness in general. The
+        # boot-card's generic "chance-based mechanics must use a real random
+        # source" rule carries an illustrative modulus and is player-facing
+        # by design; an earlier, looser version of this pattern flagged that
+        # rule in all 27 bundled copies, which is noise, not a leak.
+        re.compile(
+            r"(roulette[\s\S]{0,160}%\s*\d{1,3}\b)"
+            r"|(%\s*\d{1,3}\b[\s\S]{0,160}roulette)",
+            re.IGNORECASE,
+        ),
     ),
     (
         "forge-roulette-bonus-xp-value",
@@ -218,31 +290,64 @@ def load_allowlist():
 
 
 def iter_scan_files():
+    """Yield (path, values_only) for every file under the scan targets.
+
+    Nothing is skipped. Compiled bytecode in particular MUST be scanned:
+    a .pyc built from an older revision of this very file embeds the old
+    plaintext constants, so skipping binaries would let the gate certify a
+    tree that republishes every secret it was written to suppress.
+    """
     seen = set()
     for target in SCAN_TARGETS:
         candidates = [target] if target.is_file() else (
             sorted(target.rglob("*")) if target.is_dir() else []
         )
         for path in candidates:
-            if not path.is_file() or path in SELF_EXCLUDE or path in seen:
-                continue
-            if "__pycache__" in path.parts or path.suffix == ".pyc":
+            if not path.is_file() or path in seen:
                 continue
             seen.add(path)
-            yield path
+            if path in HASH_ONLY_FILES:
+                mode = "hash"
+            elif path in VALUE_ONLY_FILES:
+                mode = "values"
+            else:
+                mode = "full"
+            yield path, mode
 
 
-def scan_file(path):
-    """Return a list of (category, line_number, line_text) hits for one file."""
+def scan_file(path, mode="full"):
+    """Return a list of (category, line_number, line_text) hits for one file.
+
+    mode: "full"   — every pattern plus the ID check (normal files)
+          "values" — sealed-VALUE patterns plus the ID check
+          "hash"   — the ID check only (this file; see HASH_ONLY_FILES)
+
+    Binary files are decoded latin-1 rather than skipped, so ASCII constants
+    embedded in compiled bytecode are still compared, and are demoted to
+    value-level checks since NAME patterns are meaningless there.
+    """
     hits = []
+    binary = False
     try:
         text = path.read_text(encoding="utf-8")
-    except (UnicodeDecodeError, OSError):
-        return hits  # binary/unreadable files aren't player-readable text anyway
+    except UnicodeDecodeError:
+        try:
+            text = path.read_bytes().decode("latin-1")
+            binary = True
+        except OSError:
+            return hits
+    except OSError:
+        return hits
 
     lines = text.splitlines()
+    if mode == "hash":
+        active = []
+    elif mode == "values" or binary:
+        active = [(c, p) for c, p in PATTERNS if c in VALUE_CATEGORIES]
+    else:
+        active = list(PATTERNS)
 
-    for category, pattern in PATTERNS:
+    for category, pattern in active:
         for match in pattern.finditer(text):
             line_no = text.count("\n", 0, match.start()) + 1
             line_text = lines[line_no - 1] if 0 < line_no <= len(lines) else ""
@@ -251,10 +356,14 @@ def scan_file(path):
     # Hash-compare every UUID-shaped candidate rather than substring-searching
     # for literal IDs, so this file never has to contain them. Normalisation
     # means a sealed ID is caught in either its dashed or undashed spelling.
-    for match in NOTION_ID_CANDIDATE.finditer(text):
-        if _id_digest(match.group(0)) in SEALED_ADMIN_PAGE_ID_HASHES:
+    id_rx = NOTION_ID_CANDIDATE_BINARY if binary else NOTION_ID_CANDIDATE
+    for match in id_rx.finditer(text):
+        candidate = match.group(1) if binary else match.group(0)
+        if _id_digest(candidate) in SEALED_ADMIN_PAGE_ID_HASHES:
             line_no = text.count("\n", 0, match.start()) + 1
             line_text = lines[line_no - 1] if 0 < line_no <= len(lines) else ""
+            if binary:
+                line_text = f"<compiled bytecode: sealed ID embedded as a constant in {path.name}>"
             hits.append(("sealed-admin-page-id", line_no, line_text.strip()))
 
     return hits
@@ -263,13 +372,30 @@ def scan_file(path):
 def main():
     allowed = load_allowlist()
     all_hits = []  # (rel_path, category, line_no, line_text, allowlisted)
+    bytecode = []
 
-    for path in iter_scan_files():
+    for path, mode in iter_scan_files():
         rel_path = path.relative_to(REPO_ROOT).as_posix()
-        for category, line_no, line_text in scan_file(path):
+        if path.suffix == ".pyc" or "__pycache__" in path.parts:
+            bytecode.append(rel_path)
+        for category, line_no, line_text in scan_file(path, mode):
             key = f"{rel_path}:{line_no}"
             allowlisted = key in allowed
+            # Bytecode "lines" can be enormous; keep output readable.
+            if len(line_text) > 200:
+                line_text = line_text[:200] + " …[truncated]"
             all_hits.append((rel_path, category, line_no, line_text, allowlisted))
+
+    if bytecode:
+        print(
+            f"leak_check: WARNING — {len(bytecode)} compiled bytecode file(s) present "
+            "under the scan targets. These are scanned, but they should not be "
+            "committed at all (see .gitignore). If one is tracked, remove it with "
+            "`git rm --cached <path>`:"
+        )
+        for rel_path in bytecode:
+            print(f"  {rel_path}")
+        print()
 
     if not all_hits:
         print("leak_check: no hits at all. Clean.")
