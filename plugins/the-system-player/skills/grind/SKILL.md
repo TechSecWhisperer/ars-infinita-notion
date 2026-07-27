@@ -10,7 +10,17 @@ A pipeline scan: what's overdue, what's stale, what's next — nothing more.
 
 ## Steps
 
-1. **Query the Quest Board** (data source `KERNEL:Quest Board`) via `notion-query-database-view` on its default view, or a filtered view if one exists for active quests. Pull `Role`, `Company`, `Stage`, `date:Last Activity:start`, `Next Action`, `date:Next Action Due:start`, `Priority`.
+1. **Query the Quest Board** (data source `KERNEL:Quest Board`) with a narrow, filtered read — never a whole-board pull filtered client-side:
+
+   ```sql
+   SELECT Role, Company, Stage, "date:Last Activity:start", "Next Action",
+          "date:Next Action Due:start", Priority
+   FROM "<resolved Quest Board collection:// URL>"
+   ```
+
+   Project only these columns rather than pulling every property — but do **not** filter stages here. Which stages are reported is decided per-bucket in step 2, and excluding terminal stages at query level would silently drop them from all three buckets (a `Rejected` quest with an open `Next Action` would vanish entirely). Row filtering is a game-meaning decision, not an efficiency one.
+
+   Three things that will bite you: date properties are only queryable as their expanded columns (`"date:Last Activity:start"`, never `"Last Activity"` — that errors with *no such column*); `SLA Status`/`Days Silent` are formulas that cannot be selected in SQL at all (see step 2 — you compute those yourself anyway); and `Company` is a relation, so it comes back as a page reference, not a display name — resolve it before printing. If SQL mode returns `entitlement_required` (free-plan quota), fall back to `notion-query-database-view` on the default view per the boot card.
 
 2. **Compute against today (the player's timezone, from the Kernel)**, not the formula columns (`SLA Status`/`Days Silent` are noted in the boot card as live approximations — your own date math is authoritative):
    - 🟠 **Follow-up due**: 2+ business days since `Last Activity` on any quest not in a terminal stage (Rejected/Closed – No Response/Withdrawn/Offer).
