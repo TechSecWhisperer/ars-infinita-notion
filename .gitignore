@@ -1,0 +1,25 @@
+# Python bytecode. Running the mandated leak-check ritual generates these,
+# and without this file a `git add -A` sweeps them into the commit — which
+# is exactly how tools/__pycache__/leak_check.cpython-311.pyc ended up
+# tracked in PR #6.
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Build artifacts from the packaging ritual
+*.zip
+build/
+dist/
+
+# Environments
+.venv/
+venv/
+env/
+
+# OS and editor cruft
+.DS_Store
+Thumbs.db
+*.swp
+*~
+.idea/
+.vscode/
