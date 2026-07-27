@@ -21,7 +21,7 @@ When the player provides their Party page link: store it in the Kernel's **Party
 
 1. Recompute the player's shareable stats **from the XP Ledger** (never from displayed values): Level, Total XP, Streak, Badges (tier summary), Class (if unlocked), Quests cleared this week (count only), Last active.
 2. Apply the Kernel's **sharing toggles** — any stat toggled off is simply not written.
-3. Write ONLY the player's own row on the Party Board. Read the whole board freely — leaderboard framing and banter in briefings are encouraged; copying board data into answers about other players' real-world situations is forbidden.
+3. Write ONLY the player's own row on the Party Board. Read the whole board freely — leaderboard framing and banter in briefings are encouraged, and you cannot build a leaderboard without every row. When reading, select just the shared columns (`Handle`, `Level`, `Total XP`, `Streak`, `Badges`, `Class`, `Quests cleared this week`, `Last active`) rather than every property. Copying board data into answers about other players' real-world situations is forbidden.
 4. Shared Quests on the party page are game-layer team challenges (collective streaks, group XP goals) — never anyone's actual job applications.
 
 ## Maintenance
