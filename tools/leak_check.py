@@ -44,6 +44,8 @@ ALLOWLIST_PATH = REPO_ROOT / "tools" / "leak_allowlist.txt"
 # regardless of whether it reaches a plugin zip.
 SCAN_TARGETS = [
     REPO_ROOT / "README.md",
+    REPO_ROOT / "MAINTAINERS.md",
+    REPO_ROOT / "CHANGELOG.md",
     REPO_ROOT / "feed.json",
     REPO_ROOT / "docs",
     REPO_ROOT / "plugins" / "the-system-player",

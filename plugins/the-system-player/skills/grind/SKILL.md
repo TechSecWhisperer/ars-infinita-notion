@@ -33,4 +33,4 @@ A pipeline scan: what's overdue, what's stale, what's next — nothing more.
 
 5. **Optional calendar mirror (📅 System Calendar only, never the board):** for each overdue follow-up surfaced above, check whether a matching `Type: Follow-up Due` row already exists in System Calendar for that quest/contact and due date; if not, create one. This is the one write /grind is allowed to make — it never touches the Quest Board or Hunter Network, and it's idempotent (the existence check above prevents duplicates on a re-run).
 
-5. If the board has nothing due, say so plainly rather than padding the report — a clean pipeline is a fine answer.
+6. If the board has nothing due, say so plainly rather than padding the report — a clean pipeline is a fine answer.

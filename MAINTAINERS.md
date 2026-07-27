@@ -4,7 +4,7 @@ This file is for whoever cuts releases of this repo — not for players. It's ch
 
 ## The admin plugin is never published here
 
-`the-system` (the admin plugin, at `/root/.claude/plugins/synced/the-system/` on the admin's machine) contains sealed mechanics, the admin agent roster (Warden/Cardinal), the Feature Flag Registry, the Sealed Codex, and other content that must never reach a player-facing surface. **It must never be copied into this repository, in whole or in part, under any path.** Only `the-system-player` (the Player Edition mirror) belongs in `plugins/`.
+`the-system` (the admin plugin, at `/root/.claude/plugins/synced/the-system/` on the admin's machine) contains sealed mechanics, the admin agent roster, admin-only configuration switches, the sealed reference material, and other content that must never reach a player-facing surface. **It must never be copied into this repository, in whole or in part, under any path.** Only `the-system-player` (the Player Edition mirror) belongs in `plugins/`.
 
 If you're ever unsure whether a file belongs here, ask: "would I be comfortable with all 3–6 alpha players reading this line?" If no, it doesn't go in this repo.
 
@@ -52,7 +52,9 @@ It has to stay **shared publicly** (or at minimum, shared such that "Duplicate" 
 
 ## Known pending items (not blockers, but need your ruling)
 
-- **Forge Roulette (`plugins/the-system-player/skills/forge/SKILL.md`, lines ~32–33):** the exact 1-in-3 odds and the +15 XP value for the bonus roll are currently spelled out in the shipped player skill. This is allowlisted in `tools/leak_allowlist.txt` pending your ruling on whether player-facing files should ever state exact odds/XP values for a bonus mechanic, or whether that skill file should be rewritten to keep the *existence* of a roulette bonus visible (players can see it fire) while moving the precise odds/value into something the player skill queries at runtime instead of hardcoding.
-- **"Class Engine" mention (`plugins/the-system-player/skills/intake/SKILL.md`, line ~21):** the intake skill references "the Class Engine's daily menu" by name in passing, while explaining why side-quest calibration matters. `class engine` is one of the sealed-mechanics patterns the leak gate watches for. It's allowlisted for now because the mention doesn't disclose any engine internals (no precondition logic, no formulas) — it's just naming a system the player already knows exists (Side-Quest Calibration is a documented step in that same skill). Flagging it explicitly so you can decide whether the mention should be reworded to drop the internal name entirely, or whether "Class Engine" as a bare name is fine to leave in player-facing copy.
+- **Forge Roulette values — RESOLVED 2026-07-24.** The exact odds and bonus value were removed from the shipped player skill and moved behind the sealed layer (see `tools/leak_allowlist.txt`). This note previously restated both values in plaintext, in a file the leak gate did not scan — which made this document the last place in the repo they appeared. It no longer states them, and `MAINTAINERS.md` is now inside `SCAN_TARGETS`. **Standing rule: never restate a sealed value in order to describe it. Reference the mechanic, not the number.**
 
-Both of these are pre-existing in the player plugin source as synced — nothing in this repo build introduced them, but the leak gate (correctly) flags both, so they need your explicit call rather than silent allowlisting by whoever cuts the next release.
+- **Sealed engine name — RESOLVED 2026-07-24.** The player intake skill previously named a sealed internal engine in passing. It was reworded to describe the behaviour without the internal name. No engine internals were ever disclosed.
+
+- **Open, genuinely needs your ruling:** whether player-facing copy may ever state exact odds or XP values for a bonus mechanic. Current position is no — a player sees the mechanic fire at runtime; the docs do not pre-announce the numbers. Worth noting the limit of this: any value the player's own agent must compute cannot be hidden from that player, so sealing is only meaningful for values the client never needs.
+
