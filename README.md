@@ -203,7 +203,11 @@ Ars Infinita improves over time, and your instance keeps itself current. New mec
 
 This is an **early alpha**, shared with a small circle while it stabilizes — not an officially released product. Expect rough edges; that's what alpha is for. Your data lives in *your* Notion and never leaves it.
 
-*License: to be set by the author. For now, treat this as personal-use, by invitation — not for redistribution.*
+## 📄 License
+
+Released under the [MIT License](LICENSE) — © 2026 William Moses. You're free to use, modify, distribute and build on this, commercially or otherwise, provided the copyright notice travels with it.
+
+The game's sealed mechanics are not part of this repository and never have been — they live only in the author's own admin workspace. Nothing here is withheld from you by license; what isn't here simply isn't here.
 
 ---
 

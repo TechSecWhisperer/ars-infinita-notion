@@ -15,7 +15,8 @@
       "author": {
         "name": "Will Moses (Game Admin)"
       },
-      "category": "productivity"
+      "category": "productivity",
+      "license": "MIT"
     }
   ]
 }

@@ -15,7 +15,7 @@
 
 # [SEALED 2026-07-24 via warden/seal-forge-odds-and-class-engine]
 #
-# Forge Roulette odds: the exact "1-in-3" odds have been removed from
+# Forge Roulette odds: the exact odds have been removed from
 # player-facing skill documentation (forge/SKILL.md steps 2-4). Players
 # still see the mechanic fire at runtime with the payout value, but the
 # odds are not pre-announced in the docs. Moved to boot-card Sealed Codex
