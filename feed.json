@@ -39,8 +39,8 @@
       "type": "Minor",
       "applies_to": "Available-from-now",
       "min_level": 0,
-      "title": "v1.1.0 — Capability tiers: /vitals, /doctor, mobile-lite",
-      "player_facing_summary": "Two new commands: /vitals checks what your current session can actually do, and /doctor runs diagnostics and self-repairs your setup. Sessions without the browser layer now degrade gracefully into a lighter, still-playable mode, and /awaken sets up the browser layer for you on desktop."
+      "title": "v1.1.0 — Capability tiers: /vitals, /doctor, and graceful mobile-lite",
+      "player_facing_summary": "The System now checks what your session can actually do and adapts to it. New /vitals reports your setup's capabilities (desktop vs mobile-lite, whether an agent browser is available); new /doctor runs diagnostics and repairs common issues. On app-only or mobile sessions, commands that need a browser now degrade gracefully with a clear \"won't run here\" message instead of failing silently. /awaken now walks you through agent-browser setup so the full command set is available. No XP values, levels, or rules change."
     },
     {
       "version": "1.2.0",
@@ -49,7 +49,7 @@
       "applies_to": "Forward-only",
       "min_level": 0,
       "title": "v1.2.0 — Alpha 2: The Gates Reopen",
-      "player_facing_summary": "Maintenance is over — briefings, XP, and achievements are live again. Gatecrasher I now unlocks at 2 tracked applications (forward-only: anything you already earned stays earned). Levels 1–4 are now the Tutorial Arc, and after it closes the System tells you the normal daily XP range out loud. New 📅 System Calendar: briefings and reminders now land as dated entries you can see in Notion Calendar. The schedule-setup fix shipped: /awaken now creates your Daily Quest Briefing scheduled task — existing players, re-run /awaken once to pick it up. The plugin now installs from the public marketplace repo — one link."
+      "player_facing_summary": "Alpha 2 is here. Gatecrasher I now unlocks at 2 tracked applications — forward-only, so nothing you've already earned is re-locked. Levels 1–4 are now the Tutorial Arc, your onboarding stretch; once it closes you'll see a stated normal daily-XP band so progress reads clearly. New 📅 System Calendar: your daily briefings and reminders now appear as calendar entries you can browse later, not just one-off notifications. The schedule-setup fix shipped: /awaken now creates your Daily Quest Briefing scheduled task — existing players, re-run /awaken once to pick it up. And The System's plugin now installs from the public marketplace repo — one link. Your history and data are untouched."
     },
     {
       "version": "1.3.0",
@@ -57,8 +57,8 @@
       "type": "Minor",
       "applies_to": "Forward-only",
       "min_level": 0,
-      "title": "v1.3.0 — Follow-up, refocused",
-      "player_facing_summary": "Follow-up is now stage-weighted. Chasing an application nobody has answered rarely changes the outcome, so pre-contact quests (Saved, Applied) no longer raise an overdue flag, a debuff, a streak consequence, or any \"you're late\" framing — they can still be offered as an option, never as guilt. Once a human has replied (Recruiter Screen and beyond), the tight cadence stays and those quests become the priority surface in /grind and your daily briefing. Forward-only: no past XP or streak is re-scored. Setup now asks which theme you want — game skin or Professional — and will not proceed until you answer; there is no default and no silent fallback. Under the hood, any number Notion can compute itself is now computed by Notion and read by your agent rather than re-derived, so your Player Card can't drift away from your Ledger; the first of these formulas ship in the template over the next builds. And The System is now MIT licensed — free to use, fork and modify."
+      "title": "v1.3.0 — Follow-up, refocused (rules adopted; plugin build to follow)",
+      "player_facing_summary": "Rules change today; the plugin that implements them ships next. ADOPTED NOW: follow-up becomes stage-weighted — chasing an application nobody has answered rarely changes the outcome, so pre-contact quests (Saved, Applied) stop raising overdue flags, debuffs, streak consequences or any \"you're late\" framing, while post-contact quests (Recruiter Screen and beyond, where a human has replied) keep the tight cadence and become the priority surface. Also adopted: setup will ask which theme you want and refuse to proceed until you answer — no default, no silent fallback; and any number Notion can compute itself will be computed by Notion and read by your agent rather than re-derived, so your Player Card can't drift from your Ledger. NOT YET IN YOUR PLUGIN: until the next plugin build lands, your installed copy still runs the old flat two-day cadence and setup still has no theme question. You may still see follow-up prompts on quests nobody has answered — those are retired by rule, and you can ignore them. Forward-only: no past XP or streak is re-scored, and nothing is required from you. TRUE TODAY: The System is now MIT licensed — free to use, fork and modify."
     }
   ],
   "commands": [
