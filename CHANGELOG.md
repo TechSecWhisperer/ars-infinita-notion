@@ -35,7 +35,7 @@ The repo link is now the whole install path: no separate download, no side-loade
 - Your data lives in your Notion workspace and never leaves it.
 
 **Known pending items**
-- The exact Forge Roulette odds (1-in-3) and bonus value (+15 XP) are currently spelled out in the shipped player skill, allowlisted pending an admin ruling on whether that level of detail should stay player-visible.
-- A passing "Class Engine" name-check reference in the `/intake` skill is allowlisted pending the same kind of review.
+- The Forge Roulette odds and bonus value were spelled out in the shipped player skill at this release. They were sealed on 2026-07-24 (PR #5) and moved behind the admin layer. This entry deliberately does not restate them — a changelog describing a leak must not reproduce it.
+- A passing reference to a sealed internal engine name in the `/intake` skill was reworded on 2026-07-24 to describe the behaviour without the internal name.
 
 See `MAINTAINERS.md` for details on both.
