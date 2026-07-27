@@ -23,7 +23,7 @@ A pipeline scan: what's overdue, what's stale, what's next — nothing more.
    Three things that will bite you: date properties are only queryable as their expanded columns (`"date:Last Activity:start"`, never `"Last Activity"` — that errors with *no such column*); `SLA Status`/`Days Silent` are formulas that cannot be selected in SQL at all (see step 2 — you compute those yourself anyway); and `Company` is a relation, so it comes back as a page reference, not a display name — resolve it before printing. If SQL mode returns `entitlement_required` (free-plan quota), fall back to `notion-query-database-view` on the default view per the boot card.
 
 2. **Compute against today (the player's timezone, from the Kernel)**, not the formula columns (`SLA Status`/`Days Silent` are noted in the boot card as live approximations — your own date math is authoritative):
-   - 🟠 **Follow-up due**: 2+ business days since `Last Activity` on any quest not in a terminal stage (Rejected/Closed – No Response/Withdrawn/Offer).
+   - 🟠 **Follow-up due**: 2+ business days since `Last Activity` on a quest that has had **inbound human contact** — i.e. `Recruiter Screen` or later. Pre-contact stages (`Saved`, `Applied`) and terminal stages (`Rejected`/`Closed – No Response`/`Withdrawn`/`Offer`) are never surfaced here. Chasing before a human has replied yields little, and the standing rule forbids overdue framing on those quests — they may be offered as an option, never flagged as late.
    - 🔴 **Going stale**: 14+ days silent — flag for a closure confirmation or a final-nudge draft, don't close it yourself without the player's confirmation.
    - **Next actions**: anything with a `Next Action` set and no clear reason it's blocked.
 
