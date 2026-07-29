@@ -26,6 +26,7 @@ Keep each to a sentence. The player should always know what they're allowing, an
 - **Idempotent, ledger-keyed.** Before ANY milestone award, query the XP Ledger for an existing row with that exact ledger key ("Awakening: …"). Row exists → milestone already done; skip both the work-check and the award, move on. This is what makes /awaken safe to re-run and what makes it the repair/migration tool.
 - **Milestone XP replaces standard XP.** During awakening, never also award the standard amount for the same act (milestone 3 subsumes /intake's +100; milestone 4 subsumes /quest's +10). One ledger row per milestone, Category: `Awakening`.
 - **One question at a time** (Interrogation Protocol) for anything you must ask.
+- **The theme question is a gate, not a preference.** Setup does not proceed past Step 0.5 until the player has actually answered it. There is no default theme and no silent fallback — an unanswered theme question fails setup and re-asks.
 - Announce each milestone System-style, and run the level-up ceremony lines at L2, L3, L4 — awakening is designed to have several level-up moments. If a patch has staged 🔒 SEALED entries at a level just cleared, unsealing is part of the ceremony.
 
 ## Step 0 — locate or demand the template
@@ -34,6 +35,19 @@ Search the player's Notion for "The System — Job Search HQ" and a "🧬 Kernel
 
 - **Nothing found:** the player hasn't duplicated the Player Template. Tell them: get the Seed link from the Game Admin, open the Player Template, hit **Duplicate** into their own workspace, then say /awaken again. Do not attempt to build the entire workspace from scratch if the template is available — duplication is faster and canonical.
 - **Template found (fresh duplicate or partial/broken instance):** proceed. /awaken inspects what exists and builds only what's missing.
+
+## Step 0.5 — the theme gate (blocking — ask before you build)
+
+**Ask the player which theme they want, and do not proceed until they answer.** This runs before Step 1 because the very first milestone ends in a level-up ceremony, and the ceremony's wording is themed — building first and asking later means the player's opening moment is written in a skin they never chose.
+
+- Read the **Theme Registry** entity and offer the themes actually registered there, in one line each, in plain language. Do not hardcode a theme list here; the Registry is the source of truth for what exists, and re-reading it means a newly registered theme is offered automatically.
+- **If the Theme Registry is missing or unreadable** (a partial or broken instance — Step 0 explicitly admits those, and /doctor routes them here): do not fall back to a default and do not skip the gate. Repair the Theme Registry first from `references/template-schemas.md` — run that piece of the Step 1 procedure early — then ask. The gate blocks on an unanswered question, never on a repairable missing page.
+- Ask it as a single question (Interrogation Protocol), phrased as a real choice with no recommended default.
+- **No default. No silent fallback. No "I'll assume X and you can change it later."** If the player does not answer — they go quiet, they reply with something that is not a theme choice, or the session ends — setup does **not** continue. Say plainly that setup is paused on this one question, and re-ask. An unanswered theme question is a failed setup, not a setup with a default.
+- If the player explicitly asks what the difference is, answer from the Registry mappings and then re-ask. Answering the question is not the same as choosing.
+- Once answered: record the choice on the Kernel in Step 2 (alongside Versions), and use that theme's wording for every ceremony and player-facing line from this point on. Changing it later is `/theme`'s job, never a silent re-skin here.
+
+Idempotent, like everything else in /awaken: if the Kernel already records a theme choice from an earlier run, that is the answer — don't re-ask on a resume or a repair run.
 
 ## Step 1 — inventory & repair (Milestone 1)
 
@@ -51,9 +65,10 @@ Fill the 🧬 Kernel page:
 
 1. **Instance ID table** — every entity above: page ID + data source ID, discovered from the player's own workspace.
 2. **Player section** — interrogate one question at a time, only for what's missing: preferred name · email · timezone (compute all future dates/SLAs in it) · anything they want marked confidential from employers (bank it here and in the Status Window; hard rule 4 protects it forever).
-3. **Versions** — Seed version (from the Seed page), **Mechanics Version = current Patch Feed head** (a fresh awakening always builds at feed-head; late joiners are never behind), last Sigil Check = today.
-4. **Nexus links** — ask the player for their Seed link (the one the Game Admin sent); copy the Patch Feed, Rule Manifest, and Petition form links from it into the Kernel.
-5. **Sharing toggles** — default all yes; tell the player in one line what the heartbeat shares (handle, level, XP, streak, versions, last-active — game stats only, each toggleable off, never job-search content) and honour any "no".
+3. **Theme** — record the theme the player chose at the Step 0.5 gate. If this field is empty at this point on the **build path**, setup skipped the gate: stop, go back to Step 0.5, and ask. Never fill it with a default to get past this step. **This halt is build-path only.** In Migration mode, a Kernel with no theme recorded is simply an existing player who predates the gate — do **not** halt and do **not** interrogate them (Migration mode never re-asks settled questions). Carry on, and log an Open Question in the player's System Log so a later /awaken or /theme can settle it.
+4. **Versions** — Seed version (from the Seed page), **Mechanics Version = current Patch Feed head** (a fresh awakening always builds at feed-head; late joiners are never behind), last Sigil Check = today.
+5. **Nexus links** — ask the player for their Seed link (the one the Game Admin sent); copy the Patch Feed, Rule Manifest, and Petition form links from it into the Kernel.
+6. **Sharing toggles** — default all yes; tell the player in one line what the heartbeat shares (handle, level, XP, streak, versions, last-active — game stats only, each toggleable off, never job-search content) and honour any "no".
 
 **Milestone 2 — ledger key "Awakening: Kernel inscribed" · +50 XP.**
 
