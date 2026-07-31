@@ -84,11 +84,14 @@ HASH_ONLY_FILES = {
 VALUE_CATEGORIES = frozenset({
     "awakening-xp-split-sequence",
     "awakening-xp-split-total",
-    "forge-roulette-odds-value",
-    "sealed-odds-as-code",
-    "forge-roulette-bonus-xp-value",
     "engagement-watch-cadence-numbers",
 })
+# Retired 2026-07-31 (Forge ruling C, System Log row 3ae56d8e-806b-811d-83cb-
+# f45efd32b19f): "forge-roulette-odds-value", "sealed-odds-as-code", and
+# "forge-roulette-bonus-xp-value". Under ruling C the Forge Roulette carries
+# no sealed value — the 1-in-3 odds and +15 payout live openly in forge/SKILL.md
+# by design, so guarding them here would flag the intended state as a leak.
+# Only this value class is unsealed; every other seal above stands unchanged.
 
 # The sealed admin page IDs (Petition DB / Hunter Registry / Nexus and
 # related admin-only Notion pages). Raw appearance of any of these IDs
@@ -192,53 +195,19 @@ PATTERNS = [
         "trigger-insights",
         re.compile(r"\btrigger\s+insights\b", re.IGNORECASE),
     ),
-    (
-        "forge-roulette-odds-value",
-        # The odds of a hidden bonus-XP roll. Naming "Forge Roulette" as a
-        # mechanic is fine (players see it fire); any stated odds are the
-        # detail this gate is after. Matched as "<n>-in-<n>" by shape so the
-        # real odds are not written down here.
-        #
-        # PROXIMITY-GATED, and it must stay that way: a bare "<n>-in-<n>"
-        # matches ordinary English ("a 2-in-1 tracker", "a 1-in-5 shot") and
-        # an ungated version blocks CI on innocent prose. Requires an odds
-        # context word within 200 chars in either direction.
-        re.compile(
-            r"((?:forge\s+roulette|roulette|\broll\b|\bodds\b)[\s\S]{0,200}\b\d+\s*-\s*in\s*-\s*\d+\b)"
-            r"|(\b\d+\s*-\s*in\s*-\s*\d+\b[\s\S]{0,200}(?:forge\s+roulette|roulette|\broll\b|\bodds\b))",
-            re.IGNORECASE,
-        ),
-    ),
-    (
-        "sealed-odds-as-code",
-        # A rewording pass can dodge a prose pattern while keeping the secret:
-        # a modulus against a small literal leaks the odds as completely as
-        # writing them out, because $((RANDOM % n)) tells you n.
-        #
-        # Scoped to the NAMED mechanic, not to randomness in general. The
-        # boot-card's generic "chance-based mechanics must use a real random
-        # source" rule carries an illustrative modulus and is player-facing
-        # by design; an earlier, looser version of this pattern flagged that
-        # rule in all 27 bundled copies, which is noise, not a leak.
-        re.compile(
-            r"(roulette[\s\S]{0,160}%\s*\d{1,3}\b)"
-            r"|(%\s*\d{1,3}\b[\s\S]{0,160}roulette)",
-            re.IGNORECASE,
-        ),
-    ),
-    (
-        "forge-roulette-bonus-xp-value",
-        # Any "+<n>" or "XP: <n>" near "Forge Roulette". Proximity to the
-        # mechanic name keeps this narrow enough not to catch unrelated XP
-        # awards elsewhere (e.g. the on-time follow-up bonus in /log, which
-        # is a different, plainly documented, non-random game rule).
-        # Generalised from the exact payout so the value isn't stored here.
-        re.compile(
-            r"(forge\s+roulette[\s\S]{0,120}(\+\d+\b|XP:\s*\d+\b))"
-            r"|((\+\d+\b|XP:\s*\d+\b)[\s\S]{0,120}forge\s+roulette)",
-            re.IGNORECASE,
-        ),
-    ),
+    # RETIRED 2026-07-31 — Forge ruling C (System Log row 3ae56d8e-806b-811d-
+    # 83cb-f45efd32b19f). Three patterns previously lived here guarding the
+    # Forge Roulette odds and payout: "forge-roulette-odds-value" (the
+    # "<n>-in-<n>" shape near a roll/odds word), "sealed-odds-as-code" (a
+    # modulus literal near "roulette"), and "forge-roulette-bonus-xp-value"
+    # (a "+<n>"/"XP: <n>" near "forge roulette"). Ruling C redesigned the
+    # mechanic to need no sealed value — the 1-in-3 odds and +15 payout are
+    # deliberately open in forge/SKILL.md — so these three now flag the
+    # intended state. Removed rather than allowlisted, because the values are
+    # no longer secret at all. This unseals ONLY the Forge value class; the
+    # awakening-XP split, engagement-watch cadence, class-engine name, hidden-
+    # quest, sealed-codex-name, admin-agent-name, and sealed-page-ID checks
+    # are all untouched.
     (
         "engagement-watch-cadence-numbers",
         # A cadence number near the "Engagement Watch" name in either
