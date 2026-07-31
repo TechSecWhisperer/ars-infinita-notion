@@ -2,6 +2,19 @@
 
 All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here. Dates are UTC.
 
+## v1.3.0 — 2026-07-31
+
+**Changed**
+- Follow-up is now stage-weighted. Quests nobody has answered (Saved, Applied) no longer raise overdue flags, debuffs, or streak consequences — they're offered as an option, never as pressure. Once a human has replied (Recruiter Screen onward), the tight cadence stays and those become the priority surface in /grind and your daily briefing.
+- Setup now asks which theme you want and will not proceed until you answer. No default, no silent fallback.
+
+**Adopted as rule, shipping in a later build**
+- Where Notion can compute a value itself, your agent will read it rather than re-derive it. The formulas land in the template over the next builds.
+
+**Unchanged promises**
+- Forward-only: no past XP, streak, or badge is re-scored.
+- Your data stays in your Notion workspace.
+
 ## v1.2.0 — 2026-07-23
 
 **Added**
