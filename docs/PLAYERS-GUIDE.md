@@ -89,7 +89,9 @@ Weekly, run `/levelup` — a review ritual that checks your pipeline health, res
 
 If something about how the System behaves isn't working for you, `/patch` logs a standing correction so every future session (including scheduled ones) follows it automatically — including pausing a feature outright if it's doing more harm than good.
 
-**📅 System Calendar:** your briefings, weekly reviews, reminders, and due follow-ups also land as dated rows in a 📅 System Calendar database in your workspace — open Notion Calendar (or the database itself) and you'll see them there. It's just the notification layer; your Quest Board and Daily Log are still what's actually true.
+**📅 System Calendar:** your briefings, weekly reviews, and reminders land as dated rows in a 📅 System Calendar database in your workspace — open Notion Calendar (or the database itself) and you'll see them there. It's just the notification layer; your Daily Log is still what's actually true.
+
+**Your due follow-ups are not copied there.** `Next Action` and `Next Action Due` live on your Quest Board and only on your Quest Board. You see them on a calendar through the board's own **📆 Next Actions** view (`/awaken` adds it), which means you're looking at the live row — change a due date and the calendar changes with it, because there's nothing to keep in sync.
 
 ---
 

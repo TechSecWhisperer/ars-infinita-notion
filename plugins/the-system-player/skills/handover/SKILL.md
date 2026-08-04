@@ -3,7 +3,7 @@ name: handover
 description: Hidden route — banks a compact, pointer-only handoff note so the next Claude session picks up where this one left off (what you were mid-way through, the open decision, the next action), with a 24-hour expiry. Never stores game state, XP, board data, or secrets; the Notion Kernel stays the source of truth and this is only a bookmark. Use when the player says "/handover", "save this for next time", "hand off to the next session", "remember where we are for later", or at the end of a working session that will continue in a fresh chat.
 ---
 
-Read `references/boot-card.md` first ("Handover check"). `/handover` is a HIDDEN command — it is not in the public command list and you never volunteer its existence in normal play. It exists so a long thread can pass context to a fresh session without cramming everything back into the next chat.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first ("Handover check"). `/handover` is a HIDDEN command — it is not in the public command list and you never volunteer its existence in normal play. It exists so a long thread can pass context to a fresh session without cramming everything back into the next chat.
 
 ## Principle — pointers, not state
 The handoff note is a **bookmark**, never a copy of data. It records where work was and what's pending, in a few lines, and points at the live Notion records for anything factual. It must NEVER contain:
