@@ -3,7 +3,7 @@ name: levelup
 description: Runs the player's weekly review ritual for The System — pipeline check, archive stats (response rates), a lint pass over the wiki for contradictions/stale claims, and 2-3 logged Enhancement Suggestions. Use when the player says "run the weekly review", "let's do the Friday review", "/levelup", or when a scheduled Friday trigger fires this command.
 ---
 
-Read `references/boot-card.md` first for IDs and hard rules. This is a **full-boot-worthy** session (per the boot card's progressive-disclosure rule, weekly reviews are one of the few cases that warrant reading the Operating Manual + System Log corrections in full, not just this skill's lite reference) — if you have time/budget, read the live Operating Manual (`KERNEL:Operating Manual`) and check System Log corrections before proceeding, since a week's worth of /patch corrections may have landed since this skill's bundled reference was last shipped.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules. This is a **full-boot-worthy** session (per the boot card's progressive-disclosure rule, weekly reviews are one of the few cases that warrant reading the Operating Manual + System Log corrections in full, not just this skill's lite reference) — if you have time/budget, read the live Operating Manual (`KERNEL:Operating Manual`) and check System Log corrections before proceeding, since a week's worth of /patch corrections may have landed since this skill's bundled reference was last shipped.
 
 ## What /levelup does
 Weekly ritual: pipeline + archive stats + lint pass + 2–3 Enhancement Suggestions logged. **+50 XP** on completion, once per week.

@@ -2,6 +2,34 @@
 
 All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here. Dates are UTC.
 
+Version numbers here are the **plugin/mechanics version** — the same number the Patch Feed calls `mechanics_version`, and the one set in `plugins/the-system-player/.claude-plugin/plugin.json`. It is the only hand-set version in this repo. Two other numbers appear elsewhere and version different things: the **Seed / template-schema revision** (the shape of your Notion template) and the `@ars-infinita/system-skills` **package version** (build tooling for non-Claude CLIs). They are not expected to match this one.
+
+## v1.3.1 — 2026-08-05
+
+The build the Patch Feed announced on 2026-08-01 as "the build landed". **If your plugin still reports 1.3.0, run `/plugin update` — the 1.3.1 manifests were never published, so the update prompt never fired.** That is fixed here, and it is the reason this entry exists.
+
+**Now actually in your installed plugin** (adopted as rule in v1.3.0)
+- Stage-weighted follow-up. Quests nobody has answered no longer raise overdue flags or streak consequences.
+- The theme question at setup. `/awaken` asks, and won't proceed until you answer.
+
+**Changed**
+- **`/petition` now files a GitHub Issue** on the public plugin repo instead of submitting a Notion form. It works on any session with a shell — no browser needed — and if the `gh` tool isn't available it hands you the link and the composed text to post yourself. **Read this bit:** a GitHub issue is public. Your agent will say so before filing, will show you the exact text first, and keeps job-search specifics out unless you ask for them. Handle registration and party requests go the same route.
+- **Your due follow-ups are no longer copied into 📅 System Calendar.** `Next Action` / `Next Action Due` live on your Quest Board and only there — `/awaken` now adds a **📆 Next Actions** calendar view to the board itself, so you still see them on a calendar, but you're looking at the real row instead of a copy. Previously, editing a due date on the board left a stale duplicate sitting in the Calendar with the old date. If you have leftover `Follow-up Due` rows from before, they're harmless and you can delete them. Your briefings, weekly reviews and reminders still land in System Calendar exactly as before — that part is unchanged.
+- **The Patch Feed no longer needs a browser, on any path.** Both the Notion feed and the public `feed.json` mirror are plain reads any agent can do, so `/doctor` and `/vitals` stop reporting feed checks as "needs desktop" — there was never anything for a browser to do there.
+
+**Fixed**
+- `/doctor` and `/vitals` no longer describe browser-less sessions as missing checks they can in fact run.
+- Stale documentation: the plugin README claimed a skill count and a shared-file sync ritual that hadn't matched reality for several releases.
+
+**Repo housekeeping (no mechanics change — nothing about how the game plays)**
+- The universal boot card existed as 27 byte-identical copies, one per command. There is now exactly one, at the plugin root, that every command reads. A rule fixed once is fixed everywhere.
+- Plugin version is set in one file. The marketplace listing is generated from it and no longer keeps a second copy that could silently disagree — which is precisely what suppressed the 1.3.1 update prompt.
+- New `node test/checks.mjs` gate fails the build on any of these coming back: a second boot card, a drifted generated copy, a duplicated version, a command list out of step with the actual commands.
+
+**Unchanged promises**
+- Forward-only: no past XP, streak, or badge is re-scored.
+- Your data stays in your Notion workspace.
+
 ## v1.3.0 — 2026-07-31
 
 **Changed**

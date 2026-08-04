@@ -3,7 +3,7 @@ name: respawn
 description: Attempts to revive a job application the player's Quest Board marked "Closed – No Response" with a fresh angle. Use when the player says "let's try X again", "revive that application", "respawn X", or "/respawn [role]".
 ---
 
-Read `references/boot-card.md` first for IDs and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules.
 
 ## What /respawn does
 A revival attempt on a `Closed – No Response` quest — a genuinely fresh angle, not just a repeat of the original outreach. Success (getting a real response that reopens the process) unlocks "The Necromancer" achievement (+100 XP), logged when it actually happens (via /report), not at attempt time.

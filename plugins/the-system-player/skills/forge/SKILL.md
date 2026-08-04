@@ -3,7 +3,7 @@ name: forge
 description: Forges a tailored cover letter for a job tracked on the player's Quest Board — drafts from the JD + their Status Window/Stat Sheet + Gate Intel, de-AIs it into their real voice, and files it against the quest with cover-letter lifecycle tracking. Use when the player says "write a cover letter for X", "forge a letter", "I need a cover letter for the Y role", "/forge [role]", or when another command hands off to /forge before an application. Not for CVs or general messages (/ghost handles voice-fixing arbitrary text; this builds the letter itself).
 ---
 
-Read `references/boot-card.md` first for the Kernel ID table, query mechanics, and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for the Kernel ID table, query mechanics, and hard rules.
 
 ## What /forge does
 Produces a tailored, the player-voiced cover letter for one tracked quest, files it as a 🗒 Agent Notes row (Type: `Cover Letter`), delivers it as a document, and — on a quest's **first** forge only — rolls the Forge Roulette.

@@ -38,7 +38,7 @@ Your workspace is a set of linked Notion databases the System reads and writes f
 - **Hunter Network** — your contacts, with follow-up timing handled for you.
 - **Gate Intel** — reusable company research.
 - **Battle Log · XP Ledger · Achievements · Daily Log** — the record of everything you've done and earned.
-- **📅 System Calendar** — your briefings, reminders, and due follow-ups, as dated rows you can see in your own Notion calendar view. It's a delivery channel, not a source of truth — the Quest Board and Daily Log stay authoritative.
+- **📅 System Calendar** — your briefings, weekly reviews, and reminders, as dated rows you can see in your own Notion calendar view. It's a delivery channel, not a source of truth — the Daily Log stays authoritative. Your due follow-ups are *not* copied here: they live on the Quest Board and show up on a calendar through that board's own **📆 Next Actions** view, so you're always looking at the real row.
 
 ---
 
@@ -97,6 +97,8 @@ The System reads and writes your Notion pages through Notion's own connector (an
 1. Add the Notion MCP server if it isn't already connected — Claude Code will walk you through the same Notion OAuth flow in your browser.
 2. Confirm the connection covers the page from Step 1.
 
+**Not using Claude?** The System runs on any agent that can reach Notion. See **[Playing on another agent](#playing-on-another-agent-codex-antigravity-)** below.
+
 You can sanity-check the connection later with `/vitals` (Step 5).
 
 ### Step 3 — Add the marketplace and install the plugin
@@ -142,6 +144,32 @@ For company research, reading job postings that need a real browser to render, a
 
 Run `/vitals` any time to see exactly what your current session can and can't do.
 
+### Playing on another agent (Codex, Antigravity, …)
+
+Steps 1, 4 and 5 above are the same for everyone — the game lives in Notion, not in Claude. Only Steps 2 and 3 are Claude-shaped, and both have a direct equivalent.
+
+**Instead of Step 3 (install the plugin)** — build the same commands as skills for your CLI. From a clone of this repo:
+
+```sh
+cd packages/system-skills
+npm run install-codex   # OpenAI Codex CLI  -> $CODEX_HOME/skills
+npm run install-agy     # Antigravity (agy) -> ~/.gemini/config/plugins
+```
+
+No dependencies, Node 18+. Both installers take `--dry-run` and print every path they touch. See [`packages/system-skills/README.md`](packages/system-skills/README.md).
+
+**Instead of Step 2 (connect Notion)** — every command needs Notion reachable, which means adding **Notion's own MCP server** to your CLI's MCP configuration. The server is the same one Claude uses; only the config file differs:
+
+| CLI | Where MCP servers are configured |
+|---|---|
+| OpenAI Codex CLI | `~/.codex/config.toml`, under an `[mcp_servers.notion]` table |
+| Antigravity (`agy`) | `~/.gemini/config/` — or `agy mcp add`, if your build has it |
+| Anything else | whatever that agent calls its MCP server list |
+
+Point it at Notion's hosted MCP endpoint (`https://mcp.notion.com/mcp`) and complete the OAuth flow it opens, granting access to the workspace or page you duplicated the Seed into in Step 1. Your CLI's own docs are authoritative on the exact syntax — trust them over this table if they disagree. Once the server is connected, run `/awaken` (or just say "awaken") exactly as in Step 4.
+
+Two differences worth knowing: your agent needs the `gh` CLI (or you'll paste a link) for `/petition`, and the browser layer in Step 5 is `agent-browser`, which is CLI-agnostic and works the same everywhere.
+
 ### Command reference
 
 All 27 commands, in the plugin's own words:
@@ -179,10 +207,23 @@ All 27 commands, in the plugin's own words:
 ### Updating
 
 New mechanics arrive two ways:
-- A **Patch Feed** entry appears in your Notion workspace describing what changed and why.
-- You pull the plugin update in Claude Code with `/plugin update` (or via the plugin manager's update check).
+- A **Patch Feed** entry appears in your Notion workspace describing what changed and why. (The same feed is published as a plain file at [`feed.json`](feed.json), which any agent can read over HTTPS without a browser.)
+- You pull the plugin update in Claude Code with `/plugin update` (or via the plugin manager's update check). On another CLI, re-run the installer in [Playing on another agent](#playing-on-another-agent-codex-antigravity-).
 
 The promise that makes this safe to keep running: **new mechanics never rewrite your history, and your XP is never re-scored.** What you've already earned, you keep — updates add to the game going forward, they don't retroactively change what happened.
+
+#### Which version number is which
+
+You'll see several. They version different things and are not meant to match:
+
+| Number | Where you see it | What it versions |
+|---|---|---|
+| **Plugin / mechanics version** (e.g. `1.3.1`) | `/status`, `/doctor`, the Patch Feed, [`CHANGELOG.md`](CHANGELOG.md), your Kernel's `Mechanics Version` | The game itself — rules, XP, commands. This is the one that matters to you, and the one `/plugin update` moves. |
+| **Seed version** (e.g. `1.0.0`) | Your Kernel's Versions section | The *shape* of your Notion template — which pages and databases exist. Changes rarely; a mismatch with the mechanics version is normal, not a problem. |
+| **`@ars-infinita/system-skills`** (e.g. `0.1.0`) | `packages/system-skills/package.json` | Build tooling for non-Claude CLIs. Nothing to do with the game. |
+| **Admin edition `v0.3.2`** | Historical notes only | The internal admin plugin this Player Edition was forked from, years of numbering ago. Ignore it. |
+
+If `/doctor` says your Mechanics Version is behind the Patch Feed head, that's the one worth acting on.
 
 ### Troubleshooting
 

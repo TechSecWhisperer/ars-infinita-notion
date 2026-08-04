@@ -8,14 +8,27 @@ This file is for whoever cuts releases of this repo — not for players. It's ch
 
 If you're ever unsure whether a file belongs here, ask: "would I be comfortable with all 3–6 alpha players reading this line?" If no, it doesn't go in this repo.
 
+## `plugins/the-system-player/` is canonical
+
+The checked-in tree **is** the Player Edition source. It is not a mirror of anything, and nothing is ever copied over it wholesale.
+
+This used to say the opposite — that a release began by copying an external "current Player Edition source" over the whole directory. That instruction was already false in practice (`packages/system-skills/builder.mjs` reads this tree directly and calls it the source of truth) and actively harmful: a wholesale copy silently reverts any fix made here in a reviewed PR, and an external edit reaches players without review. **Edit this tree, in a pull request, like any other code.** If the sealed admin system ever needs to produce player content, it opens a reviewed change — it does not overwrite the directory.
+
 ## Cutting a release
 
-1. **Pull the latest Player Edition source.** Copy the current player plugin mirror over `plugins/the-system-player/` in full (don't hand-edit individual files out of sync with the source — copy the whole tree so nothing drifts).
+1. **Confirm `plugins/the-system-player/` is the change you reviewed.** No import step, no whole-tree copy.
 2. **Run the validation ritual** (this has caused real installer failures before — do not skip it):
    - `plugins/the-system-player/.claude-plugin/plugin.json` parses as JSON.
    - Its `description` field is ≤500 characters.
    - Every `plugins/the-system-player/skills/*/SKILL.md` has YAML frontmatter that parses with `yaml.safe_load`, and its `name` field matches its folder name exactly.
    - `.claude-plugin/marketplace.json` at the repo root still parses as JSON and still points `source` at `./plugins/the-system-player`.
+
+   Most of that is now mechanical. From `packages/system-skills/`:
+   ```bash
+   node builder.mjs      # regenerates .claude-plugin/marketplace.json from plugin.json
+   node test/checks.mjs   # structural gate: manifests, versions, catalog, boot card
+   ```
+   `test/checks.mjs` needs no network, no CLIs and no dependencies, and is the check that fails the release if any of the invariants below drift.
 
    A quick one-liner for the SKILL.md check:
    ```bash
@@ -36,7 +49,14 @@ If you're ever unsure whether a file belongs here, ask: "would I be comfortable 
    python3 tools/leak_check.py
    ```
    This scans every player-facing file (README, `docs/`, `plugins/the-system-player/**`) for sealed-mechanics patterns — admin agent names, sealed page IDs, awakening XP-split numbers, class-engine internals, and so on. It must exit `0` (or only report allowlisted hits) before you commit. See `tools/leak_allowlist.txt` for the current accepted exceptions and why each one is there — don't add an entry to that file without a real justification comment, and treat every new addition as something that needs your explicit sign-off, not something to wave through by default.
-4. **Bump the version** in `plugins/the-system-player/.claude-plugin/plugin.json` and mirror it in `.claude-plugin/marketplace.json`'s plugin entry. Setting an explicit `version` means players only get prompted to update when this field changes — if you skip it, every commit to the tracked branch counts as a new version instead.
+4. **Bump the version — in exactly one place:** `plugins/the-system-player/.claude-plugin/plugin.json`. Setting an explicit `version` means players only get prompted to update when this field changes — if you skip it, every commit to the tracked branch counts as a new version instead.
+
+   **Do not mirror it into `.claude-plugin/marketplace.json`.** That entry deliberately carries only `name`, `source` and marketplace-level classification. Claude Code resolves the plugin's own manifest, so a second `version`/`description` there does not win — it just sits there disagreeing, which is exactly how the 1.3.1 release shipped a feed at 1.3.1 with manifests still at 1.3.0 and no update prompt. `node builder.mjs` regenerates the file; `node test/checks.mjs` fails if a duplicate `version` or `description` reappears in it.
+
+   Version parity is enforced as follows — this is what the check asserts, so it is also the rule:
+   - `plugin.json.version` **must equal** the newest `## vX.Y.Z` heading in `CHANGELOG.md`. Hard failure.
+   - `feed.json`'s `head` / `mechanics_version` **should equal** it, but a mismatch is a **WARN, not a failure**: during a release train the feed legitimately announces a rules change before the build that implements it lands. Ship the plugin, then the feed catches up (or vice versa) — the warning is there so the gap is deliberate rather than forgotten.
+   - `feed.json` keeps `mechanics_version` and `head` because the boot card and `/doctor` name both ("compare the Kernel's Mechanics Version against the Patch Feed head"). The old third field, `feed_version`, had no consumer anywhere and was removed.
 5. **Update `CHANGELOG.md`** with a dated entry describing what shipped, in player-safe language.
 6. **Commit** with a clear message, and tag the release if you're using tags for this repo's history.
 

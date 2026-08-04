@@ -5,7 +5,7 @@ description: Initialises, repairs, or migrates the player's instance of The Syst
 
 # /awaken — the Awakening
 
-Read `references/boot-card.md` for universal rules and `references/template-schemas.md` for the canonical database schemas. This command is the ONE exception to "the Kernel already exists" — /awaken is what writes it.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` for universal rules and `references/template-schemas.md` for the canonical database schemas. This command is the ONE exception to "the Kernel already exists" — /awaken is what writes it.
 
 The player starts at **Level 0** (a level that exists only during awakening). Every build milestone is a quest that awards XP. By completion the player has legitimately earned **exactly 500 XP → Level 4**, one level below the L5 Job Change Trial.
 
@@ -54,7 +54,8 @@ Idempotent, like everything else in /awaken: if the Kernel already records a the
 Check each entity in `references/template-schemas.md` exists and matches schema: Hub, Operating Manual, Status Window, Guild Hall, Patch Notes, Theme Registry, Kernel (pages) · Quest Board, Hunter Network, Battle Log, Gate Intel, Story Bank, Competency Matrix, XP Ledger, 🗒 Agent Notes, Daily Log, Networking Events, Achievements, Questions & Feedback Log, 📅 System Calendar (databases).
 
 - Missing database → create it per the reference schema (relations wired per the dependency order there). Missing page → recreate its skeleton per the reference.
-- **📅 System Calendar is a delivery/record channel, not a source of truth** — it holds dated rows (briefings, reminders, due follow-ups, events) so the player has a calendar view of what's coming up; the Daily Log and Quest Board remain authoritative for anything also written here. Idempotent: if a player's duplicate already has it, verify schema and leave it alone; if missing, create it fresh and register its IDs on the Kernel like every other entity.
+- **📅 System Calendar is a delivery/record channel, not a source of truth** — it holds dated rows the System *generates* (briefings, weekly reviews, reminders, events) so the player has a calendar view of what's coming up; the Daily Log remains authoritative for anything also written here. Idempotent: if a player's duplicate already has it, verify schema and leave it alone; if missing, create it fresh and register its IDs on the Kernel like every other entity.
+- **Quest follow-ups are NOT copied here.** `Next Action` / `Next Action Due` live on the ⚔️ Quest Board only. Create a **native calendar view on the Quest Board** instead, once, named **📆 Next Actions**, dated on `Next Action Due` and filtered to rows where `Next Action Due` is not empty. That is how a due follow-up reaches the player's calendar — one row, one place, no copy to drift. Idempotent: check the Quest Board's existing views by name before creating it, and if the surface can't create views, say so plainly in one line and tell the player how to add it themselves (Quest Board → **+** next to the view tabs → **Calendar** → date by `Next Action Due`).
 - Never delete or rename anything that exists; never touch rows that carry player data.
 
 **Milestone 1 — ledger key "Awakening: The System comes online" · +100 XP · ⚔️ LEVEL 2 ceremony.**
@@ -67,7 +68,7 @@ Fill the 🧬 Kernel page:
 2. **Player section** — interrogate one question at a time, only for what's missing: preferred name · email · timezone (compute all future dates/SLAs in it) · anything they want marked confidential from employers (bank it here and in the Status Window; hard rule 4 protects it forever).
 3. **Theme** — record the theme the player chose at the Step 0.5 gate. If this field is empty at this point on the **build path**, setup skipped the gate: stop, go back to Step 0.5, and ask. Never fill it with a default to get past this step. **This halt is build-path only.** In Migration mode, a Kernel with no theme recorded is simply an existing player who predates the gate — do **not** halt and do **not** interrogate them (Migration mode never re-asks settled questions). Carry on, and log an Open Question in the player's System Log so a later /awaken or /theme can settle it.
 4. **Versions** — Seed version (from the Seed page), **Mechanics Version = current Patch Feed head** (a fresh awakening always builds at feed-head; late joiners are never behind), last Sigil Check = today.
-5. **Nexus links** — ask the player for their Seed link (the one the Game Admin sent); copy the Patch Feed, Rule Manifest, and Petition form links from it into the Kernel.
+5. **Nexus links** — ask the player for their Seed link (the one the Game Admin sent); copy the Patch Feed and Rule Manifest links from it into the Kernel. (Petitions don't need a link here — `/petition` files a GitHub Issue on the public plugin repo.)
 6. **Sharing toggles** — default all yes; tell the player in one line what the heartbeat shares (handle, level, XP, streak, versions, last-active — game stats only, each toggleable off, never job-search content) and honour any "no".
 
 **Milestone 2 — ledger key "Awakening: Kernel inscribed" · +50 XP.**
@@ -92,24 +93,37 @@ Write the player's first Daily Log entry (today, domains touched, mood if offere
 
 ## Step 6.5 — set up your daily rhythm
 
-Before the finale, make the daily-briefing promise actually real — don't just offer it and leave the player unscheduled.
+**The goal:** the player gets a **Daily Quest Briefing on weekdays at roughly 8am in their own local time**, without having to remember to ask for it. Use whatever scheduler your agent actually offers to make that true. The goal is the requirement; the mechanism is whatever's in front of you. Don't leave the player unscheduled just because the route below isn't the one you have.
 
-1. **Probe for scheduled-task tools** (e.g. via `ToolSearch` for `create_trigger` / a scheduled-task or cron-trigger tool — on Cowork and Claude Code sessions these are usually available; a plain claude.ai chat or mobile session usually won't have them).
-2. **If available:**
-   - **List existing scheduled tasks first.** If one already named "Daily Quest Briefing" exists, skip creation entirely — idempotent, never a duplicate.
-   - Otherwise, offer (never impose) to create **one** scheduled task: **"Daily Quest Briefing"**, weekdays at roughly the player's local 8am. Compute the cron in UTC from the Kernel's Player timezone — if the UTC conversion crosses midnight, shift the day-of-week field accordingly so it still lands on the player's weekday morning, not the wrong day in UTC.
-   - The scheduled prompt must be **self-contained** (each firing starts a fresh session with no memory of this one): boot from the player's own 🧬 Kernel (resolve the Boot Card/Kernel page IDs from there, same as any other session), run the daily briefing duties per the live `KERNEL:Operating Manual`, write today's Daily Log entry, add a 📅 System Calendar row (`Type: Daily Briefing`), and close with a concise briefing summary.
-   - Recommend the player turn on notifications for it, so the briefing actually reaches them instead of sitting unread.
-3. **If scheduled-task tools are NOT available** (app-only / mobile-only session): degrade gracefully, don't fail silently.
-   - Tell the player plainly, in one short line: their daily rhythm is manual here — open the app each weekday morning and say "run my daily briefing."
-   - Log an Open Question in the player's System Log (Type: Open Question, Area: Agent Behaviour) noting that scheduled-task setup was skipped on this surface, so a later `/doctor` run on a capable surface can revisit it.
+**Whatever the route, three things must hold:**
 
-No XP — this is plumbing, not a milestone. (Friday `/levelup` can be scheduled the same way, on request, using the same probe/idempotency pattern above — this step's mandate is the Daily Quest Briefing specifically.)
+- **Idempotent.** List whatever schedules/jobs already exist and look for one named **"Daily Quest Briefing"** before creating anything. Found → done, skip creation, never make a second one.
+- **Correct local time.** Read the Player timezone from the Kernel and target the player's local weekday ~8am. If your scheduler wants UTC or a cron expression, convert — and when the conversion crosses midnight, shift the day-of-week field too, or the briefing lands on the wrong day.
+- **Self-contained prompt.** Each firing starts a fresh session with no memory of this one. The scheduled prompt must therefore boot from the player's own 🧬 Kernel (resolve page IDs from there, same as any other session), run the daily briefing duties per the live `KERNEL:Operating Manual`, write today's Daily Log entry, add a 📅 System Calendar row (`Type: Daily Briefing`), and close with a concise briefing summary.
+
+**Offer, never impose** — and once it's created, suggest the player turn on notifications for it, so the briefing reaches them instead of sitting unread.
+
+### Finding a scheduler
+
+Probe for what this session has, in whatever way is natural for your agent — a scheduled-task or cron-trigger tool in the tool list, a `schedule`/`cron` subcommand, a background-job or automation feature. Some examples, none of them the only right answer:
+
+- **Claude Code / Cowork:** a scheduled-task tool (search the tool list for `create_trigger` or similar) creates the task directly.
+- **A CLI agent with its own scheduler or automation config:** register the job there.
+- **No agent-side scheduler, but a shell:** the host's own scheduler is a legitimate route — `cron` on Linux, `launchd` on macOS, Task Scheduler on Windows — invoking the agent non-interactively with the self-contained prompt above. Offer it; don't install anything without the player's yes.
+
+### If nothing on this surface can schedule
+
+Degrade out loud, never silently:
+
+- Tell the player plainly, in one short line: their daily rhythm is manual here — open the app each weekday morning and say "run my daily briefing."
+- Log an Open Question in the player's System Log (Type: Open Question, Area: Agent Behaviour) noting that scheduled-task setup was skipped on this surface, so a later `/doctor` run on a capable surface can revisit it.
+
+No XP — this is plumbing, not a milestone. (The Friday `/levelup` review can be scheduled the same way, on request, under the same three rules — this step's mandate is the Daily Quest Briefing specifically.)
 
 ## Step 7 — register the Hunter (Milestone 7)
 
 1. Ask the player to choose a **handle** (self-chosen alias; real name optional and off by default).
-2. Submit it via the Petition form (link in the Kernel): title "HANDLE REGISTRATION: <handle>", Category: Other, with Seed version and current level. If the form is unreachable, draft the registration text for the player to send to the Game Admin directly. Handles are admin-registered (no duplicates) — tell the player the Game Admin may come back with a conflict, and the registration stands once confirmed.
+2. Submit it via `/petition` (which files a GitHub Issue on the plugin repo): title "HANDLE REGISTRATION: <handle>", Category: Other, with Seed version and current level. `/petition` carries its own fallback if `gh` isn't available, and its public-issue warning applies here too — a handle is a self-chosen alias, so say so before filing if the player picked something identifying. Handles are admin-registered (no duplicates) — tell the player the Game Admin may come back with a conflict, and the registration stands once confirmed.
 3. Record handle + registration date in the Kernel.
 
 **Milestone 7 — ledger key "Awakening: Hunter registered" · +75 XP · ⚔️ LEVEL 4 ceremony — the Awakening is complete.**
