@@ -3,13 +3,28 @@
 // OpenAI Codex CLI and the Antigravity CLI (agy). Node stdlib only.
 //
 // Source of truth: plugins/the-system-player/skills/<name>/SKILL.md
+//                  plugins/the-system-player/references/boot-card.md  (ONE copy)
+//                  plugins/the-system-player/.claude-plugin/plugin.json (the only
+//                    hand-set version anywhere in the repo)
 // Output:
 //   dist/codex/<name>/SKILL.md          (+ references/)   -> $CODEX_HOME/skills
 //   dist/agy/the-system-player/...                        -> ~/.gemini/config/plugins
 //   dist/manifest.json                                    (test + installer input)
+//   .claude-plugin/marketplace.json     (TRACKED, generated from plugin.json)
+//
+// Boot-card fan-out: the repo tracks exactly one boot-card.md, at the plugin
+// root. Claude skills point at it with `${CLAUDE_SKILL_DIR}/../../references/…`,
+// which works because the whole plugin tree is materialised on install. The
+// codex and agy CLIs install skills as standalone folders with no shared
+// parent, so for those two targets — and only those two — this build stamps a
+// per-skill copy and rewrites the reference to a local one. Those copies are
+// build output in gitignored dist/, verified byte-identical by the
+// `shared-reference-build-check` in test/checks.mjs.
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { createHash } from 'node:crypto';
+import { fileURLToPath } from 'node:url';
 import {
   AGENT_PROFILES,
   deriveDomainTerms,
@@ -18,11 +33,16 @@ import {
   stripClaudeIdioms,
 } from './lib/transform.mjs';
 import {
+  BOOT_CARD_LOCAL_REF,
+  BOOT_CARD_PATH,
+  BOOT_CARD_REF,
   DIST_AGY,
   DIST_CODEX,
   DIST_DIR,
   MANIFEST_PATH,
+  MARKETPLACE_PATH,
   PLUGIN_SLUG,
+  REPO_ROOT,
   SOURCE_PLUGIN_MANIFEST,
   SOURCE_SKILLS_DIR,
 } from './lib/paths.mjs';
@@ -84,10 +104,20 @@ function renderSkill(skill, profile) {
   return { text: frontmatter + body, description };
 }
 
-function emitSkillDir(skill, profile, targetDir) {
+function emitSkillDir(skill, profile, targetDir, bootCard) {
   fs.mkdirSync(targetDir, { recursive: true });
-  const { text, description } = renderSkill(skill, profile);
+  const { text: rendered, description } = renderSkill(skill, profile);
+
+  // Point this target at its own stamped copy instead of the plugin-root file.
+  // `${CLAUDE_SKILL_DIR}` is a Claude-harness substitution and means nothing to
+  // codex or agy, so it must not survive into their output either way.
+  const text = rendered.split(BOOT_CARD_REF).join(BOOT_CARD_LOCAL_REF);
   fs.writeFileSync(path.join(targetDir, 'SKILL.md'), text);
+
+  // Stamp the single authored boot card into this skill's own references/.
+  const bootCardDest = path.join(targetDir, BOOT_CARD_LOCAL_REF);
+  fs.mkdirSync(path.dirname(bootCardDest), { recursive: true });
+  fs.writeFileSync(bootCardDest, stripClaudeIdioms(bootCard, profile));
 
   const extras = listExtraFiles(skill.dir);
   for (const rel of extras) {
@@ -103,7 +133,41 @@ function emitSkillDir(skill, profile, targetDir) {
       fs.copyFileSync(src, dest);
     }
   }
-  return { text, description, extras };
+  return { text, description, extras: [BOOT_CARD_LOCAL_REF, ...extras].sort() };
+}
+
+/**
+ * Regenerate the repo-root marketplace.json from plugin.json.
+ *
+ * The plugin entry carries ONLY `name`, `source` and marketplace-level
+ * classification. It deliberately does NOT repeat `version` or `description`:
+ * Claude Code resolves the plugin's own manifest, so a second copy here never
+ * wins — it just sits and disagrees, which is exactly how v1.3.1 shipped with
+ * the marketplace still advertising 1.3.0 and no update prompt firing.
+ *
+ * Marketplace-level fields (its own name, owner and description — which
+ * describe the marketplace, not the plugin) are preserved from the existing
+ * file; only the `plugins` array is derived.
+ */
+export function renderMarketplace(sourcePlugin, existing) {
+  return {
+    ...existing,
+    plugins: [
+      {
+        name: sourcePlugin.name,
+        source: `./plugins/${PLUGIN_SLUG}`,
+        category: 'productivity',
+      },
+    ],
+  };
+}
+
+function writeMarketplace(sourcePlugin) {
+  const existing = JSON.parse(fs.readFileSync(MARKETPLACE_PATH, 'utf8'));
+  const next = JSON.stringify(renderMarketplace(sourcePlugin, existing), null, 2) + '\n';
+  const before = fs.readFileSync(MARKETPLACE_PATH, 'utf8');
+  if (before !== next) fs.writeFileSync(MARKETPLACE_PATH, next);
+  return { changed: before !== next };
 }
 
 function main() {
@@ -113,7 +177,20 @@ function main() {
   const sourcePlugin = JSON.parse(
     fs.readFileSync(SOURCE_PLUGIN_MANIFEST, 'utf8'),
   );
+  const bootCard = fs.readFileSync(BOOT_CARD_PATH, 'utf8');
   const skills = readSourceSkills();
+
+  // Every skill must actually point at the one shared boot card. A skill that
+  // silently lost the reference would boot without the universal rules.
+  const missingRef = skills
+    .filter((s) => !s.body.includes(BOOT_CARD_REF))
+    .map((s) => s.name);
+  if (missingRef.length) {
+    throw new Error(
+      `these skills do not reference the shared boot card (${BOOT_CARD_REF}): ${missingRef.join(', ')}`,
+    );
+  }
+
   const agyPluginDir = path.join(DIST_AGY, PLUGIN_SLUG);
   fs.mkdirSync(path.join(agyPluginDir, 'skills'), { recursive: true });
 
@@ -143,11 +220,13 @@ function main() {
       skill,
       AGENT_PROFILES.codex,
       path.join(DIST_CODEX, skill.name),
+      bootCard,
     );
     const agy = emitSkillDir(
       skill,
       AGENT_PROFILES.agy,
       path.join(agyPluginDir, 'skills', skill.name),
+      bootCard,
     );
 
     for (const [agent, built] of [
@@ -176,6 +255,8 @@ function main() {
     });
   }
 
+  const marketplace = writeMarketplace(sourcePlugin);
+
   fs.writeFileSync(
     MANIFEST_PATH,
     JSON.stringify(
@@ -185,6 +266,15 @@ function main() {
         pluginSlug: PLUGIN_SLUG,
         builtAt: new Date().toISOString(),
         agents: Object.keys(AGENT_PROFILES),
+        // The one authored boot card, and the digest every stamped copy must
+        // match. `shared-reference-build-check` in test/checks.mjs reads this.
+        bootCard: {
+          source: path.relative(REPO_ROOT, BOOT_CARD_PATH),
+          sha256: createHash('sha256').update(bootCard).digest('hex'),
+          bytes: Buffer.byteLength(bootCard),
+          claudeRef: BOOT_CARD_REF,
+          builtRef: BOOT_CARD_LOCAL_REF,
+        },
         skills: manifestSkills,
       },
       null,
@@ -198,6 +288,12 @@ function main() {
   console.log(`  codex -> ${DIST_CODEX} (one dir per skill, SKILL.md + references/)`);
   console.log(`  agy   -> ${agyPluginDir} (plugin.json + skills/<name>/SKILL.md)`);
   console.log(`  manifest -> ${MANIFEST_PATH}`);
+  console.log(
+    `  boot card -> 1 authored copy, ${manifestSkills.length * 2} stamped into dist/ (codex + agy)`,
+  );
+  console.log(
+    `  marketplace -> ${MARKETPLACE_PATH}${marketplace.changed ? ' (REWRITTEN — commit this)' : ' (already in sync)'}`,
+  );
 
   if (residuals.length) {
     console.error('\nresidual Claude-specific mentions survived the rewrite:');
@@ -206,4 +302,8 @@ function main() {
   }
 }
 
-main();
+// Only build when run directly. test/checks.mjs imports `renderMarketplace`
+// from here so the check and the generator can never drift apart.
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
+}

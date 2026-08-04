@@ -16,9 +16,10 @@ Zero dependencies, Node stdlib only, Node >= 18.
 ## What the build does
 
 `builder.mjs` reads every `plugins/the-system-player/skills/<name>/SKILL.md`, keeps the
-`name`/`description` frontmatter (both target CLIs use the same two fields), copies the
-`references/` mirror alongside each skill so the boot-card pattern still works standalone,
-and rewrites Claude-harness-specific idioms per target:
+`name`/`description` frontmatter (both target CLIs use the same two fields), stamps the
+shared boot card into each skill (see below), regenerates the repo-root
+`.claude-plugin/marketplace.json` from `plugin.json`, and rewrites Claude-harness-specific
+idioms per target:
 
 | Source (Claude) | codex | agy |
 | --- | --- | --- |
@@ -33,7 +34,22 @@ name in the Competency Matrix, not a harness reference. The builder fails the bu
 other `Claude`/`Anthropic` token survives.
 
 Output lands in `dist/` (gitignored) plus `dist/manifest.json`, which drives the installers
-and the smoke test.
+and the tests. The one tracked file the build writes is `.claude-plugin/marketplace.json`
+— generated from `plugin.json` so the plugin's version and description exist in exactly one
+place. Rebuild and commit it whenever `plugin.json` changes.
+
+## The boot card is stamped, not stored
+
+The repo tracks **one** `boot-card.md`, at `plugins/the-system-player/references/`. Claude
+skills read that exact file (`${CLAUDE_SKILL_DIR}/../../references/boot-card.md`) — the
+whole plugin tree is materialised on install, so a plugin-root path resolves.
+
+codex and agy can't do that: both install skills as **standalone folders with no shared
+parent**, so there is no plugin root to point at. For those two targets only, the build
+stamps a per-skill copy into `dist/` and rewrites the reference to the local
+`references/boot-card.md`. Those copies are build output — never hand-edit one, and never
+commit one. `test/checks.mjs` fails if any stamped copy differs from the single source by a
+byte, or if a second authored copy appears anywhere in the plugin tree.
 
 ## Install
 
@@ -54,8 +70,23 @@ After installing, start a fresh session:
 
 ```sh
 npm run build   # node builder.mjs
-npm test        # node test/smoke.mjs
+npm run check   # node test/checks.mjs — structural, no network, always runs
+npm test        # check, then node test/smoke.mjs
 ```
+
+### `test/checks.mjs` — the structural gate
+
+Zero dependencies, no network, no CLIs; it runs anywhere and is expected to actually run
+(unlike the smoke test, which skips when a CLI is missing). Four named checks:
+
+| Check | Catches |
+| --- | --- |
+| `shared-reference-build-check` | A second authored boot card appearing anywhere in the plugin tree; a skill that stopped referencing the shared one, or whose reference no longer resolves; any build-stamped copy drifting from the source; a built `SKILL.md` still carrying the Claude-only plugin-root path. |
+| `release-metadata-check` | `marketplace.json` not regenerated, or growing a duplicate `version`/`description`/`author`/`license` that `plugin.json` already owns; `CHANGELOG.md`'s newest entry disagreeing with `plugin.json` (hard fail); `feed.json` disagreeing (**WARN** only — the feed legitimately leads mid-release-train); `feed_version` coming back. |
+| `command-catalog-check` | A skill with broken or mismatched frontmatter; `feed.json`'s command list drifting from the actual `skills/` directories; the hidden `/handover` route leaking into the published list. |
+| `single-surface-lint` | The duplicate write-paths cut in v1.3.1 creeping back: a Calendar `Follow-up Due` mirror, a Notion "Petition form" route, browser-gating language on the `feed.json` mirror. |
+
+### `test/smoke.mjs` — the real CLIs
 
 `test/smoke.mjs` invokes the **real** CLIs non-interactively — no mocks:
 
