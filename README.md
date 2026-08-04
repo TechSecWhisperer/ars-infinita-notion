@@ -214,4 +214,4 @@ The game's sealed mechanics are not part of this repository and never have been 
 *Built with Notion, an AI agent, a headless browser, and pure determination.*
 ***Ars Infinita Notion (A.I.N)** — an **Ars Infinita** project. Status: Alpha — the System is stabilizing.*
 
-*Yes, this is a vibe coded project. ;)*
+*P.S. — this world wasn't so much engineered as **vibe coded into existence**: one human with a vision, one AI with infinite patience, and a long night of "okay but what if it also—". No regrets. The System approves. ;)*
