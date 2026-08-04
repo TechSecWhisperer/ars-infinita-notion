@@ -1,6 +1,12 @@
 # 🌌 Ars Infinita Notion — *A.I.N*
 ### *"Ai-yn"* · Craft Without Limits.
 
+![Mechanics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FTechSecWhisperer%2Fars-infinita-notion%2Fmain%2Ffeed.json&query=%24.mechanics_version&label=mechanics&prefix=v&color=8A2BE2)
+![Agents](https://img.shields.io/badge/agents-Claude%20%C2%B7%20Codex%20%C2%B7%20Antigravity-0B7285)
+![Skills](https://img.shields.io/badge/skills-27-2F9E44)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Status](https://img.shields.io/badge/status-alpha-orange)
+
 > Part of **Ars Infinita** — a personal brand for building worlds without limits. **A.I.N** is its Notion-native chapter. *(And yes — the **AI** is right there in the name.)*
 
 **Ars Infinita Notion (A.I.N)** turns the job hunt into a role-playing game you actually want to open. It's a **Notion workspace** driven by an **AI agent** — together they form *the System*: a personal engine that tracks your applications, tailors your materials, researches your targets, manages your network, and turns real-world progress into levels, XP, and unlocks.
@@ -8,6 +14,10 @@
 The job market is a void of spreadsheets and silence. Ars Infinita imposes order on it — and makes the grind *feel* like progress, because it is.
 
 > **You are the Player. Notion is the world. The agent is the System. What you build is yours.**
+
+---
+
+**What's new lives in one place:** [`CHANGELOG.md`](CHANGELOG.md) — and rule changes arrive in your own Patch Feed in Notion.
 
 ---
 
@@ -231,6 +241,10 @@ If `/doctor` says your Mechanics Version is behind the Patch Feed head, that's t
 - **`/awaken` can't see my Notion workspace.** Almost always a connector problem: go back to Step 2 and confirm the Notion connection is authorized, and that the *specific page* you duplicated the Seed into is shared with that connection (Notion scopes access per-page/per-workspace, not automatically to everything).
 - **The Seed link asks for access / shows a 404.** The Seed page has to be shared publicly by the admin — this isn't something you can fix on your end. Use `/petition` if you already have the plugin installed, or otherwise tell the admin directly.
 - **Something else feels broken.** Run `/doctor` first — a full diagnostic pass that self-repairs anything local. Run `/vitals` to see exactly what your session can and can't do (useful for browser- or connector-shaped issues). For anything else — a question, a bug, an idea — `/petition`.
+
+### 🙋 Questions, bugs, ideas
+
+**[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out of them. Or run `/petition`: with an authenticated `gh` CLI your agent files it for you (after showing you the exact text); without one, it hands you the prepared text and the link. GitHub notifies you of replies per your notification settings. Answers are best-effort — this is an alpha run by one Game Admin, whose nightly agent reads the queue. Browse the [open issues](https://github.com/TechSecWhisperer/ars-infinita-notion/issues) to see what's already been reported.
 
 ---
 
