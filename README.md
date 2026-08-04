@@ -17,15 +17,7 @@ The job market is a void of spreadsheets and silence. Ars Infinita imposes order
 
 ---
 
-## 🆕 What's new — v1.3.1
-
-- **Kinder follow-ups, your theme, your choice.** The v1.3.0 rules are now fully shipped in the plugin: pre-contact applications never nag you as "late" (follow-up pressure applies only once a human is actually talking to you), and setup asks which theme you want up front — game skin or plain professional, no silent default.
-- **Bring your own agent.** The command set builds and installs as native skills for **OpenAI Codex** and **Antigravity (`agy`)**, with smoke tests that exercise the generated skills against the real CLIs. See [Playing on another agent](#playing-on-another-agent-codex-antigravity-).
-- **Petitions now use GitHub Issues.** With an authenticated `gh` CLI, your agent files the [Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues) for you — after showing you the exact public text; without it, you get the prepared text and a link to paste. GitHub notifies you of replies per your notification settings.
-- **Less duplication, more checks.** The 27 copies of the shared boot card became one canonical file, plugin metadata is generated from `plugin.json`, and structural release checks guard those invariants against drift. The remaining cuts are tracked openly in the [`zero-duplication` issues](https://github.com/TechSecWhisperer/ars-infinita-notion/issues?q=label%3Azero-duplication).
-- **Blind-tested across agents.** The v1.3.1 setup path was traversed by Codex and Antigravity on unchanged, zero-briefing prompts; both made it cleanly to the Notion connection boundary, and every stall they hit was filed against the docs — never patched into the test. ([Receipts.](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/23))
-
-Full history: [`CHANGELOG.md`](CHANGELOG.md) · live rule changes arrive in your own Patch Feed in Notion.
+**What's new lives in one place:** [`CHANGELOG.md`](CHANGELOG.md) — and rule changes arrive in your own Patch Feed in Notion.
 
 ---
 
