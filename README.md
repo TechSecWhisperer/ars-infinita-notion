@@ -3,7 +3,7 @@
 
 ![Mechanics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FTechSecWhisperer%2Fars-infinita-notion%2Fmain%2Ffeed.json&query=%24.mechanics_version&label=mechanics&prefix=v&color=8A2BE2)
 ![Agents](https://img.shields.io/badge/agents-Claude%20%C2%B7%20Codex%20%C2%B7%20Antigravity-0B7285)
-![Skills](https://img.shields.io/badge/commands-27-2F9E44)
+![Skills](https://img.shields.io/badge/skills-27-2F9E44)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Status](https://img.shields.io/badge/status-alpha-orange)
 
@@ -17,12 +17,13 @@ The job market is a void of spreadsheets and silence. Ars Infinita imposes order
 
 ---
 
-## 🆕 What's new — v1.3.1, the zero-duplication release
+## 🆕 What's new — v1.3.1
 
-- **Bring your own agent.** The 27 commands now build and install as native skills for **OpenAI Codex** and **Antigravity (`agy`)**, not just Claude — with smoke tests that run against the real CLIs. See [Playing on another agent](#playing-on-another-agent-codex-antigravity-).
-- **Support moved to GitHub Issues.** `/petition` now files an [Issue](../../issues) — you get email notifications when the Game Admin answers, and your agent can file it for you. No more shouting into a form.
-- **One source of truth, everywhere.** 27 duplicated rule files became one; version numbers unified (and [labeled](#which-version-number-is-which)); every remaining mirror is generated, with structural checks that fail the build on drift.
-- **Blind-tested by rival AIs.** Every release now passes a *Gate Trial*: non-Claude agents dropped into this repo with zero briefing must find their way to a playing player. If they stall, we fix the docs — never the test.
+- **Kinder follow-ups, your theme, your choice.** The v1.3.0 rules are now fully shipped in the plugin: pre-contact applications never nag you as "late" (follow-up pressure applies only once a human is actually talking to you), and setup asks which theme you want up front — game skin or plain professional, no silent default.
+- **Bring your own agent.** The command set builds and installs as native skills for **OpenAI Codex** and **Antigravity (`agy`)**, with smoke tests that exercise the generated skills against the real CLIs. See [Playing on another agent](#playing-on-another-agent-codex-antigravity-).
+- **Petitions now use GitHub Issues.** With an authenticated `gh` CLI, your agent files the [Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues) for you — after showing you the exact public text; without it, you get the prepared text and a link to paste. GitHub notifies you of replies per your notification settings.
+- **Less duplication, more checks.** The 27 copies of the shared boot card became one canonical file, plugin metadata is generated from `plugin.json`, and structural release checks guard those invariants against drift. The remaining cuts are tracked openly in the [`zero-duplication` issues](https://github.com/TechSecWhisperer/ars-infinita-notion/issues?q=label%3Azero-duplication).
+- **Blind-tested across agents.** The v1.3.1 setup path was traversed by Codex and Antigravity on unchanged, zero-briefing prompts; both made it cleanly to the Notion connection boundary, and every stall they hit was filed against the docs — never patched into the test. ([Receipts.](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/23))
 
 Full history: [`CHANGELOG.md`](CHANGELOG.md) · live rule changes arrive in your own Patch Feed in Notion.
 
@@ -251,7 +252,7 @@ If `/doctor` says your Mechanics Version is behind the Patch Feed head, that's t
 
 ### 🙋 Questions, bugs, ideas
 
-**[Open an Issue](../../issues/new)** — or just run `/petition` and your agent files it for you. The Game Admin's nightly agent triages the queue; you'll get GitHub's email notification when there's an answer. (Watch the [open issues](../../issues) to see what's already being worked.)
+**[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out of them. Or run `/petition`: with an authenticated `gh` CLI your agent files it for you (after showing you the exact text); without one, it hands you the prepared text and the link. GitHub notifies you of replies per your notification settings. Answers are best-effort — this is an alpha run by one Game Admin, whose nightly agent reads the queue. Browse the [open issues](https://github.com/TechSecWhisperer/ars-infinita-notion/issues) to see what's already been reported.
 
 ---
 
