@@ -1,0 +1,7 @@
+# Built artefacts — regenerate with `npm run build`, never commit.
+dist/
+
+# Eval prompts, expected outputs and raw CLI transcripts. NEVER commit these.
+evals/
+test-output/
+*.eval.*

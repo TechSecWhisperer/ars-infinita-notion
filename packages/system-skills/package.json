@@ -1,0 +1,36 @@
+{
+  "name": "@ars-infinita/system-skills",
+  "version": "0.1.0",
+  "description": "Cross-agent build of The System (Player Edition) skills for OpenAI Codex CLI and the Antigravity CLI (agy). Claude Code users should install the native plugin instead.",
+  "license": "MIT",
+  "author": "William Moses (Game Admin)",
+  "type": "module",
+  "private": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "files": [
+    "builder.mjs",
+    "install-codex.mjs",
+    "install-agy.mjs",
+    "lib/",
+    "test/",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "node builder.mjs",
+    "test": "node test/smoke.mjs",
+    "install-codex": "node builder.mjs && node install-codex.mjs",
+    "install-agy": "node builder.mjs && node install-agy.mjs"
+  },
+  "keywords": [
+    "job-search",
+    "notion",
+    "gamification",
+    "career",
+    "codex",
+    "antigravity",
+    "agent-skills"
+  ],
+  "dependencies": {}
+}
