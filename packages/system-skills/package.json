@@ -19,7 +19,8 @@
   ],
   "scripts": {
     "build": "node builder.mjs",
-    "test": "node test/smoke.mjs",
+    "check": "node test/checks.mjs",
+    "test": "node test/checks.mjs && node test/smoke.mjs",
     "install-codex": "node builder.mjs && node install-codex.mjs",
     "install-agy": "node builder.mjs && node install-agy.mjs"
   },

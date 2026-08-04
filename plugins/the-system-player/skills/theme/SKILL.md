@@ -3,7 +3,7 @@ name: theme
 description: Re-skins The System's titles/labels between the hidden Solo Leveling game theme and a plain Professional theme (or another registered theme), per the Theme Registry — cosmetic only, structure and IDs untouched. Use when the player says "switch theme to X", "turn off the game stuff", "make this look professional", "I want plain language", or "/theme [name]".
 ---
 
-Read `references/boot-card.md` first for IDs and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules.
 
 ## What /theme does
 Re-skins titles per the Theme Registry mapping. **This touches nearly every database and page title in the workspace — it's the highest blast-radius command in the whole system.** Treat it accordingly.
