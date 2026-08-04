@@ -3,7 +3,7 @@ name: report
 description: Logs an inbound reply on a tracked job application — updates the Quest Board stage and activity clock, archives the message, and sets the next action. Use when the player says "they replied", "I heard back from X", "got an email about the Y role", "moved to next round", or "/report".
 ---
 
-Read `references/boot-card.md` first for IDs, query mechanics, and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules.
 
 ## What /report does
 Logs the message to the Battle Log, updates `Last Activity`, moves `Stage` if the reply implies a stage change, and sets `Next Action`. No fixed XP line in the Game Rules table for this one — don't invent XP for it (boot card rule 5); the XP comes from later, more specific commands (/engage, or a stage-completion action).
@@ -24,7 +24,7 @@ Logs the message to the Battle Log, updates `Last Activity`, moves `Stage` if th
    - Just an acknowledgment/no real update → leave `Stage` as-is
    If you're not sure which bucket a reply falls into, ask rather than guessing — a wrong stage skews the SLA clock and any XP a later command grants off of it.
 
-4. **Set `Next Action`** on the quest — a concrete next step in the player's own words where possible ("prep for recruiter screen Tuesday", "send thank-you note", "await panel feedback"). If this next action has a real due date, mirror it into 📅 System Calendar (`Type: Follow-up Due`, `Quest` = this role/company, `Date` = the due date) — idempotent: check for an existing Calendar row for this quest with that same due date before creating one. The Quest Board's `Next Action`/`Next Action Due` stays the source of truth; the Calendar row is just a delivery copy so the player sees it on their calendar.
+4. **Set `Next Action`** on the quest — a concrete next step in the player's own words where possible ("prep for recruiter screen Tuesday", "send thank-you note", "await panel feedback"). If it has a real due date, set `date:Next Action Due:start` and stop there. `Next Action`/`Next Action Due` live on the Quest Board and nowhere else — the player sees them on a calendar through the Quest Board's own **📆 Next Actions** calendar view (created once by `/awaken`), not through a copied row. Never write a follow-up duplicate into 📅 System Calendar: a copy goes stale the moment the player edits the due date on the board.
 
 5. **If this is a completed interview stage** (Recruiter Screen/Hiring Manager/Panel/Final Round actually *completed*, not just scheduled), the boot card's Game Rules table pays out 75/100/150/200 XP respectively. Before logging, query the XP Ledger filtered to this quest for a row whose `Action` already names this exact stage (e.g. "Recruiter Screen completed: <role> @ <company>") — only log a new entry if none exists, so a `/report` re-run on the same reply, or a second reply about the same completed stage, can't double-pay it.
 

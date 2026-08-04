@@ -3,7 +3,7 @@ name: log
 description: Archives a message the player sent to someone (a recruiter, hiring manager, or contact) into the Battle Log, links it to the right person and quest, and updates last-contacted tracking. Use when the player says "I sent this to X", "log this message to Y", "here's what I told the recruiter", or "/log [message] to [person]".
 ---
 
-Read `references/boot-card.md` first for IDs, query mechanics, and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules.
 
 ## What /log does
 Archives the full outbound message, links person + quest, updates `Last Contacted`. **On-time follow-up (within SLA) = +15 XP** — only when this message is actually a follow-up on an existing quest inside the 2-business-day SLA window; a first-contact or off-SLA message doesn't earn this.

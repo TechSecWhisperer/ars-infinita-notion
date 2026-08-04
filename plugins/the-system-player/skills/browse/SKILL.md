@@ -3,10 +3,10 @@ name: browse
 description: Drive a live web page with agent-browser (the vercel-labs browser CLI) using its real interface — health-check, open, snapshot, click, fill — so browser work actually runs instead of being hallucinated or silently skipped. Use when a task needs to render a JS-heavy page, log into a site, read a live posting, or submit a web form, or when the player says "/browse", "open this page", "use the browser", or a browser-required command (/scout, live /quest, /recruit, /gather, form submission) needs a browser.
 ---
 
-Read `references/boot-card.md` first — the "Using agent-browser" and "Capability tiers" sections are the ground truth for the tool's interface. This skill exists so an agent doing web work uses agent-browser's REAL commands instead of guessing an API or giving up.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first — the "Using agent-browser" and "Capability tiers" sections are the ground truth for the tool's interface. This skill exists so an agent doing web work uses agent-browser's REAL commands instead of guessing an API or giving up.
 
 ## When this runs
-Any duty that needs a live browser: a JS-heavy or LinkedIn posting for `/quest`, company research for `/scout`, the web-research half of `/recruit` and `/gather`, submitting the petition / handle / heartbeat form. Universal (Notion-only) commands never need this.
+Any duty that needs a live browser: a JS-heavy or LinkedIn posting for `/quest`, company research for `/scout`, the web-research half of `/recruit` and `/gather`, and the stats-heartbeat push. Universal (Notion-only) commands never need this — and neither do `/petition` or handle registration any more: those file a GitHub Issue via `gh`, which is a plain shell call, not a form.
 
 ## Do it in this order
 1. **Probe, don't assume.** `agent-browser doctor --json`. Healthy → proceed. Not installed → `npm install -g agent-browser && agent-browser install`. Broken → `agent-browser doctor --fix`. Can't get it healthy → stop and degrade (step 4); never pretend.

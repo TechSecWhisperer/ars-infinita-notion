@@ -3,7 +3,7 @@ name: gather
 description: Logs a networking event the player's attending (a conference, meetup, industry dinner) to Raids & Gatherings and preps attendee intel + talking points ahead of time. Use when the player says "I'm going to X event", "help me prep for this meetup", "log this conference", or "/gather [event]".
 ---
 
-Read `references/boot-card.md` first for IDs and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules.
 
 ## What /gather does
 Logs the event, preps whatever attendee intel and talking points are feasible ahead of time.

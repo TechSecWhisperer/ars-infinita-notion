@@ -5,12 +5,12 @@ description: Requests a shared Party Board in the Guild Hall for the player and 
 
 # /party — the Guild Hall
 
-Read `references/boot-card.md` first — **the Party Wall section is a hard rule and governs everything here.**
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first — **the Party Wall section is a hard rule and governs everything here.**
 
 ## Requesting a party
 
 1. Gather: proposed **party name** + the **registered handles** of every member (members must have completed /awaken's handle registration — if a friend hasn't, they register first).
-2. Submit via the Petition form (link in the Kernel): title "PARTY REQUEST: <party name>", Category: Other, listing the handles. The Game Admin provisions a Party page in the central Guild Hall and shares it with exactly those members.
+2. Submit via `/petition` (which files a GitHub Issue on the plugin repo): title "PARTY REQUEST: <party name>", Category: Other, listing the handles. Handles are aliases, but the issue is public — confirm with the player before filing. The Game Admin provisions a Party page in the central Guild Hall and shares it with exactly those members.
 3. Tell the player what happens next, honestly: provisioning is manual and best-effort; when the invite lands, say "/party link <url>" (or just paste it) and you'll wire it in.
 
 ## Wiring a provisioned party

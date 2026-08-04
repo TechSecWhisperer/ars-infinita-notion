@@ -3,7 +3,7 @@ name: patch
 description: Logs a correction to how The System should operate as a standing rule in the System Log, so every future session (including fresh scheduled-task sessions) follows it automatically. Use when the player says "this isn't working", "stop doing X", "from now on do Y instead", "that's wrong, fix it going forward", or "/patch [correction]". Also the mechanism for instantly pausing a feature the player finds is causing more harm than good (e.g. bonus quests or streak theatrics).
 ---
 
-Read `references/boot-card.md` first for IDs and hard rules. Corrections logged here are standing rules that override the Operating Manual and every other skill until the player revokes them (boot card rule — hard rules override everything below them).
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules. Corrections logged here are standing rules that override the Operating Manual and every other skill until the player revokes them (boot card rule — hard rules override everything below them).
 
 ## What /patch does
 Logs a `Correction` or `Not Working` entry in the System Log — instantly binding on every future session.

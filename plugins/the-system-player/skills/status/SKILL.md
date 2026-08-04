@@ -3,7 +3,7 @@ name: status
 description: Reports the player's current player state in "The System" — level, XP, streak, active debuffs, and recent unlocks. Read-only. Use when the player says "show my status", "what level am I", "how much XP do I have", "what's my streak", or "/status".
 ---
 
-Read `references/boot-card.md` first for IDs. Read-only command — no writes.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs. Read-only command — no writes.
 
 ## What /status does
 Reads the Player Card + XP Ledger + Achievements and reports back cleanly.

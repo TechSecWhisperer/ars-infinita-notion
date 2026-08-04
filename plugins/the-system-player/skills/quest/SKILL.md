@@ -3,7 +3,7 @@ name: quest
 description: Tracks a NEW job posting into the player's Quest Board in Notion (their gamified job-search tracker, "The System") — creates the quest entry, links/creates a Gate Intel company record, and starts the SLA clock. Also picks an EXISTING quest back up — a fast one-quest briefing (stage, latest agent notes, what's next) — when the player names a role/company already on the board instead of pasting a new link. Use this whenever the player pastes a job link and says something like "quest", "track this job", "add this to the board", "found a role at X"; or when they want to resume/check one specific tracked role — "pick up my quest for X", "where am I on the Y application", "let's continue with Z", "quest continue". Also triggers on "/quest [link]". Not for a fit score (/appraise), not for reporting a submitted application (/engage), and not for a whole-pipeline scan across every quest (/grind — that's multi-quest, this is single-quest).
 ---
 
-Read `references/boot-card.md` first (once per session) for the Notion ID table, query mechanics, and hard rules — this skill assumes you have it loaded.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first (once per session) for the Notion ID table, query mechanics, and hard rules — this skill assumes you have it loaded.
 
 ## Two modes, one command
 `/quest` either **starts** a quest or **picks one back up** — decide which before doing anything else:
