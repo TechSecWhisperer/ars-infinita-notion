@@ -61,6 +61,14 @@ npm run install-agy     # build, validate with `agy plugin validate`, then copy 
 Both installers accept `--dry-run` and print every path they touch. Overrides:
 `CODEX_HOME` for codex, `AGY_CONFIG_ROOT` for agy.
 
+> **`--dry-run` is read-only about your *install target*, not about this repo.**
+> Both `npm run` scripts build first, so `npm run install-codex -- --dry-run`
+> still runs `builder.mjs`, which deletes and regenerates `dist/`. Nothing
+> outside `dist/` is touched and `dist/` is gitignored, so the effect is
+> confined to build output — but it is a mutation, and the flag's name suggests
+> otherwise. To dry-run without rebuilding, skip npm and call the installer
+> directly: `node install-codex.mjs --dry-run` (requires an existing `dist/`).
+
 After installing, start a fresh session:
 
 - codex: `codex`, then ask for a command by name (e.g. "run /status")
