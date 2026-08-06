@@ -19,7 +19,7 @@ A fast environment probe answering one question — "what can I do in THIS sessi
    https://raw.githubusercontent.com/TechSecWhisperer/ars-infinita-notion/main/feed.json
    ```
 
-   — which any agent that can make an HTTP request or run `curl` can read. Report reachable / unreachable, and say which path answered.
+   — which any agent that can make an HTTP request or run `curl` can read. Report reachable / unreachable, and say which path answered. This probe reports **reachability only** — never compare the two paths' `head` values here and never report drift from it: the `/main/` URL is cache-unreliable and has served a stale `head` across repeated fetches while the Notion feed was already ahead. Version comparison belongs to the boot head-check and `/doctor` check 6, both of which settle disagreements against the Notion feed.
 
 ## Report — the capability profile
 Give a short, plain profile framed by capability, never as a device-class verdict:
