@@ -4,6 +4,18 @@
 
 Mirror of the Seed v1.0.0 Player Template. Used to verify an instance and rebuild missing pieces. Notion create-database DDL syntax. **Dependency order matters** — relations reference earlier databases (use the actual data source IDs from the player's workspace, discovered or just created).
 
+## Entity aliases (for resolving `KERNEL:` references)
+
+Some skills and older surfaces reference entities by an in-fiction or legacy name. Resolve these against the canonical entities below — same entity, one database, never two (issue #23):
+
+| Alias used in skills | Canonical entity |
+|---|---|
+| `KERNEL:Stat Sheet` | **Competency Matrix** |
+| `KERNEL:Skill Inventory` | **Story Bank** |
+| `KERNEL:System Log` | **Questions & Feedback Log** |
+
+Additionally, a migrated instance may carry **legacy database titles** (recorded in a `Legacy title` column on its Kernel ID table, e.g. `Job Tracker`=Quest Board, `People`=Hunter Network, `Comms Archive`=Battle Log, `Company Research`=Gate Intel). The Kernel's ID table is authoritative for that instance — resolve by ID, never by guessing from a title.
+
 ## Pages (skeletons)
 
 - **The System — Job Search HQ** (root, ⚔️) — [SYSTEM] welcome callout · "How this works (30-second version)" · Sections link list.
