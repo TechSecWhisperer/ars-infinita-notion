@@ -16,7 +16,7 @@ This plugin sits next to several other version numbers. They are deliberately di
 ## Architecture
 
 - **No instance data in this plugin.** Skills reference entities as `KERNEL:<Entity>`, resolved against the 🧬 Kernel page in the player's own Notion workspace (written by `/awaken`).
-- **One boot card, not twenty-seven.** `references/boot-card.md` sits at the **plugin root** and every skill reads that same file via `${CLAUDE_SKILL_DIR}/../../references/boot-card.md`. It carries universal rules only — a mirror of the Nexus 📜 Rule Manifest. Fix a rule once and every command has it.
+- **One boot card, not twenty-seven.** `references/boot-card.md` sits at the **plugin root** and every skill reads that same file via `${CLAUDE_SKILL_DIR}/../../references/boot-card.md`. It carries universal rules only — a mirror of the Nexus 📜 Rule Manifest. Fix a rule once and every command has it. (Two `references/` directories exist by design: this shared root one, and `skills/awaken/references/` for /awaken's own template schemas — per-skill material that only /awaken reads. Neither replaces the other; issue #23 recorded an agent misreading this.)
 - **Patches:** every command's lite boot compares the Kernel's Mechanics Version to the Nexus Patch Feed and applies missed patches. The Runebook (on the Seed page) is ground truth for any agent; this plugin is the Claude convenience wrapper.
 - **Privacy:** Party Wall + whitelist push. No job-search content ever leaves the player's workspace.
 
