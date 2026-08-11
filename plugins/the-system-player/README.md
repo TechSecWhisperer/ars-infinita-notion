@@ -11,7 +11,7 @@ This plugin sits next to several other version numbers. They are deliberately di
 | **Plugin version** | `.claude-plugin/plugin.json` → `version` | This installable plugin. **The only hand-set version in the repo.** `.claude-plugin/marketplace.json` deliberately does not repeat it — Claude Code resolves the plugin's own manifest and a second copy would silently disagree. |
 | **Mechanics version** | Notion Patch Feed (mirrored as `mechanics_version` / `head` in `/feed.json`), recorded on each player's 🧬 Kernel | The game rules. Tracks the plugin version by convention — a rules change ships as a plugin build — but the feed's head may briefly lead during a release train. |
 | **Seed / template-schema revision** | `skills/awaken/references/template-schemas.md` | The *shape* of the Notion Player Template (which pages and databases exist, and their properties). Moves only when the template's structure changes, which is rare. |
-| **`@ars-infinita-notion/system-skills`** | `packages/system-skills/package.json` | The cross-agent build tooling for the Codex and Antigravity CLIs. Its own npm-package lifecycle, unrelated to the game. |
+| **`@ars-infinita/system-skills`** | `packages/system-skills/package.json` | The cross-agent build tooling for the Codex and Antigravity CLIs. Its own npm-package lifecycle, unrelated to the game. |
 
 ## Architecture
 
