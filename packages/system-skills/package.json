@@ -36,6 +36,6 @@
   ],
   "dependencies": {},
   "bin": {
-    "ars-infinita-skills": "./cli.mjs"
+    "ars-infinita-skills": "cli.mjs"
   }
 }
