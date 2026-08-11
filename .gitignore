@@ -10,6 +10,9 @@ __pycache__/
 *.zip
 build/
 dist/
+# npm pack output. `npm pack` (without --dry-run) drops a tarball in the
+# package dir; it is a build artifact and must never be committed.
+*.tgz
 
 # Environments
 .venv/

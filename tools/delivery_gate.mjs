@@ -98,6 +98,37 @@ function baseBranchDrift() {
   }
 }
 
+// The npm channel can strand work the same way the marketplace channel did on
+// 2026-08-10: a release lands, `npm publish` is forgotten, and codex/agy users
+// keep getting the old skills with nothing saying so.
+//
+// ADVISORY, and that is a deliberate choice rather than an oversight. Failing
+// here would deadlock the repo between merge and publish: the release commit
+// has to be on main BEFORE it can be published, so a hard failure would block
+// every other PR during that window — and a gate that must be bypassed
+// routinely is worse than one that reports. The publish itself is gated by
+// prepublishOnly; this is the thing that says out loud that it has not happened.
+function npmChannelStatus(version) {
+  const pkgPath = path.join(REPO_ROOT, 'packages', 'system-skills', 'package.json');
+  if (!fs.existsSync(pkgPath)) return null;
+  const name = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).name;
+  try {
+    const published = execFileSync('npm', ['view', name, 'version'], {
+      encoding: 'utf8',
+      timeout: 30_000,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    }).trim();
+    if (published === version) return `  npm: ${name}@${published} published — channel current`;
+    return `  npm: registry has ${published}, repo has ${version} — run \`npm publish\` from packages/system-skills`;
+  } catch (err) {
+    const stderr = String(err.stderr || '');
+    if (stderr.includes('E404') || stderr.includes('404 Not Found')) {
+      return `  npm: ${name} has never been published — codex/agy users cannot npm install yet`;
+    }
+    return `  npm: registry unreachable, channel state unknown (not treated as current)`;
+  }
+}
+
 function changedSince(commit) {
   return git(['diff', '--name-only', `${commit}..HEAD`, '--', PLUGIN_REL])
     .split('\n')
@@ -179,6 +210,8 @@ function main() {
   if (verdict(changed) === PASS) {
     console.log('PASS delivery-freshness-gate');
     console.log(`  v${version} cut ${when} (${bump.slice(0, 7)}); no shipped file has changed since`);
+    const npmLine = npmChannelStatus(version);
+    if (npmLine) console.log(npmLine);
     process.exit(PASS);
   }
 

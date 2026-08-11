@@ -67,6 +67,46 @@ This used to say the opposite — that a release began by copying an external "c
 5. **Update `CHANGELOG.md`** with a dated entry describing what shipped, in player-safe language.
 6. **Commit** with a clear message, and tag the release if you're using tags for this repo's history.
 
+## Publishing the npm package (Codex / Antigravity channel)
+
+`@ars-infinita/system-skills` is a **second distribution channel** carrying a prebuilt copy of the skills for the two non-Claude CLIs. Claude Code is deliberately not a target — it installs from the marketplace, and a second path would mean two installs able to disagree.
+
+### The release flow — tag-driven
+
+**`npm version patch` is the wrong tool in this repo.** It bumps `package.json` only, and this package's version is *coupled* to `plugin.json` — so it would immediately fail `release-metadata-check`. The version is hand-set in exactly one place and everything else follows it:
+
+```bash
+# 1. bump plugin.json's version, and sync the package to it
+# 2. add the CHANGELOG entry (checks.mjs fails if its newest heading disagrees)
+# 3. commit, merge to main, then tag the merge commit:
+git tag v1.3.3 && git push origin v1.3.3
+```
+
+The tag triggers the publish workflow. `tools/verify_release_tag.mjs` runs first and fails the release if the tag, `plugin.json` and `package.json` do not all name the same version — **the tag is an independent claim about what ships**, and nothing else checks it, so a tag naming a third version would otherwise publish content under a number nobody chose.
+
+### Authentication — no token
+
+Publishing uses **npm trusted publishing (OIDC)**, so there is no `NPM_TOKEN` anywhere: no secret to scope, leak, or rotate. The workflow needs `id-token: write`, and npm generates provenance automatically — the `--provenance` flag is not needed and should not be added.
+
+**Chicken and egg on the first publish only:** a trusted publisher is configured *per package*, so the package must exist on the registry before you can point npm at this repo. So the very first publish is manual, from `packages/system-skills/`:
+
+```bash
+npm publish --access public
+```
+
+Then, on npmjs.com, configure the trusted publisher (repo `TechSecWhisperer/ars-infinita-notion`, the publish workflow's filename), and every release after that is tag-driven with no credential.
+
+Either way `prepublishOnly` runs the build, the structural gate and the leak check first and aborts on any failure, so a broken or leaking tarball cannot go out by forgetting a step.
+
+**Provenance requires a public repo and a cloud-hosted runner.** Both hold here; if either changes, provenance silently stops being generated.
+
+Three things worth knowing:
+
+- **Its version must equal `plugin.json`'s.** `release-metadata-check` fails otherwise. The package ships real skills, so its number is what a Codex user actually receives; letting it float would mean the two channels shipping different content under different numbers.
+- **`dist/` is gitignored but must be packed, and `files[]` is what makes that work.** On npm ≥7 `files[]` is a true allowlist that the `.gitignore` fallback cannot strip — verified on npm 10 by packing with and without `.npmignore` and getting identical 122-file tarballs. `packages/system-skills/.npmignore` is therefore **belt-and-braces for an old npm** (npm 6 *did* apply the fallback over `files[]`), not the mechanism. Do not remove `dist/` from `files[]` on the theory that `.npmignore` covers it; it does not.
+- **Verify the tarball, don't trust the manifest — this is the real protection.** `npm pack --dry-run` should report ~120 files including 54 `SKILL.md`. If it reports 9, `dist/` was excluded and the publish would be empty.
+- **Verify after publishing, too.** `npm view @ars-infinita/system-skills version` should match `plugin.json`. `tools/delivery_gate.mjs` prints this on every run as an advisory line — deliberately advisory, because failing on it would deadlock the repo between merging a release and publishing it. It is the thing that says out loud that the npm channel is behind; it will not stop you.
+
 ## The Seed page
 
 The Notion Seed template players duplicate lives at:
