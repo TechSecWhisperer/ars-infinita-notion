@@ -137,7 +137,15 @@ function main() {
   const bump = findBumpCommit(version);
   if (!bump) {
     console.log('BLOCKED delivery-freshness-gate');
-    console.log(`  could not locate the commit that set version ${version}`);
+    // The common case by far, and it looks like history corruption if unnamed:
+    // you are mid-release, the bump is staged but not committed, so there is no
+    // commit to measure from yet. Still BLOCKED, never PASS — delivery of a
+    // version that does not exist in history cannot be verified.
+    if (versionAt('HEAD') !== version) {
+      console.log(`  version ${version} exists only in the working tree — commit the release, then re-run`);
+    } else {
+      console.log(`  could not locate the commit that set version ${version}`);
+    }
     process.exit(BLOCKED);
   }
 

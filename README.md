@@ -79,8 +79,9 @@ This one repo is everything you need. No other links to chase — install the pl
 
 ### Prerequisites
 
-- A **Notion account** (the free plan works fine).
-- **Claude** on a Pro or Max plan, using either **Claude Code** (terminal) or the **Claude desktop app** (Cowork). Either works — steps below note where they differ.
+- A **Notion account** — the **free plan is all you need**. Nothing in The System requires a paid Notion plan, and anything that turns out to is a bug worth reporting.
+- **A paid AI agent subscription.** The System is an agent doing real work for you every day, so it needs a plan that allows that. **This is the one thing you have to pay for.** For Claude that means **Pro or Max**, using either **Claude Code** (terminal) or the **Claude desktop app** (Cowork) — either works, and the steps below note where they differ. Other agents are supported (see *Playing on another agent*); whatever you use, expect to need a plan that permits sustained daily agent work, which for most agents means a paid tier.
+- **Confirm your agent can run routines** — scheduled, recurring, unattended tasks. This is what delivers your morning briefing without you asking for it. **A paid plan does not guarantee this capability**, so check it explicitly before you install rather than discovering it later. If your agent can't run them, The System still works — you drive it yourself, saying *"run my daily briefing"* each weekday morning instead of it arriving on its own.
 
 ### Step 1 — Duplicate the Seed into your own Notion workspace
 
