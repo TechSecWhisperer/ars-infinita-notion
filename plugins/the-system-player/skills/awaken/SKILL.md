@@ -103,6 +103,13 @@ Write the player's first Daily Log entry (today, domains touched, mood if offere
 
 **Offer, never impose** — and once it's created, suggest the player turn on notifications for it, so the briefing reaches them instead of sitting unread.
 
+**Verify it can actually run unattended — and if it can't, say so rather than leaving a routine that looks fine.** On some surfaces a routine *created by an agent* is granted weaker permissions than the same routine created by the player: it runs under a classifier that can pause any tool call mid-run, so the briefing stalls part-written instead of delivering. **No prompt fixes this** — the permission model follows the creation path, and on an agent-created routine the setting is not even exposed. Claude Code routines are a known case; assume any surface may behave this way until shown otherwise. Where it applies, **walk the player through creating the routine themselves**, and give them an acceptance test in two parts:
+
+- **Behavioural, and it applies on every surface:** trigger one run now, or check that the first scheduled briefing actually arrived end to end. The failure being guarded against is a stall part-way through, so only a completed delivery proves anything. Inspecting configuration does not.
+- **Inspective, only where the surface exposes such a thing:** a correctly created routine shows an unconditional connector grant and no separate approval-mode setting. On a host scheduler (`cron`, `launchd`, Task Scheduler) there is no connector grant to look at — skip this half rather than asking the player an unanswerable question.
+
+**A routine that exists but stalls is worse than no routine at all**, because the player believes they are covered and finds out by hearing nothing.
+
 ### Finding a scheduler
 
 Probe for what this session has, in whatever way is natural for your agent — a scheduled-task or cron-trigger tool in the tool list, a `schedule`/`cron` subcommand, a background-job or automation feature. Some examples, none of them the only right answer:
