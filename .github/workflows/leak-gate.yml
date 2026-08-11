@@ -21,3 +21,14 @@ jobs:
 
       - name: Run leak_check.py
         run: python3 tools/leak_check.py
+  delivery-gate:
+    name: Delivery freshness
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0      # REQUIRED — the gate reads history
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node tools/delivery_gate.mjs
