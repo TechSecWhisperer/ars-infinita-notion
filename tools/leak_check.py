@@ -50,6 +50,15 @@ SCAN_TARGETS = [
     REPO_ROOT / "docs",
     REPO_ROOT / "plugins" / "the-system-player",
     REPO_ROOT / "tools",
+    # packages/ was unscanned until 2026-08-11, which the comment above already
+    # argued against: it is in this public repo, so it is world-readable whether
+    # or not it reaches a player. It now also BUILDS AND SHIPS the skills to npm
+    # for the codex/agy targets, so its dist/ is a distribution surface carrying
+    # transformed copies of player content. Transformed, not byte-identical —
+    # so proving the source is clean does not prove the artifact is.
+    # dist/ is gitignored and only exists after a build; a missing directory
+    # yields no candidates rather than an error, so this is safe pre-build.
+    REPO_ROOT / "packages",
 ]
 
 # The gate's own source cannot be fully scanned by itself: a pattern-based

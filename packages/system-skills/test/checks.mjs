@@ -38,6 +38,7 @@ import {
   HIDDEN_SKILLS,
   MANIFEST_PATH,
   MARKETPLACE_PATH,
+  PKG_ROOT,
   PLUGIN_SLUG,
   REPO_ROOT,
   SOURCE_PLUGIN_DIR,
@@ -246,6 +247,26 @@ check('release-metadata-check', () => {
       `CHANGELOG newest entry is v${heading[1]} but plugin.json is ${plugin.version}`,
     );
   }
+
+  // This package is published to npm carrying a prebuilt copy of the skills,
+  // so its version is what a codex/agy user actually receives. It must equal
+  // the plugin version or the two distribution channels silently ship
+  // different content under different numbers — the 2026-08-10 failure with an
+  // extra registry involved. Hard failure, same as the CHANGELOG.
+  const pkg = readJSON(path.join(PKG_ROOT, 'package.json'));
+  ok(
+    pkg.version === plugin.version,
+    `package.json is ${pkg.version} but plugin.json is ${plugin.version} — the npm ` +
+      'package ships the skills, so it may not carry its own version',
+  );
+  ok(
+    Array.isArray(pkg.files) && pkg.files.includes('dist/'),
+    'package.json files[] omits dist/ — the tarball would ship installers with nothing to install',
+  );
+  ok(
+    pkg.bin && Object.keys(pkg.bin).length === 1,
+    'package.json needs exactly one bin, or `npx @ars-infinita/system-skills <cmd>` stops resolving',
+  );
 
   // The feed is compared but only WARNs. During a release train the Patch Feed
   // legitimately announces a rules change before the build implementing it

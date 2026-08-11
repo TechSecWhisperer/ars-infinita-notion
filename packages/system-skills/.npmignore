@@ -1,0 +1,10 @@
+# npm packs from files[] in package.json, which on npm >=7 is a true allowlist:
+# dist/ being in .gitignore does NOT strip it. Verified on npm 10 by packing
+# with and without this file — identical 122-file tarballs both times.
+#
+# So this is belt-and-braces, not the mechanism. It exists because npm 6 DID
+# apply the .gitignore fallback over files[], and a publisher on an old npm
+# would otherwise ship an empty installer. files[] is the real fix; the real
+# protection is verifying the tarball (see MAINTAINERS.md).
+node_modules/
+*.log
