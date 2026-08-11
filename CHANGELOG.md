@@ -2,7 +2,20 @@
 
 All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here. Dates are UTC.
 
-Version numbers here are the **plugin/mechanics version** — the same number the Patch Feed calls `mechanics_version`, and the one set in `plugins/the-system-player/.claude-plugin/plugin.json`. It is the only hand-set version in this repo. Two other numbers appear elsewhere and version different things: the **Seed / template-schema revision** (the shape of your Notion template) and the `@ars-infinita/system-skills` **package version** (build tooling for non-Claude CLIs). They are not expected to match this one.
+Version numbers here are the **plugin version** — the one set in `plugins/the-system-player/.claude-plugin/plugin.json`, and the only hand-set version in this repo. It is **usually** the same number the Patch Feed calls `mechanics_version`, because most releases ship a mechanics change and its build together. **They can legitimately differ:** a delivery-only release (bug fixes, docs, or getting already-merged work into your hands) moves the plugin version while the mechanics version stays put until the Patch Feed publishes the next one. When they differ, the entry says so. Nothing player-side compares the two — your agent checks its Kernel's Mechanics Version against the Patch Feed head, and both are the mechanics number. Two other numbers appear elsewhere and version different things: the **Seed / template-schema revision** (the shape of your Notion template) and the `@ars-infinita/system-skills` **package version** (build tooling for non-Claude CLIs). They are not expected to match this one.
+
+## v1.3.2 — 2026-08-11
+
+**Read this first: The System needs a paid AI agent subscription, and you should check that your agent can run routines.** Both are now stated up front instead of being implied. Notion's **free plan remains all you need** — nothing here requires you to pay Notion, and anything that turns out to is a bug worth reporting. The routines check is the part worth doing deliberately: a paid plan does **not** guarantee your agent can run scheduled tasks, and that capability is what delivers your morning briefing without you asking. If yours can't, The System still works — you just say *"run my daily briefing"* each weekday morning instead of it arriving on its own.
+
+**Changed**
+- **`/awaken` is now honest about routines it cannot reliably create.** On some surfaces a routine *created by an agent* gets weaker permissions than the same routine created by you: it runs under a classifier that can pause any tool call mid-run, so a briefing stalls part-written rather than delivering. No prompt fixes that — the permission model follows who created it. Where it applies, `/awaken` now walks you through creating the routine yourself and gives you an acceptance test to confirm it. **A routine that exists but stalls is worse than no routine**, because you believe you're covered and find out by hearing nothing.
+
+**Delivery note — why this release exists at all**
+- Six player-facing files changed on 2026-08-05→08-10 and **never reached anybody**, because the version never moved and an unchanged version offers no update. This release delivers them: the `/main/` Patch-Feed cache caveat in the boot card, `/doctor` and `/vitals`, plus the `/awaken` migration-view check, purpose-matched briefing detection and entity alias table.
+- A new gate, `tools/delivery_gate.mjs`, now fails while shipped code sits undelivered. The previous checks compared release surfaces to each other at a point in time, so they passed whenever those surfaces agreed — including when they agreed on a stale number.
+
+**Note on numbering:** no XP value, level threshold, badge criterion or rule surface changed, so the **mechanics version stays 1.3.1** until the Patch Feed publishes otherwise. This is a plugin delivery + documentation release.
 
 ## v1.3.1 — 2026-08-05
 

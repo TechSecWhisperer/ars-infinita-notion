@@ -74,6 +74,30 @@ function findBumpCommit(currentVersion) {
   return candidate;
 }
 
+// A PR branch cut before a release still carries the OLD version, so the gate
+// would report every file that release delivered as "undelivered" — a verdict
+// that is true of the branch's tree and false about what merging it does. That
+// is the misleading-FAIL that teaches people to ignore a gate, so name it
+// instead: the branch is stale, not the repo. Returns null when not applicable
+// or undeterminable; callers treat null as "carry on normally".
+function baseBranchDrift() {
+  const base = process.env.GITHUB_BASE_REF; // set only on pull_request events
+  if (!base) return null;
+  try {
+    git(['fetch', '--quiet', 'origin', base]);
+    const baseSha = git(['rev-parse', 'FETCH_HEAD']);
+    try {
+      // Base already contained in HEAD → branch is current, nothing to report.
+      execFileSync('git', ['merge-base', '--is-ancestor', baseSha, 'HEAD'], { cwd: REPO_ROOT });
+      return null;
+    } catch {
+      return { base, baseSha, baseVersion: versionAt(baseSha) };
+    }
+  } catch {
+    return null; // no network or no such ref — fall through to the normal verdict
+  }
+}
+
 function changedSince(commit) {
   return git(['diff', '--name-only', `${commit}..HEAD`, '--', PLUGIN_REL])
     .split('\n')
@@ -137,7 +161,15 @@ function main() {
   const bump = findBumpCommit(version);
   if (!bump) {
     console.log('BLOCKED delivery-freshness-gate');
-    console.log(`  could not locate the commit that set version ${version}`);
+    // The common case by far, and it looks like history corruption if unnamed:
+    // you are mid-release, the bump is staged but not committed, so there is no
+    // commit to measure from yet. Still BLOCKED, never PASS — delivery of a
+    // version that does not exist in history cannot be verified.
+    if (versionAt('HEAD') !== version) {
+      console.log(`  version ${version} exists only in the working tree — commit the release, then re-run`);
+    } else {
+      console.log(`  could not locate the commit that set version ${version}`);
+    }
     process.exit(BLOCKED);
   }
 
@@ -148,6 +180,20 @@ function main() {
     console.log('PASS delivery-freshness-gate');
     console.log(`  v${version} cut ${when} (${bump.slice(0, 7)}); no shipped file has changed since`);
     process.exit(PASS);
+  }
+
+  // Before blaming this branch, check whether it is simply behind a base that
+  // already shipped a newer version. Only a DIFFERENT base version means that:
+  // if the versions match, the files really are stranded on the base too and
+  // the FAIL below is the honest answer.
+  const drift = baseBranchDrift();
+  if (drift && drift.baseVersion && drift.baseVersion !== version) {
+    console.log('BLOCKED delivery-freshness-gate');
+    console.log(`  this branch is behind ${drift.base}, which is on v${drift.baseVersion} while the branch carries v${version}.`);
+    console.log(`  the ${changed.length} file(s) below were delivered by that release, so this is a stale branch,`);
+    console.log('  not undelivered work. Update the branch from ' + drift.base + ' and re-run.');
+    for (const f of changed) console.log(`    ${f}`);
+    process.exit(BLOCKED);
   }
 
   console.log('FAIL delivery-freshness-gate');
