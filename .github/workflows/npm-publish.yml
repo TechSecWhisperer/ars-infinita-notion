@@ -50,6 +50,18 @@ jobs:
           node-version: "22"
           registry-url: "https://registry.npmjs.org"
 
+      # Trusted publishing needs npm >= 11.5.1, and Node 22 bundles npm 10.9.
+      # An older npm does not perform the OIDC token exchange at all — it just
+      # sends an unauthenticated PUT, and the registry answers 404 rather than
+      # 401 so it does not leak which packages exist. That 404 is what failed
+      # the v1.3.3 tag, and it reads like a missing package rather than a
+      # missing credential, so it is worth naming here.
+      - name: Upgrade npm to a version that can do OIDC
+        run: npm install -g npm@latest
+
+      - name: Show the npm version actually publishing
+        run: npm --version
+
       # Reads GITHUB_REF_NAME. Exits 1 if the tag disagrees with either
       # manifest, and 2 (BLOCKED) if the tag is not a release tag at all —
       # never a pass on an undetermined state.
