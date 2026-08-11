@@ -1,7 +1,7 @@
 {
   "name": "@ars-infinita/system-skills",
   "version": "1.3.2",
-  "description": "The System (Player Edition) skills, built for the OpenAI Codex CLI and the Antigravity CLI (agy). Ships prebuilt \u2014 install with `npx @ars-infinita/system-skills install-codex`. Claude Code users should install the native plugin from the marketplace instead.",
+  "description": "The System (Player Edition) skills, built for the OpenAI Codex CLI and the Antigravity CLI (agy). Ships prebuilt — install with `npx @ars-infinita/system-skills install-codex`. Claude Code users should install the native plugin from the marketplace instead.",
   "license": "MIT",
   "author": "William Moses (Game Admin)",
   "type": "module",
@@ -10,14 +10,12 @@
     "node": ">=18"
   },
   "files": [
-    "builder.mjs",
+    "cli.mjs",
     "install-codex.mjs",
     "install-agy.mjs",
     "lib/",
-    "test/",
-    "README.md",
-    "cli.mjs",
-    "dist/"
+    "dist/",
+    "README.md"
   ],
   "scripts": {
     "build": "node builder.mjs",

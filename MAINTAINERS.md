@@ -71,13 +71,34 @@ This used to say the opposite — that a release began by copying an external "c
 
 `@ars-infinita/system-skills` is a **second distribution channel** carrying a prebuilt copy of the skills for the two non-Claude CLIs. Claude Code is deliberately not a target — it installs from the marketplace, and a second path would mean two installs able to disagree.
 
-Publish **after** the release commit, from `packages/system-skills/`:
+### The release flow — tag-driven
+
+**`npm version patch` is the wrong tool in this repo.** It bumps `package.json` only, and this package's version is *coupled* to `plugin.json` — so it would immediately fail `release-metadata-check`. The version is hand-set in exactly one place and everything else follows it:
+
+```bash
+# 1. bump plugin.json's version, and sync the package to it
+# 2. add the CHANGELOG entry (checks.mjs fails if its newest heading disagrees)
+# 3. commit, merge to main, then tag the merge commit:
+git tag v1.3.3 && git push origin v1.3.3
+```
+
+The tag triggers the publish workflow. `tools/verify_release_tag.mjs` runs first and fails the release if the tag, `plugin.json` and `package.json` do not all name the same version — **the tag is an independent claim about what ships**, and nothing else checks it, so a tag naming a third version would otherwise publish content under a number nobody chose.
+
+### Authentication — no token
+
+Publishing uses **npm trusted publishing (OIDC)**, so there is no `NPM_TOKEN` anywhere: no secret to scope, leak, or rotate. The workflow needs `id-token: write`, and npm generates provenance automatically — the `--provenance` flag is not needed and should not be added.
+
+**Chicken and egg on the first publish only:** a trusted publisher is configured *per package*, so the package must exist on the registry before you can point npm at this repo. So the very first publish is manual, from `packages/system-skills/`:
 
 ```bash
 npm publish --access public
 ```
 
-`prepublishOnly` runs the build, the structural gate and the leak check first, and aborts the publish if any of them fail — so a broken or leaking tarball cannot be pushed by forgetting a step.
+Then, on npmjs.com, configure the trusted publisher (repo `TechSecWhisperer/ars-infinita-notion`, the publish workflow's filename), and every release after that is tag-driven with no credential.
+
+Either way `prepublishOnly` runs the build, the structural gate and the leak check first and aborts on any failure, so a broken or leaking tarball cannot go out by forgetting a step.
+
+**Provenance requires a public repo and a cloud-hosted runner.** Both hold here; if either changes, provenance silently stops being generated.
 
 Three things worth knowing:
 
