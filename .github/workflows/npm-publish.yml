@@ -56,8 +56,13 @@ jobs:
       # 401 so it does not leak which packages exist. That 404 is what failed
       # the v1.3.3 tag, and it reads like a missing package rather than a
       # missing credential, so it is worth naming here.
+      # Pinned, not @latest. This job holds id-token: write, so whatever npm
+      # is installed here handles the publishing credential — a floating tag
+      # would hand that to whatever the registry served that morning. 11.5.1
+      # is the first release that can do the OIDC exchange; bump it
+      # deliberately, never automatically.
       - name: Upgrade npm to a version that can do OIDC
-        run: npm install -g npm@latest
+        run: npm install -g npm@11.5.1
 
       - name: Show the npm version actually publishing
         run: npm --version
