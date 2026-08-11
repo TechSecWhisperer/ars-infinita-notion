@@ -1,0 +1,63 @@
+# Publishes @ars-infinita/system-skills — the Codex / Antigravity distribution
+# channel — when a release tag is pushed.
+#
+# Triggered by the TAG, not by a merge, so the tag is an independent claim
+# about what ships. tools/verify_release_tag.mjs fails the release unless the
+# tag, plugin.json and package.json all name the same version; nothing else
+# checks that, because release-metadata-check compares two files that are both
+# inside the commit being tagged.
+#
+# AUTHENTICATION: npm trusted publishing (OIDC). There is deliberately no
+# NPM_TOKEN anywhere — no secret to scope, leak or rotate. `id-token: write`
+# is what authenticates, and npm generates provenance automatically, so
+# --provenance is NOT needed and must not be added.
+#
+# FIRST PUBLISH IS MANUAL. A trusted publisher is configured per package on
+# npmjs.com, so the package must exist before this workflow can authenticate.
+# See MAINTAINERS.md, "Publishing the npm package".
+#
+# Kept deliberately thin. The build, the structural gate and the leak check
+# all run inside `npm publish` via the package's prepublishOnly script, so
+# they cannot be skipped by editing this file — and they stay testable from a
+# normal checkout instead of only inside CI.
+
+name: Publish to npm
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: read
+  id-token: write # OIDC — this is what replaces NPM_TOKEN
+
+jobs:
+  publish:
+    name: Publish @ars-infinita/system-skills
+    # Provenance requires a public repo and a cloud-hosted runner; both hold
+    # here. The repository guard stops a fork that pushes a tag from trying
+    # to publish under this package name.
+    if: github.repository == 'TechSecWhisperer/ars-infinita-notion'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out the tagged commit
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      # Reads GITHUB_REF_NAME. Exits 1 if the tag disagrees with either
+      # manifest, and 2 (BLOCKED) if the tag is not a release tag at all —
+      # never a pass on an undetermined state.
+      - name: Verify the tag agrees with both manifests
+        run: node tools/verify_release_tag.mjs
+
+      # prepublishOnly runs: builder.mjs, test/checks.mjs, tools/leak_check.py.
+      # Any failure aborts the publish. python3 is preinstalled on the runner.
+      - name: Publish
+        run: npm publish --access public
+        working-directory: packages/system-skills
