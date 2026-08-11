@@ -8,10 +8,23 @@ re-emits them for two other CLIs:
 - **OpenAI Codex CLI** (`codex`) — as user skills in `$CODEX_HOME/skills/<name>/SKILL.md`
 - **Antigravity CLI** (`agy`, Gemini-based) — as a plugin in `~/.gemini/config/plugins/the-system-player/`
 
-**Claude Code users should keep using the native plugin** (`/plugin install the-system-player@ars-infinita`).
+**Claude Code users should keep using the native plugin** (`/plugin install the-system-player@ars-infinita-notion`).
 This package exists only for the other two CLIs; nothing here is needed for Claude.
 
 Zero dependencies, Node stdlib only, Node >= 18.
+
+## Install
+
+```sh
+npx @ars-infinita/system-skills install-codex   # -> $CODEX_HOME/skills
+npx @ars-infinita/system-skills install-agy     # -> ~/.gemini/config/plugins
+```
+
+**The published package ships `dist/` prebuilt**, so there is no clone and no build step — that is the whole install. Both commands accept `--dry-run`, which prints every path they would touch and writes nothing.
+
+**The version tracks the plugin version**, because this package carries a real copy of the skills rather than just the tooling that builds them: `@ars-infinita/system-skills@1.3.2` contains the v1.3.2 skills. `release-metadata-check` fails the build if the two numbers ever diverge, so the npm channel cannot silently ship different content from the marketplace channel.
+
+**Claude Code is deliberately not a target.** It installs from the marketplace, and adding an npm path would mean two ways to get the same skills onto one machine, free to disagree. `cli.mjs` prints the marketplace command instead.
 
 ## What the build does
 
@@ -51,7 +64,9 @@ stamps a per-skill copy into `dist/` and rewrites the reference to the local
 commit one. `test/checks.mjs` fails if any stamped copy differs from the single source by a
 byte, or if a second authored copy appears anywhere in the plugin tree.
 
-## Install
+## Installing from a clone (contributors)
+
+Players should use the `npx` commands above — this section is for working on the package itself, where you want your local edits installed rather than the published build.
 
 ```sh
 npm run install-codex   # build, then copy into $CODEX_HOME/skills (default ~/.codex/skills)
