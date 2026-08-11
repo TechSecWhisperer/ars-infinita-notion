@@ -4,6 +4,20 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — the one set in `plugins/the-system-player/.claude-plugin/plugin.json`, and the only hand-set version in this repo. It is **usually** the same number the Patch Feed calls `mechanics_version`, because most releases ship a mechanics change and its build together. **They can legitimately differ:** a delivery-only release (bug fixes, docs, or getting already-merged work into your hands) moves the plugin version while the mechanics version stays put until the Patch Feed publishes the next one. When they differ, the entry says so. Nothing player-side compares the two — your agent checks its Kernel's Mechanics Version against the Patch Feed head, and both are the mechanics number. One other number appears elsewhere and versions a different thing: the **Seed / template-schema revision** (the shape of your Notion template). It is not expected to match this one. The `@ars-infinita-notion/system-skills` **npm package** used to be in that list, but **now tracks this number exactly** — as of v1.3.2 it ships the skills prebuilt rather than only the tooling that builds them, so its version is what a Codex or Antigravity user actually receives. A build check fails if the two diverge.
 
+## v1.3.3 — 2026-08-11
+
+**Codex and Antigravity users: the package name changed.** It is now `@ars-infinita-notion/system-skills`, matching this repository and the Claude Code marketplace. The name in the v1.3.2 notes below — `@ars-infinita/system-skills` — **was never published under that name and never will be**; that scope did not exist on npm, which is how it was caught. If you copied that command and it failed, this is why. The working command:
+
+```
+npx @ars-infinita-notion/system-skills install-codex   # or install-agy
+```
+
+Nothing about the install changed beyond the name, and nothing you already have is affected — a package that was never published cannot be on your machine.
+
+**Claude Code players: nothing here changes how you play.** This release carries a corrected package name in the plugin's own version-map table. No command, rule, XP value or threshold moved. It ships as a version bump because a documentation fix nobody receives is not a fix — the same reasoning behind v1.3.2's delivery gate.
+
+**Note on numbering:** no XP value, level threshold, badge criterion or rule surface changed, so the **mechanics version stays 1.3.1**. This is a delivery + documentation release. Licensing is unchanged and always has been **MIT** — repository, plugin manifest and npm package have agreed from the start; nothing was relicensed here.
+
 ## v1.3.2 — 2026-08-11
 
 **Read this first: The System needs a paid AI agent subscription, and you should check that your agent can run routines.** Both are now stated up front instead of being implied. Notion's **free plan remains all you need** — nothing here requires you to pay Notion, and anything that turns out to is a bug worth reporting. The routines check is the part worth doing deliberately: a paid plan does **not** guarantee your agent can run scheduled tasks, and that capability is what delivers your morning briefing without you asking. If yours can't, The System still works — you just say *"run my daily briefing"* each weekday morning instead of it arriving on its own.
