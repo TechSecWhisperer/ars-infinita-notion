@@ -1,4 +1,4 @@
-# @ars-infinita/system-skills
+# @ars-infinita-notion/system-skills
 
 Cross-agent build of **The System — Player Edition** skills.
 
@@ -16,13 +16,13 @@ Zero dependencies, Node stdlib only, Node >= 18.
 ## Install
 
 ```sh
-npx @ars-infinita/system-skills install-codex   # -> $CODEX_HOME/skills
-npx @ars-infinita/system-skills install-agy     # -> ~/.gemini/config/plugins
+npx @ars-infinita-notion/system-skills install-codex   # -> $CODEX_HOME/skills
+npx @ars-infinita-notion/system-skills install-agy     # -> ~/.gemini/config/plugins
 ```
 
 **The published package ships `dist/` prebuilt**, so there is no clone and no build step — that is the whole install. Both commands accept `--dry-run`, which prints every path they would touch and writes nothing.
 
-**The version tracks the plugin version**, because this package carries a real copy of the skills rather than just the tooling that builds them: `@ars-infinita/system-skills@1.3.2` contains the v1.3.2 skills. `release-metadata-check` fails the build if the two numbers ever diverge, so the npm channel cannot silently ship different content from the marketplace channel.
+**The version tracks the plugin version**, because this package carries a real copy of the skills rather than just the tooling that builds them: `@ars-infinita-notion/system-skills@1.3.2` contains the v1.3.2 skills. `release-metadata-check` fails the build if the two numbers ever diverge, so the npm channel cannot silently ship different content from the marketplace channel.
 
 **Claude Code is deliberately not a target.** It installs from the marketplace, and adding an npm path would mean two ways to get the same skills onto one machine, free to disagree. `cli.mjs` prints the marketplace command instead.
 
