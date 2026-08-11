@@ -28,3 +28,5 @@ This plugin sits next to several other version numbers. They are deliberately di
 - **Single-command fixes** → that skill's `SKILL.md`.
 - **Pre-ship validation ritual** — see `MAINTAINERS.md` for the full release flow, including the mandatory leak gate.
 - **Masking rules:** no reference anywhere to admin-side machinery or sealed mechanics — the authoritative masked-terms list lives in the Game Admin's build doc, not in this package. Player-facing register for anything sealed: "The System occasionally grants bonus quests."
+
+<!-- GATE SELF-TEST — this PR must FAIL the delivery gate and must NOT be merged. -->
