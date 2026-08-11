@@ -30,6 +30,12 @@ This used to say the opposite — that a release began by copying an external "c
    ```
    `test/checks.mjs` needs no network, no CLIs and no dependencies, and is the check that fails the release if any of the invariants below drift.
 
+   Then, from the repo root, the one check that reads git history:
+   ```bash
+   node tools/delivery_gate.mjs   # did shipped code change without the version moving?
+   ```
+   **This answers a question `test/checks.mjs` structurally cannot.** That gate compares release surfaces *to each other at a point in time*, so it passes whenever they agree — including when they agree on a stale number and nothing has moved. On 2026-08-10 three PRs merged six changes into `plugins/the-system-player/`, every surface still agreed at 1.3.1, `checks.mjs` passed, and **no player received any of it**, because a client that sees the same version offers no update. `delivery_gate.mjs` diffs the shipped tree against the commit that last moved `plugin.json`'s `version` and fails while anything sits undelivered. It exits `2` (BLOCKED, never PASS) if it cannot read history — a shallow clone needs `fetch-depth: 0` — and self-tests against known-bad fixtures first, because a gate that cannot fail is not a gate.
+
    A quick one-liner for the SKILL.md check:
    ```bash
    python3 -c "
