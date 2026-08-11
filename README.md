@@ -159,15 +159,18 @@ Run `/vitals` any time to see exactly what your current session can and can't do
 
 Steps 1, 4 and 5 above are the same for everyone — the game lives in Notion, not in Claude. Only Steps 2 and 3 are Claude-shaped, and both have a direct equivalent.
 
-**Instead of Step 3 (install the plugin)** — build the same commands as skills for your CLI. From a clone of this repo:
+**Instead of Step 3 (install the plugin)** — install the same commands as skills for your CLI. **No clone needed:**
 
 ```sh
-cd packages/system-skills
-npm run install-codex   # OpenAI Codex CLI  -> $CODEX_HOME/skills
-npm run install-agy     # Antigravity (agy) -> ~/.gemini/config/plugins
+npx @ars-infinita/system-skills install-codex   # OpenAI Codex CLI  -> $CODEX_HOME/skills
+npx @ars-infinita/system-skills install-agy     # Antigravity (agy) -> ~/.gemini/config/plugins
 ```
 
-No dependencies, Node 18+. Both installers take `--dry-run` and print every path they touch. See [`packages/system-skills/README.md`](packages/system-skills/README.md).
+The package ships the skills prebuilt, so this is the whole install. No dependencies, Node 18+. Both take `--dry-run` and print every path they touch before writing anything.
+
+Its version matches the plugin version above, so `npx @ars-infinita/system-skills@1.3.2 …` pins you to a known release, and a build check fails if the two ever disagree. See [`packages/system-skills/README.md`](packages/system-skills/README.md).
+
+*From a clone instead? `cd packages/system-skills && npm run install-codex` still works — it builds first, then installs.*
 
 **Instead of Step 2 (connect Notion)** — every command needs Notion reachable, which means adding **Notion's own MCP server** to your CLI's MCP configuration. The server is the same one Claude uses; only the config file differs:
 

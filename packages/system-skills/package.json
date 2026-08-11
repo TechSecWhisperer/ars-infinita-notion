@@ -1,7 +1,7 @@
 {
   "name": "@ars-infinita/system-skills",
-  "version": "0.1.0",
-  "description": "Cross-agent build of The System (Player Edition) skills for OpenAI Codex CLI and the Antigravity CLI (agy). Claude Code users should install the native plugin instead.",
+  "version": "1.3.2",
+  "description": "The System (Player Edition) skills, built for the OpenAI Codex CLI and the Antigravity CLI (agy). Ships prebuilt — install with `npx @ars-infinita/system-skills install-codex`. Claude Code users should install the native plugin from the marketplace instead.",
   "license": "MIT",
   "author": "William Moses (Game Admin)",
   "type": "module",
@@ -10,11 +10,11 @@
     "node": ">=18"
   },
   "files": [
-    "builder.mjs",
+    "cli.mjs",
     "install-codex.mjs",
     "install-agy.mjs",
     "lib/",
-    "test/",
+    "dist/",
     "README.md"
   ],
   "scripts": {
@@ -22,7 +22,8 @@
     "check": "node test/checks.mjs",
     "test": "node test/checks.mjs && node test/smoke.mjs",
     "install-codex": "node builder.mjs && node install-codex.mjs",
-    "install-agy": "node builder.mjs && node install-agy.mjs"
+    "install-agy": "node builder.mjs && node install-agy.mjs",
+    "prepublishOnly": "node builder.mjs && node test/checks.mjs && python3 ../../tools/leak_check.py"
   },
   "keywords": [
     "job-search",
@@ -33,5 +34,8 @@
     "antigravity",
     "agent-skills"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "bin": {
+    "ars-infinita-skills": "./cli.mjs"
+  }
 }
