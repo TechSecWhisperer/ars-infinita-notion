@@ -267,6 +267,16 @@ check('release-metadata-check', () => {
     pkg.bin && Object.keys(pkg.bin).length === 1,
     'package.json needs exactly one bin, or `npx @ars-infinita-notion/system-skills <cmd>` stops resolving',
   );
+  // npm normalises bin paths when it builds the manifest it stores in the
+  // registry, and says so as a warning mid-publish: `"bin[...]" script name
+  // ./cli.mjs was invalid and removed`. The install still works — the tarball
+  // keeps what was written — but the published manifest then disagrees with
+  // this file, permanently, because a version cannot be republished.
+  ok(
+    Object.values(pkg.bin ?? {}).every((target) => !target.startsWith('./')),
+    'package.json bin[] uses a ./ prefix — npm strips it when publishing, so the registry ' +
+      'manifest would not match this file',
+  );
 
   // The feed is compared but only WARNs. During a release train the Patch Feed
   // legitimately announces a rules change before the build implementing it
