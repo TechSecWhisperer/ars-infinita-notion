@@ -1,4 +1,4 @@
-# Publishes @ars-infinita/system-skills — the Codex / Antigravity distribution
+# Publishes @ars-infinita-notion/system-skills — the Codex / Antigravity distribution
 # channel — when a release tag is pushed.
 #
 # Triggered by the TAG, not by a merge, so the tag is an independent claim
@@ -33,7 +33,7 @@ permissions:
 
 jobs:
   publish:
-    name: Publish @ars-infinita/system-skills
+    name: Publish @ars-infinita-notion/system-skills
     # Provenance requires a public repo and a cloud-hosted runner; both hold
     # here. The repository guard stops a fork that pushes a tag from trying
     # to publish under this package name.
