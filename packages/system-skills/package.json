@@ -5,6 +5,11 @@
   "license": "MIT",
   "author": "William Moses (Game Admin)",
   "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TechSecWhisperer/ars-infinita-notion.git",
+    "directory": "packages/system-skills"
+  },
   "private": false,
   "engines": {
     "node": ">=18"
