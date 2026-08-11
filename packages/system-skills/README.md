@@ -13,6 +13,13 @@ This package exists only for the other two CLIs; nothing here is needed for Clau
 
 Zero dependencies, Node stdlib only, Node >= 18.
 
+## Before you install — two prerequisites
+
+- **A paid AI agent subscription.** The System is an agent doing real work for you every day, so it needs a plan that allows that. This is agent-agnostic — whichever CLI you install these skills into, expect to need a tier that permits sustained daily agent work. **It is the one thing you have to pay for.**
+- **Confirm your agent can run routines** — scheduled, recurring, unattended tasks. **A paid plan does not guarantee this capability**, so check it explicitly rather than discovering it later: it is what delivers your morning briefing without you asking. If your agent can't run them, The System still works — you drive it yourself, saying *"run my daily briefing"* each weekday morning instead of it arriving on its own.
+
+**Notion's free plan is all you need.** Nothing here requires a paid Notion plan, and anything that turns out to is a bug worth reporting.
+
 ## Install
 
 ```sh
