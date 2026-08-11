@@ -265,7 +265,7 @@ check('release-metadata-check', () => {
   );
   ok(
     pkg.bin && Object.keys(pkg.bin).length === 1,
-    'package.json needs exactly one bin, or `npx @ars-infinita/system-skills <cmd>` stops resolving',
+    'package.json needs exactly one bin, or `npx @ars-infinita-notion/system-skills <cmd>` stops resolving',
   );
 
   // The feed is compared but only WARNs. During a release train the Patch Feed
