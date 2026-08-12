@@ -1,0 +1,8 @@
+# Blank issues stay ENABLED deliberately: /petition's documented no-`gh` fallback sends players
+# to .../issues/new, and disabling blank issues would break that path for exactly the players
+# who already have the least working tooling.
+blank_issues_enabled: true
+contact_links:
+  - name: Setup, prerequisites and the command reference
+    url: https://github.com/TechSecWhisperer/ars-infinita-notion#-getting-started
+    about: Most questions are answered here — including what you need before installing.
