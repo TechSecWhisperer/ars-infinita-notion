@@ -53,8 +53,20 @@ if (dryRun) {
   console.log(`  ${existed ? 'replaced' : 'installed'} ${skills.length} skills`);
 }
 
+// NOT `agy plugin list`. That subcommand enumerates agy's *imported* plugin
+// registry, populated by `agy plugin import` / `agy plugin install`. A plugin
+// discovered from a standard customisation root — which is exactly what we
+// install into, and what agy's own docs say requires no registration — never
+// appears there. It reports "No imported plugins" on a perfectly good install,
+// so telling a player to check that way sends them chasing a failure that did
+// not happen. Verified: files present, `agy plugin validate` [ok] on the
+// installed copy, and all 27 skills loading in a live session, while
+// `agy plugin list` still said there was nothing.
 console.log(
   dryRun
     ? 'dry run complete.'
-    : 'done. Check with `agy plugin list`; skills load on the next `agy` session.',
+    : 'done. Skills load on the next `agy` session — verify with:\n' +
+      '  agy -p "list your skills"\n' +
+      '(`agy plugin list` will NOT show this plugin: it lists imported plugins\n' +
+      ' only, and this one is auto-discovered from ~/.gemini/config/.)',
 );

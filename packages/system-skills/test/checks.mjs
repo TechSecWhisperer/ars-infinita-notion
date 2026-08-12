@@ -22,8 +22,10 @@
 //       in this release do not creep back into a SKILL.md.
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { spawnSync } from 'node:child_process';
 
 import { renderMarketplace } from '../builder.mjs';
 import { AGENT_PROFILES, parseFrontmatter, stripClaudeIdioms } from '../lib/transform.mjs';
@@ -369,6 +371,73 @@ check('single-surface-lint', () => {
       text.includes('raw.githubusercontent.com'),
       `/${name} does not give the raw feed URL any agent can fetch`,
     );
+  }
+});
+
+// ---------------------------------------------------------------------------
+
+check('install-clobber-guard', () => {
+  // The codex target is a SHARED namespace: the player's own skills sit in
+  // $CODEX_HOME/skills/ next to ours, and our names are ordinary words. An
+  // earlier install-codex removed whatever was at each destination before
+  // copying, which destroyed a player-authored skill of the same name with no
+  // warning and exit 0. This exercises the installer for real against a
+  // throwaway CODEX_HOME rather than asserting anything about its source.
+  if (!distBuilt) {
+    warn('dist/ not built — skipping (run `node builder.mjs` to exercise this check)');
+    return;
+  }
+
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'ars-infinita-clobber-'));
+  try {
+    const skills = path.join(tmp, 'skills');
+    const mine = path.join(skills, 'status');
+    fs.mkdirSync(mine, { recursive: true });
+    // A player's own skill that happens to share one of our names, carrying a
+    // file that exists nowhere in our dist — its survival is the assertion.
+    fs.writeFileSync(path.join(mine, 'SKILL.md'), '---\nname: status\n---\nmine\n');
+    fs.writeFileSync(path.join(mine, 'my-notes.md'), 'irreplaceable\n');
+
+    const run = (args) =>
+      spawnSync(process.execPath, [path.join(PKG_ROOT, 'install-codex.mjs'), ...args], {
+        env: { ...process.env, CODEX_HOME: tmp },
+        encoding: 'utf8',
+      });
+
+    const blocked = run([]);
+    ok(blocked.status !== 0, 'install-codex overwrote a foreign skill instead of refusing');
+    ok(
+      fs.existsSync(path.join(mine, 'my-notes.md')),
+      'install-codex destroyed a player-authored skill that shared one of our names',
+    );
+    ok(
+      /collision/i.test(blocked.stderr || ''),
+      'install-codex aborted without naming the collision',
+    );
+
+    // Same run must not have half-installed the other 26 before hitting the
+    // collision — an abort that already wrote is not an abort.
+    const strays = fs.readdirSync(skills).filter((n) => n !== 'status');
+    ok(strays.length === 0, `install-codex wrote ${strays.length} skills before aborting`);
+
+    // With the collision gone it installs, records a manifest, and a second
+    // run updates its own skills rather than treating them as foreign.
+    fs.rmSync(mine, { recursive: true, force: true });
+    const first = run([]);
+    ok(first.status === 0, `install-codex failed on a clean target: ${first.stderr}`);
+    const manifestPath = path.join(skills, '.ars-infinita-install.json');
+    ok(fs.existsSync(manifestPath), 'install-codex wrote no install manifest');
+    if (fs.existsSync(manifestPath)) {
+      const m = readJSON(manifestPath);
+      ok(
+        Array.isArray(m.skills) && m.skills.length === names.length,
+        `install manifest lists ${m.skills?.length} skills, expected ${names.length}`,
+      );
+    }
+    const second = run([]);
+    ok(second.status === 0, 'reinstalling over our own previous install was refused');
+  } finally {
+    fs.rmSync(tmp, { recursive: true, force: true });
   }
 });
 
