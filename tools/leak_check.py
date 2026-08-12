@@ -59,6 +59,12 @@ SCAN_TARGETS = [
     # dist/ is gitignored and only exists after a build; a missing directory
     # yields no candidates rather than an error, so this is safe pre-build.
     REPO_ROOT / "packages",
+    # .github/ was unscanned until 2026-08-12. Issue forms and the pull request
+    # template are authored prose on the most public surface in the repository —
+    # every filed issue and every PR description is rendered from them. A gate
+    # that skips them lets a clean exit code be quoted as evidence for files it
+    # never opened, which is worse than not running it.
+    REPO_ROOT / ".github",
 ]
 
 # The gate's own source cannot be fully scanned by itself: a pattern-based

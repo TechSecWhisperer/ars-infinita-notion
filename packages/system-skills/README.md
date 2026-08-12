@@ -175,5 +175,10 @@ Verified empirically on this machine, not guessed:
 
 ## Publishing
 
-Not published. `npm publish` is deliberately not wired into any script — that is the maintainer's
-call, not the build's.
+Published from CI, never from a laptop. A merge to `main` that moves the version cuts the release
+tag and publishes in the same run; a hand-pushed `v*` tag does the same thing. Authentication is
+npm trusted publishing (OIDC) — there is deliberately no `NPM_TOKEN` anywhere, so there is no
+secret to scope, leak or rotate.
+
+The gates cannot be skipped by editing the workflow: `prepublishOnly` runs `builder.mjs`,
+`test/checks.mjs` and `tools/leak_check.py` inside `npm publish` itself.
