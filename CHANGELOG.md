@@ -4,6 +4,20 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — the one set in `plugins/the-system-player/.claude-plugin/plugin.json`, and the only hand-set version in this repo. It is **usually** the same number the Patch Feed calls `mechanics_version`, because most releases ship a mechanics change and its build together. **They can legitimately differ:** a delivery-only release (bug fixes, docs, or getting already-merged work into your hands) moves the plugin version while the mechanics version stays put until the Patch Feed publishes the next one. When they differ, the entry says so. Nothing player-side compares the two — your agent checks its Kernel's Mechanics Version against the Patch Feed head, and both are the mechanics number. One other number appears elsewhere and versions a different thing: the **Seed / template-schema revision** (the shape of your Notion template). It is not expected to match this one. The `@ars-infinita-notion/system-skills` **npm package** used to be in that list, but **now tracks this number exactly** — as of v1.3.2 it ships the skills prebuilt rather than only the tooling that builds them, so its version is what a Codex or Antigravity user actually receives. A build check fails if the two diverge.
 
+## v1.3.4 — 2026-08-12
+
+**Codex and Antigravity users: the install page now tells you what you need before you start.** The two prerequisites — a **paid AI agent subscription**, and **confirming your agent can run routines** — were stated in the main README and in the v1.3.2 notes, but not on the npm install path you actually read. They are now in `packages/system-skills/README.md` and in `npx @ars-infinita-notion/system-skills --help`, ahead of the install commands. Nothing about the install itself changed.
+
+The prerequisites are deliberately **agent-agnostic**. Whichever CLI you use, expect to need a tier that permits sustained daily agent work, and check the routines capability separately — **a paid plan does not guarantee it**, and it is what delivers your morning briefing without you asking. If your agent can't run routines, The System still works; you say *"run my daily briefing"* each weekday instead. **Notion's free plan remains all you need.**
+
+**Claude Code players: nothing here changes how you play.**
+
+**Fixed**
+- **The delivery gate was watching one channel of two.** `tools/delivery_gate.mjs` compared only the plugin directory against the last version bump, so anything under `packages/system-skills/` — the npm channel, including its install instructions — could change with every check green and reach nobody. That is the same defect the gate was built to catch, one directory across. It now watches both channels, and its self-test covers the new scope in both directions: an npm-channel change must fail it, a test-only change must not.
+- Delivered with this release: the npm `repository` field added on 2026-08-11, which landed on main after v1.3.3 was cut and had been sitting unpublished. The widened gate is what surfaced it.
+
+**Note on numbering:** no XP value, level threshold, badge criterion or rule surface changed, so the **mechanics version stays 1.3.1**. This is a delivery + documentation release.
+
 ## v1.3.3 — 2026-08-11
 
 **Codex and Antigravity users: the package name changed.** It is now `@ars-infinita-notion/system-skills`, matching this repository and the Claude Code marketplace. The name in the v1.3.2 notes below — `@ars-infinita/system-skills` — **was never published under that name and never will be**; that scope did not exist on npm, which is how it was caught. If you copied that command and it failed, this is why. The working command:

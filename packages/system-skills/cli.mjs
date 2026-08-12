@@ -27,6 +27,13 @@ const TARGETS = {
 function usage(problem) {
   if (problem) console.error(`error: ${problem}\n`);
   console.log('The System (Player Edition) — skills for the Codex and Antigravity CLIs\n');
+  console.log('Before you install, two prerequisites:');
+  console.log('  1. A paid AI agent subscription — any agent; The System works your');
+  console.log('     account daily, so it needs a tier that permits that.');
+  console.log('  2. Confirm your agent can run routines (scheduled, unattended tasks).');
+  console.log('     A paid plan does NOT guarantee this. Without it The System still');
+  console.log('     works — you ask for your daily briefing instead of it arriving.');
+  console.log('  Notion\'s free plan is all you need; nothing here requires paid Notion.\n');
   console.log('Usage:');
   console.log('  npx @ars-infinita-notion/system-skills install-codex [--dry-run]');
   console.log('  npx @ars-infinita-notion/system-skills install-agy   [--dry-run]\n');
