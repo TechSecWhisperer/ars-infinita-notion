@@ -34,6 +34,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import {
+  PKG_ROOT,
   REPO_ROOT,
   SOURCE_PLUGIN_DIR,
   SOURCE_PLUGIN_MANIFEST,
@@ -50,6 +51,35 @@ function git(args) {
 const rel = (p) => path.relative(REPO_ROOT, p).split(path.sep).join('/');
 const MANIFEST_REL = rel(SOURCE_PLUGIN_MANIFEST);
 const PLUGIN_REL = rel(SOURCE_PLUGIN_DIR);
+const PKG_REL = rel(PKG_ROOT);
+
+// WHAT COUNTS AS SHIPPED. Two channels reach players, and until 2026-08-12 this
+// gate watched only the first:
+//
+//   plugins/the-system-player/  → the Claude Code marketplace
+//   packages/system-skills/     → npm, for the Codex and Antigravity CLIs
+//
+// The npm package was a blind spot of exactly the shape this gate exists to
+// catch. Its README.md and cli.mjs ARE the install instructions a codex/agy
+// user reads, and both could change with every check green and reach nobody,
+// because an unchanged version offers no update — one directory across from
+// the 2026-08-10 defect, and invisible to the check written to prevent it.
+//
+// Two deliberate calls inside the package:
+//   - `test/` is NOT watched. It is absent from package.json "files" and
+//     cannot change what a player receives, so demanding a release for a
+//     test-only edit would be noise, and a gate people route around is worse
+//     than no gate.
+//   - `builder.mjs` IS watched despite never being published, because it
+//     generates the dist/ that ships. Unpublished is not the same as
+//     undelivered.
+const WATCHED = [PLUGIN_REL, PKG_REL];
+const NOT_WATCHED = [`${PKG_REL}/test/`];
+
+function isWatched(file) {
+  if (NOT_WATCHED.some((prefix) => file.startsWith(prefix))) return false;
+  return WATCHED.some((root) => file === root || file.startsWith(`${root}/`));
+}
 
 function versionAt(commit) {
   try {
@@ -129,10 +159,15 @@ function npmChannelStatus(version) {
   }
 }
 
+// Diff the whole tree and filter in JS rather than passing a git pathspec, so
+// isWatched() is the single definition of "shipped" and the self-test below
+// exercises the same function the verdict uses. A pathspec would be a second
+// copy of the rule, free to disagree with the one under test.
 function changedSince(commit) {
-  return git(['diff', '--name-only', `${commit}..HEAD`, '--', PLUGIN_REL])
+  return git(['diff', '--name-only', `${commit}..HEAD`])
     .split('\n')
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter(isWatched);
 }
 
 // A gate that cannot fail is not a gate. Before issuing any verdict we prove
@@ -151,10 +186,23 @@ function selfTest({ quiet = false } = {}) {
       `${PLUGIN_REL}/skills/doctor/SKILL.md`,
       `${PLUGIN_REL}/skills/vitals/SKILL.md`,
     ], expect: FAIL },
+    // The 2026-08-12 blind spot, replayed: install copy on the npm channel
+    // changed and this gate said PASS, because it watched one channel of two.
+    { name: 'npm-channel install copy changed', input: [
+      `${PKG_REL}/README.md`,
+      `${PKG_REL}/cli.mjs`,
+    ], expect: FAIL },
+    { name: 'npm-channel builder changed (unpublished, but generates dist/)', input: [`${PKG_REL}/builder.mjs`], expect: FAIL },
+    // The other half of the scoping rule. Without these the watch set could
+    // widen to the whole repo and every case above would still pass.
+    { name: 'test-only change is not a delivery', input: [`${PKG_REL}/test/checks.mjs`], expect: PASS },
+    { name: 'unshipped repo file is not a delivery', input: ['docs/PLAYERS-GUIDE.md', 'feed.json'], expect: PASS },
   ];
   let bad = 0;
   for (const c of cases) {
-    const got = verdict(c.input);
+    // Route through isWatched() so the self-test exercises the scoping rule
+    // and the verdict together — the same pipeline changedSince() uses.
+    const got = verdict(c.input.filter(isWatched));
     const okCase = got === c.expect;
     if (!okCase) bad += 1;
     if (!quiet || !okCase) {
