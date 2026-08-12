@@ -4,6 +4,19 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — the one set in `plugins/the-system-player/.claude-plugin/plugin.json`, and the only hand-set version in this repo. It is **usually** the same number the Patch Feed calls `mechanics_version`, because most releases ship a mechanics change and its build together. **They can legitimately differ:** a delivery-only release (bug fixes, docs, or getting already-merged work into your hands) moves the plugin version while the mechanics version stays put until the Patch Feed publishes the next one. When they differ, the entry says so. Nothing player-side compares the two — your agent checks its Kernel's Mechanics Version against the Patch Feed head, and both are the mechanics number. One other number appears elsewhere and versions a different thing: the **Seed / template-schema revision** (the shape of your Notion template). It is not expected to match this one. The `@ars-infinita-notion/system-skills` **npm package** used to be in that list, but **now tracks this number exactly** — as of v1.3.2 it ships the skills prebuilt rather than only the tooling that builds them, so its version is what a Codex or Antigravity user actually receives. A build check fails if the two diverge.
 
+## v1.3.5 — 2026-08-12
+
+**Petitions now look the same however you file them.** `/petition` applies a `petition` label when it files for you, and the new web form applies the same one — so a petition sent from your agent and one typed into GitHub by hand land identically. Keep starting your title with your category in brackets (`[Bug] …`, `[Question] …`); that convention is unchanged, and the form now asks for it too, since a web form cannot fill it in for you.
+
+If your session has no working GitHub CLI, `/petition` hands you a link. That link now opens the structured form instead of an empty issue, so you get the category, version and handle fields — and the reminder that a GitHub issue is public — rather than a blank box.
+
+**Fixed — documentation that had gone false**
+- The plugin's version-map table still described the npm package as build tooling "unrelated to the game". It has shipped the actual skills since v1.3.2, and its version tracks this one exactly.
+- The npm package's own README said it was "not published" and that publishing was deliberately unwired. It has been published since v1.3.2, from CI, with no stored token.
+- The main README contradicted itself on the same point, and pinned a stale version in an example.
+
+**Note on numbering:** no XP value, level threshold, badge criterion or rule surface changed, so the **mechanics version stays 1.3.1**. This is a delivery + documentation release.
+
 ## v1.3.4 — 2026-08-12
 
 **Codex and Antigravity users: the install page now tells you what you need before you start.** The two prerequisites — a **paid AI agent subscription**, and **confirming your agent can run routines** — were stated in the main README and in the v1.3.2 notes, but not on the npm install path you actually read. They are now in `packages/system-skills/README.md` and in `npx @ars-infinita-notion/system-skills --help`, ahead of the install commands. Nothing about the install itself changed.
