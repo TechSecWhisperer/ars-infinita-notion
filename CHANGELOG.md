@@ -4,6 +4,22 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — the one set in `plugins/the-system-player/.claude-plugin/plugin.json`, and the only hand-set version in this repo. It is **usually** the same number the Patch Feed calls `mechanics_version`, because most releases ship a mechanics change and its build together. **They can legitimately differ:** a delivery-only release (bug fixes, docs, or getting already-merged work into your hands) moves the plugin version while the mechanics version stays put until the Patch Feed publishes the next one. When they differ, the entry says so. Nothing player-side compares the two — your agent checks its Kernel's Mechanics Version against the Patch Feed head, and both are the mechanics number. One other number appears elsewhere and versions a different thing: the **Seed / template-schema revision** (the shape of your Notion template). It is not expected to match this one. The `@ars-infinita-notion/system-skills` **npm package** used to be in that list, but **now tracks this number exactly** — as of v1.3.2 it ships the skills prebuilt rather than only the tooling that builds them, so its version is what a Codex or Antigravity user actually receives. A build check fails if the two diverge.
 
+## v1.3.6 — 2026-08-13
+
+**Codex CLI users: check your own skills — earlier versions may have overwritten one.** Up to and including v1.3.5, `npx @ars-infinita-notion/system-skills install-codex` installed 27 skills into your shared `~/.codex/skills/` folder and **replaced anything already sitting under the same name**. The names we use are ordinary words — `status`, `log`, `report`, `browse`, `doctor`, `patch`, `quest`, `forge` and 19 more — so a skill you wrote yourself under one of those names could have been deleted, with no warning, no prompt, no backup, and a success message. If you installed before today and had your own Codex skills, that is the set worth checking.
+
+**Nothing in your Notion workspace was ever affected**, and **Antigravity installs were never affected** — that path writes only to its own namespaced plugin directory.
+
+**What the installer does now**
+- It **refuses to remove any directory it did not install.** Every destination is classified before a single byte is written, and if any of them turns out to be yours, the whole install stops and prints the exact paths. A partial install would leave 26 System commands beside one of your own skills wearing a System name; a clean refusal is the better answer.
+- `--force` is the escape hatch, and it **moves aside rather than deletes** — your directory is renamed into `~/.codex/.ars-infinita-backup/<timestamp>/`, outside the folder Codex scans, and the path is printed for you. It is yours to keep, restore or remove.
+- The install is now **recorded** in `~/.codex/.ars-infinita-install.json`, including a content hash per skill. That is what tells the installer which directories are its own, and it is what a future uninstall will need to remove only what you never edited.
+- The summary line now distinguishes **"updated our own previous install"** from **"moved aside your own skill"**. The old wording said `replaced` for both, which read the same whether we had updated a System command or destroyed something you wrote.
+
+**Also fixed — an install check that always looked like failure.** `install-agy` told you to verify with `agy plugin list`, which reports **"No imported plugins"** on a completely correct install: that command lists only plugins registered by `agy plugin import`, and plugins auto-discovered from a standard configuration root never appear there. It now suggests `agy -p "list your skills"` and says plainly that the registry listing is expected to be empty.
+
+**Note on numbering:** no XP value, level threshold, badge criterion or rule surface changed, so the **mechanics version stays 1.3.1**. This is a bug-fix release.
+
 ## v1.3.5 — 2026-08-12
 
 **Petitions now look the same however you file them.** `/petition` applies a `petition` label when it files for you, and the new web form applies the same one — so a petition sent from your agent and one typed into GitHub by hand land identically. Keep starting your title with your category in brackets (`[Bug] …`, `[Question] …`); that convention is unchanged, and the form now asks for it too, since a web form cannot fill it in for you.

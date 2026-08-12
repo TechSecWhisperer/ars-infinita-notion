@@ -35,8 +35,11 @@ function usage(problem) {
   console.log('     works — you ask for your daily briefing instead of it arriving.');
   console.log('  Notion\'s free plan is all you need; nothing here requires paid Notion.\n');
   console.log('Usage:');
-  console.log('  npx @ars-infinita-notion/system-skills install-codex [--dry-run]');
+  console.log('  npx @ars-infinita-notion/system-skills install-codex [--dry-run] [--force]');
   console.log('  npx @ars-infinita-notion/system-skills install-agy   [--dry-run]\n');
+  console.log('install-codex writes into the shared skills folder, so it stops rather');
+  console.log('than overwrite a skill you wrote yourself. --force moves yours aside to');
+  console.log('$CODEX_HOME/.ars-infinita-backup/<timestamp>/ instead — never deletes.\n');
   console.log('Claude Code users: install the native plugin instead —');
   console.log('  /plugin marketplace add TechSecWhisperer/ars-infinita-notion');
   console.log('  /plugin install the-system-player@ars-infinita-notion\n');
