@@ -29,6 +29,10 @@ npx @ars-infinita-notion/system-skills install-agy     # -> ~/.gemini/config/plu
 
 **The published package ships `dist/` prebuilt**, so there is no clone and no build step — that is the whole install. Both commands accept `--dry-run`, which prints every path they would touch and writes nothing.
 
+**`install-codex` will not overwrite skills you wrote yourself.** It installs 27 skills into the shared `$CODEX_HOME/skills/` folder under ordinary names (`status`, `log`, `report`, `browse`, `doctor`, `patch`, …). If any of those names is already taken by a directory this installer did not create, it **stops before writing anything** and prints the paths. Re-run with `--force` to proceed: that **moves your directories aside** — renamed into `$CODEX_HOME/.ars-infinita-backup/<timestamp>/`, outside the folder Codex scans — and tells you where they went. Nothing is ever deleted. The install is recorded in `$CODEX_HOME/.ars-infinita-install.json`, which is how a later run knows which directories are its own.
+
+Versions **up to and including 1.3.5 did not do this** — they replaced same-named directories silently. If you installed before v1.3.6, that is worth checking. Antigravity installs were never affected; that path writes only to its own namespaced plugin directory (and, by the same token, replaces any edits you made *inside* it on update).
+
 **The version tracks the plugin version**, because this package carries a real copy of the skills rather than just the tooling that builds them: `@ars-infinita-notion/system-skills@1.3.2` contains the v1.3.2 skills. `release-metadata-check` fails the build if the two numbers ever diverge, so the npm channel cannot silently ship different content from the marketplace channel.
 
 **Claude Code is deliberately not a target.** It installs from the marketplace, and adding an npm path would mean two ways to get the same skills onto one machine, free to disagree. `cli.mjs` prints the marketplace command instead.

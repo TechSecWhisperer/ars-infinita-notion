@@ -43,9 +43,24 @@ export const PLUGIN_SLUG = 'the-system-player';
 
 // Codex reads user skills from $CODEX_HOME/skills (CODEX_HOME defaults to ~/.codex).
 // Verified against the on-disk layout of the bundled skills in ~/.codex/skills/.system/.
+export function codexHome() {
+  return process.env.CODEX_HOME || path.join(homedir(), '.codex');
+}
+
 export function codexSkillsDir() {
-  const home = process.env.CODEX_HOME || path.join(homedir(), '.codex');
-  return path.join(home, 'skills');
+  return path.join(codexHome(), 'skills');
+}
+
+// Both of these sit ONE LEVEL ABOVE skills/ on purpose. The manifest is not in
+// the directory codex scans because nothing has verified codex ignores a stray
+// JSON file there; the backup root is not in it because codex would otherwise
+// be free to discover a moved-aside skill as a live one.
+export function codexManifestPath() {
+  return path.join(codexHome(), '.ars-infinita-install.json');
+}
+
+export function codexBackupRoot() {
+  return path.join(codexHome(), '.ars-infinita-backup');
 }
 
 // agy (Antigravity CLI) discovers global customisations under ~/.gemini/config/.

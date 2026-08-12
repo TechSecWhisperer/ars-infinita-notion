@@ -20,10 +20,16 @@
 //       feed.json's command list is exactly the public subset of them.
 //   single-surface-lint         — the specific duplicated instructions removed
 //       in this release do not creep back into a SKILL.md.
+//   codex-install-guard         — install-codex never destroys a directory it
+//       did not install. Behavioural, not structural: it runs the real
+//       installer against a sandboxed CODEX_HOME. It lives here rather than in
+//       smoke.mjs so `prepublishOnly` runs it and no workflow edit can skip it.
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
+import { execFileSync } from 'node:child_process';
 
 import { renderMarketplace } from '../builder.mjs';
 import { AGENT_PROFILES, parseFrontmatter, stripClaudeIdioms } from '../lib/transform.mjs';
@@ -369,6 +375,175 @@ check('single-surface-lint', () => {
       text.includes('raw.githubusercontent.com'),
       `/${name} does not give the raw feed URL any agent can fetch`,
     );
+  }
+});
+
+// ---------------------------------------------------------------------------
+
+// Behavioural. Every assertion below corresponds to a way the pre-1.3.6
+// installer destroyed player data, and the whole block was verified by negative
+// control: run against that installer, it fails — a guard that passes against
+// the bug it was written for is worthless.
+check('codex-install-guard', () => {
+  if (!distBuilt) {
+    warn('dist/ is not built — run `node builder.mjs`; the guard cannot run without it');
+    return;
+  }
+
+  const installer = path.join(PKG_ROOT, 'install-codex.mjs');
+  const sandboxRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'ars-install-guard-'));
+  const NAME = 'status'; // one of ours, and an ordinary word a player would use
+
+  // Runs the real installer with CODEX_HOME redirected. Never throws: the
+  // failure cases are as interesting as the success ones.
+  const run = (home, args = []) => {
+    try {
+      const stdout = execFileSync(process.execPath, [installer, ...args], {
+        encoding: 'utf8',
+        env: { ...process.env, CODEX_HOME: home },
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      return { code: 0, stdout, stderr: '' };
+    } catch (err) {
+      return {
+        code: err.status ?? 1,
+        stdout: (err.stdout || '').toString(),
+        stderr: (err.stderr || '').toString(),
+      };
+    }
+  };
+
+  const home = (label) => {
+    const h = path.join(sandboxRoot, label);
+    fs.mkdirSync(path.join(h, 'skills'), { recursive: true });
+    return h;
+  };
+
+  const plantPlayerSkill = (h, name, bootCardBody) => {
+    const dir = path.join(h, 'skills', name);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, 'SKILL.md'), '---\nname: status\n---\nMY OWN unrelated skill\n');
+    fs.writeFileSync(path.join(dir, 'my-notes.md'), 'notes the player wrote\n');
+    if (bootCardBody !== undefined) {
+      fs.mkdirSync(path.join(dir, 'references'), { recursive: true });
+      fs.writeFileSync(path.join(dir, 'references', 'boot-card.md'), bootCardBody);
+    }
+    return dir;
+  };
+
+  const survived = (dir) =>
+    fs.existsSync(path.join(dir, 'my-notes.md')) &&
+    fs.readFileSync(path.join(dir, 'SKILL.md'), 'utf8').includes('MY OWN unrelated skill');
+
+  try {
+    // 1. A plain collision aborts, says which path, and writes NOTHING.
+    {
+      const h = home('collision');
+      const planted = plantPlayerSkill(h, NAME);
+      const r = run(h);
+      ok(r.code !== 0, 'collision run exited 0 — it must refuse');
+      ok(survived(planted), `collision run destroyed the player's ${NAME} skill`);
+      ok(r.stderr.includes(planted), 'collision run did not name the colliding path on stderr');
+      const written = fs
+        .readdirSync(path.join(h, 'skills'))
+        .filter((n) => n !== NAME);
+      ok(
+        written.length === 0,
+        `collision run wrote ${written.length} other skills before aborting — it must abort first`,
+      );
+      ok(
+        !fs.existsSync(path.join(h, '.ars-infinita-install.json')),
+        'collision run wrote a manifest despite installing nothing',
+      );
+    }
+
+    // 2. False-positive regression. The obvious structural fingerprint (has a
+    //    SKILL.md and a references/boot-card.md) classified THIS as ours and
+    //    overwrote it. The repo documents that layout, so it is not exotic.
+    {
+      const h = home('lookalike');
+      const planted = plantPlayerSkill(h, NAME, '# my own boot card\n');
+      const r = run(h);
+      ok(r.code !== 0, 'a player skill containing its own references/boot-card.md was not treated as a collision');
+      ok(survived(planted), "a player's own references/boot-card.md was mistaken for ours and overwritten");
+    }
+
+    // 3. Clean install: manifest lands, lists every skill, sits outside skills/.
+    let expectedCount = 0;
+    {
+      const h = home('clean');
+      const r = run(h);
+      ok(r.code === 0, `clean install failed: ${r.stderr.trim()}`);
+      const manifestPath = path.join(h, '.ars-infinita-install.json');
+      ok(fs.existsSync(manifestPath), 'clean install wrote no manifest');
+      ok(
+        !fs.existsSync(path.join(h, 'skills', '.ars-infinita-install.json')),
+        'the manifest was written inside skills/, where codex scans',
+      );
+      const m = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+      expectedCount = fs.readdirSync(DIST_CODEX, { withFileTypes: true }).filter((d) => d.isDirectory()).length;
+      ok(m.schemaVersion === 1, `manifest schemaVersion is ${m.schemaVersion}`);
+      ok(
+        m.skills.length === expectedCount,
+        `manifest lists ${m.skills.length} skills, expected ${expectedCount}`,
+      );
+      ok(
+        m.skills.every((s) => s.hash && s.path && s.name),
+        'manifest entries are missing name/path/hash — uninstall could not tell edits from originals',
+      );
+
+      // 4. Re-running over our own install succeeds.
+      const again = run(h);
+      ok(again.code === 0, `second install over our own failed: ${again.stderr.trim()}`);
+
+      // 5. Fingerprint-only upgrade: no manifest, but our boot card is there.
+      fs.rmSync(manifestPath);
+      const upgraded = run(h);
+      ok(
+        upgraded.code === 0,
+        'a pre-manifest install of our own was misread as a collision — legacy installs cannot upgrade',
+      );
+    }
+
+    // 6. --force moves aside instead of destroying, outside skills/.
+    {
+      const h = home('force');
+      plantPlayerSkill(h, NAME);
+      const r = run(h, ['--force']);
+      ok(r.code === 0, `--force run failed: ${r.stderr.trim()}`);
+      const backupRoot = path.join(h, '.ars-infinita-backup');
+      ok(fs.existsSync(backupRoot), '--force did not create a backup root');
+      const stamps = fs.readdirSync(backupRoot);
+      ok(stamps.length === 1, `--force created ${stamps.length} backup directories, expected 1`);
+      const parked = path.join(backupRoot, stamps[0], NAME);
+      ok(fs.existsSync(parked), '--force did not park the colliding directory');
+      ok(survived(parked), '--force lost the player\'s files instead of moving them');
+      ok(
+        !path.resolve(parked).startsWith(path.resolve(path.join(h, 'skills')) + path.sep),
+        'the --force backup is inside skills/, where codex may discover it as a skill',
+      );
+      ok(
+        fs.existsSync(path.join(h, 'skills', NAME, 'references', 'boot-card.md')),
+        '--force moved the player skill aside but did not install ours in its place',
+      );
+    }
+
+    // 7. --dry-run writes nothing at all.
+    {
+      const h = home('dry');
+      const r = run(h, ['--dry-run']);
+      ok(r.code === 0, `--dry-run failed: ${r.stderr.trim()}`);
+      ok(
+        fs.readdirSync(path.join(h, 'skills')).length === 0,
+        '--dry-run wrote into skills/',
+      );
+      ok(
+        !fs.existsSync(path.join(h, '.ars-infinita-install.json')),
+        '--dry-run wrote a manifest',
+      );
+    }
+  } finally {
+    fs.rmSync(sandboxRoot, { recursive: true, force: true });
   }
 });
 
