@@ -1,6 +1,6 @@
 {
   "name": "the-system-player",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "The System — Player Edition. Gamified job-search tracker in your own Notion (Quest Board, XP/levels, Gate Intel, Hunter Network). Commands: /awaken, /quest, /engage, /report, /log, /grind, /status, /intake, /appraise, /scout, /ghost, /forge, /armor, /raid, /respawn, /gather, /recruit, /touch, /patch, /levelup, /theme, /petition, /party, /vitals, /doctor, /browse. v1.3: stage-weighted follow-up; setup now asks which theme you want. IDs resolve via your Kernel.",
   "author": {
     "name": "William Moses (Game Admin)"
