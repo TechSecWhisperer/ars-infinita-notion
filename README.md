@@ -168,7 +168,7 @@ npx @ars-infinita-notion/system-skills install-agy     # Antigravity (agy) -> ~/
 
 The package ships the skills prebuilt, so this is the whole install. No dependencies, Node 18+. Both take `--dry-run` and print every path they touch before writing anything.
 
-Its version matches the plugin version above, so `npx @ars-infinita-notion/system-skills@1.3.2 …` pins you to a known release, and a build check fails if the two ever disagree. See [`packages/system-skills/README.md`](packages/system-skills/README.md).
+Its version matches the plugin version above, so `npx @ars-infinita-notion/system-skills@1.3.4 …` pins you to a known release, and a build check fails if the two ever disagree. See [`packages/system-skills/README.md`](packages/system-skills/README.md).
 
 *From a clone instead? `cd packages/system-skills && npm run install-codex` still works — it builds first, then installs.*
 
@@ -234,7 +234,7 @@ You'll see several. They version different things and are not meant to match:
 |---|---|---|
 | **Plugin / mechanics version** (e.g. `1.3.1`) | `/status`, `/doctor`, the Patch Feed, [`CHANGELOG.md`](CHANGELOG.md), your Kernel's `Mechanics Version` | The game itself — rules, XP, commands. This is the one that matters to you, and the one `/plugin update` moves. |
 | **Seed version** (e.g. `1.0.0`) | Your Kernel's Versions section | The *shape* of your Notion template — which pages and databases exist. Changes rarely; a mismatch with the mechanics version is normal, not a problem. |
-| **`@ars-infinita-notion/system-skills`** (e.g. `0.1.0`) | `packages/system-skills/package.json` | Build tooling for non-Claude CLIs. Nothing to do with the game. |
+| **`@ars-infinita-notion/system-skills`** (e.g. `1.3.4`) | `packages/system-skills/package.json` | The skills as a Codex/Antigravity user receives them. Tracks the plugin version exactly — a build check fails if the two disagree. |
 | **Admin edition `v0.3.2`** | Historical notes only | The internal admin plugin this Player Edition was forked from, years of numbering ago. Ignore it. |
 
 If `/doctor` says your Mechanics Version is behind the Patch Feed head, that's the one worth acting on.

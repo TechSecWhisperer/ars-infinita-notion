@@ -44,8 +44,16 @@ const PASS = 0;
 const FAIL = 1;
 const BLOCKED = 2;
 
+// `-c core.quotePath=false` matters for changedSince(): with the default, git
+// escapes non-ASCII paths (e.g. "caf\303\251.md"), which then fails the
+// startsWith() test in isWatched() and silently drops a shipped file from the
+// watch set. Filtering in JS buys testability at the cost of this footgun; the
+// flag is the price. All current paths are ASCII, so this is pre-emptive.
 function git(args) {
-  return execFileSync('git', args, { cwd: REPO_ROOT, encoding: 'utf8' }).trim();
+  return execFileSync('git', ['-c', 'core.quotePath=false', ...args], {
+    cwd: REPO_ROOT,
+    encoding: 'utf8',
+  }).trim();
 }
 
 const rel = (p) => path.relative(REPO_ROOT, p).split(path.sep).join('/');
@@ -74,7 +82,7 @@ const PKG_REL = rel(PKG_ROOT);
 //     generates the dist/ that ships. Unpublished is not the same as
 //     undelivered.
 const WATCHED = [PLUGIN_REL, PKG_REL];
-const NOT_WATCHED = [`${PKG_REL}/test/`];
+const NOT_WATCHED = [`${PKG_REL}/test/`, `${PKG_REL}/.gitignore`];
 
 function isWatched(file) {
   if (NOT_WATCHED.some((prefix) => file.startsWith(prefix))) return false;
