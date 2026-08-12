@@ -23,8 +23,12 @@ The petition write-path is a **GitHub Issue on `TechSecWhisperer/ars-infinita-no
    ```sh
    gh issue create --repo TechSecWhisperer/ars-infinita-notion \
      --title "[<Category>] <Title>" \
+     --label petition \
      --body "<the composed body>"
    ```
+
+   The `petition` label is what makes both filing routes look the same to the admin — the
+   web form applies it too. Keep the `[<Category>]` title prefix for the same reason.
 
    Body layout — keep it this shape so the admin can triage a stack of them quickly:
 
@@ -41,7 +45,7 @@ The petition write-path is a **GitHub Issue on `TechSecWhisperer/ars-infinita-no
 
 3. **Fallback — no `gh`, or it isn't authenticated.** Don't fake a submission and don't fall back to a browser. Tell the player plainly and give them the link to open themselves:
 
-   **https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new**
+   **https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new/choose**
 
    Hand them the composed title and body as copy-pasteable text alongside it. If they'd rather not use GitHub at all, draft the petition as a short message for them to send to the Game Admin directly, and say that's what you're doing.
 

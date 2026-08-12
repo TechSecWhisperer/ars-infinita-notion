@@ -1,11 +1,15 @@
 name: Petition the Game Admin
 description: A question, enhancement idea, bug report, or mercy appeal for whoever runs The System. This is what /petition files for you.
-title: "[Petition] "
 labels: ["petition"]
 body:
   - type: markdown
     attributes:
       value: |
+        **Start your title with your category in brackets** — `[Bug] …`, `[Question] …`,
+        `[Enhancement] …`, `[Mercy appeal] …`, `[Other] …` — matching the dropdown below.
+        Issue forms cannot fill that in for you, and it is what `/petition` writes when it
+        files on your behalf, so typing it keeps both routes looking the same in the list.
+
         **This issue is public.** Anyone can read it, and it stays readable after it is closed.
 
         Keep job-search specifics out of it — employers, roles, salaries, contacts, and document
