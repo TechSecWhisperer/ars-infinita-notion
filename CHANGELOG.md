@@ -4,6 +4,14 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — the one set in `plugins/the-system-player/.claude-plugin/plugin.json`, and the only hand-set version in this repo. It is **usually** the same number the Patch Feed calls `mechanics_version`, because most releases ship a mechanics change and its build together. **They can legitimately differ:** a delivery-only release (bug fixes, docs, or getting already-merged work into your hands) moves the plugin version while the mechanics version stays put until the Patch Feed publishes the next one. When they differ, the entry says so. Nothing player-side compares the two — your agent checks its Kernel's Mechanics Version against the Patch Feed head, and both are the mechanics number. One other number appears elsewhere and versions a different thing: the **Seed / template-schema revision** (the shape of your Notion template). It is not expected to match this one. The `@ars-infinita-notion/system-skills` **npm package** used to be in that list, but **now tracks this number exactly** — as of v1.3.2 it ships the skills prebuilt rather than only the tooling that builds them, so its version is what a Codex or Antigravity user actually receives. A build check fails if the two diverge.
 
+## v1.3.7 — 2026-08-13
+
+**Nothing here changes how you play.** No command, rule, XP value, threshold or badge criterion moved, and there is nothing to do on your side.
+
+This release carries build and release workflow enhancements only — internal tooling the project uses on itself. It ships as a version bump because the published package changed, and a change to the package that nobody receives is not a change.
+
+**Note on numbering:** the **mechanics version stays 1.3.1**. This is a tooling and delivery release.
+
 ## v1.3.6 — 2026-08-13
 
 **Codex CLI users: check your own skills — earlier versions may have overwritten one.** Up to and including v1.3.5, `npx @ars-infinita-notion/system-skills install-codex` installed 27 skills into your shared `~/.codex/skills/` folder and **replaced anything already sitting under the same name**. The names we use are ordinary words — `status`, `log`, `report`, `browse`, `doctor`, `patch`, `quest`, `forge` and 19 more — so a skill you wrote yourself under one of those names could have been deleted, with no warning, no prompt, no backup, and a success message. If you installed before today and had your own Codex skills, that is the set worth checking.
