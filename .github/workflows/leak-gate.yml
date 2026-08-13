@@ -32,3 +32,39 @@ jobs:
         with:
           node-version: "20"
       - run: node tools/delivery_gate.mjs
+
+  # Closes a real hole: until this job existed, NOTHING ran test/checks.mjs on
+  # a pull request. The battery ran only inside
+  # `npm publish`, via prepublishOnly — so a PR reverting install-codex to the
+  # version that destroyed players' own skills went green, and was caught only
+  # at publish, which is the worst moment: it blocks a release instead of a
+  # review, and only if someone publishes.
+  #
+  # gate_audit.mjs is deliberately NOT here. It rebuilds the tree once per
+  # mutation and is slow; it belongs at publish and before any gate change.
+  structural-gate:
+    name: Structural gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # The battery hard-fails on an unbuilt dist/ rather than reporting
+      # success without running, so this build step is load-bearing.
+      - run: node builder.mjs
+        working-directory: packages/system-skills
+      - run: node test/checks.mjs
+        working-directory: packages/system-skills
+
+      # Without this, a PR that hand-tampers a GENERATED committed file goes
+      # green. `builder.mjs` above silently repairs the workspace copy, and the
+      # battery then compares the repaired file to itself — so the check whose
+      # error text says "rebuild and commit it" can never fire in any flow that
+      # builds first, which is every flow. Demonstrated: pointing
+      # marketplace.json's plugins[].source at another path passed the battery
+      # while the COMMITTED file — the one the marketplace serves — stayed
+      # tampered.
+      #
+      # dist/ is gitignored, so this sees only tracked generated files.
+      - run: git diff --exit-code
