@@ -151,6 +151,18 @@ const MUTATIONS = [
       fs.mkdirSync(path.join(w, 'site'), { recursive: true });
       fs.writeFileSync(path.join(w, 'site', 'index.md'), `${MARKER}\n`);
     } },
+
+  // The coverage-disclosure category, replaying the 2026-08-13 case: a comment
+  // describing what our own checks did not reach, added to a public file. Split
+  // like MARKER so this file does not trip the gate it is auditing.
+  { gate: 'leak', name: 'coverage disclosure added to a public file',
+    mutate: (w) => append(w, 'README.md',
+      `\n<!-- ${['went', 'green'].join(' ')} without being checked -->\n`) },
+  { gate: 'leak', name: 'coverage disclosure in a brand-new file',
+    mutate: (w) => {
+      fs.writeFileSync(path.join(w, 'NOTES.md'),
+        `the gate ${['would not', 'catch'].join(' ')} this\n`);
+    } },
 ];
 
 function append(w, rel, text) {
