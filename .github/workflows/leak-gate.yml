@@ -33,15 +33,13 @@ jobs:
           node-version: "20"
       - run: node tools/delivery_gate.mjs
 
-  # Closes a real hole: until this job existed, NOTHING ran test/checks.mjs on
-  # a pull request. The battery ran only inside
-  # `npm publish`, via prepublishOnly — so a PR reverting install-codex to the
-  # version that destroyed players' own skills went green, and was caught only
-  # at publish, which is the worst moment: it blocks a release instead of a
-  # review, and only if someone publishes.
+  # Runs the structural check battery at review time. The same battery also
+  # runs at release, via prepublishOnly; running it here surfaces problems
+  # while they are cheap to fix rather than when a publish is blocked.
   #
   # gate_audit.mjs is deliberately NOT here. It rebuilds the tree once per
-  # mutation and is slow; it belongs at publish and before any gate change.
+  # mutation and is slow; it belongs at publish, and before any change to the
+  # checks themselves.
   structural-gate:
     name: Structural gate
     runs-on: ubuntu-latest
@@ -57,14 +55,11 @@ jobs:
       - run: node test/checks.mjs
         working-directory: packages/system-skills
 
-      # Without this, a PR that hand-tampers a GENERATED committed file goes
-      # green. `builder.mjs` above silently repairs the workspace copy, and the
-      # battery then compares the repaired file to itself — so the check whose
-      # error text says "rebuild and commit it" can never fire in any flow that
-      # builds first, which is every flow. Demonstrated: pointing
-      # marketplace.json's plugins[].source at another path passed the battery
-      # while the COMMITTED file — the one the marketplace serves — stayed
-      # tampered.
+      # builder.mjs regenerates the committed generated files, so the steps
+      # above can end up comparing a freshly-regenerated file against itself.
+      # This asserts the tree is unchanged by the build: if anything moved, the
+      # generated files on the branch are not what the sources produce, and
+      # they need rebuilding and committing.
       #
       # dist/ is gitignored, so this sees only tracked generated files.
       - run: git diff --exit-code
