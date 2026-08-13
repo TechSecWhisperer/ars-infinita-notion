@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0      # needed to diff this branch's commits against base
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -21,6 +23,30 @@ jobs:
 
       - name: Run leak_check.py
         run: python3 tools/leak_check.py
+
+      # A pull request title and body are as public as any committed file, and
+      # a file scanner cannot see either. Passed through the environment rather
+      # than interpolated into the script: the body is attacker-controlled text
+      # on a public repository, and `${{ }}` inside a run block would make it
+      # executable.
+      - name: Scan the pull request title and body
+        if: github.event_name == 'pull_request'
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: printf '%s\n%s' "$PR_TITLE" "$PR_BODY" | python3 tools/leak_check.py --text "the pull request title/body"
+
+      # Only the commits this branch ADDS. Scanning full history would fail
+      # permanently on text that is already published and cannot be rewritten,
+      # and a required check that can never go green teaches people to bypass
+      # it — which costs more than the hole it was closing.
+      - name: Scan new commit messages
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_REF: ${{ github.event.pull_request.base.ref }}
+        run: |
+          git log --format=%B "origin/$BASE_REF..HEAD" \
+            | python3 tools/leak_check.py --text "this branch's commit messages"
   delivery-gate:
     name: Delivery freshness
     runs-on: ubuntu-latest
