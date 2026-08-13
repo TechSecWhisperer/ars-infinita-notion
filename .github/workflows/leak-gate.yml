@@ -33,9 +33,8 @@ jobs:
           node-version: "20"
       - run: node tools/delivery_gate.mjs
 
-  # Added 2026-08-13 with the owner's explicit grant (workflows are otherwise
-  # out of bounds to the maintenance agent). It closes a real hole: until now
-  # NOTHING ran test/checks.mjs on a pull request. The battery ran only inside
+  # Closes a real hole: until this job existed, NOTHING ran test/checks.mjs on
+  # a pull request. The battery ran only inside
   # `npm publish`, via prepublishOnly — so a PR reverting install-codex to the
   # version that destroyed players' own skills went green, and was caught only
   # at publish, which is the worst moment: it blocks a release instead of a
@@ -57,3 +56,15 @@ jobs:
         working-directory: packages/system-skills
       - run: node test/checks.mjs
         working-directory: packages/system-skills
+
+      # Without this, a PR that hand-tampers a GENERATED committed file goes
+      # green. `builder.mjs` above silently repairs the workspace copy, and the
+      # battery then compares the repaired file to itself — so the check whose
+      # error text says "rebuild and commit it" can never fire in any flow that
+      # builds first, which is every flow. Demonstrated: pointing
+      # marketplace.json's plugins[].source at another path passed the battery
+      # while the COMMITTED file — the one the marketplace serves — stayed
+      # tampered.
+      #
+      # dist/ is gitignored, so this sees only tracked generated files.
+      - run: git diff --exit-code
