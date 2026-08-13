@@ -398,11 +398,19 @@ check('release-metadata-check', () => {
     // v1.3.60 entry.
     const entry =
       changelog.split(/^## /m).find((s) => new RegExp(`^v${plugin.version}(\\s|$|—|-)`).test(s)) || '';
-    const declared = entry.match(/mechanics version stays\s+\**(\d+\.\d+\.\d+)/i);
+    // The verb is NOT prescribed, only the number. An earlier version required
+    // the literal phrase "mechanics version stays X" — which modelled only one
+    // of the two legitimate divergences. When the mechanics version MOVES and
+    // the plugin sits ahead of it, "stays" is factually wrong, and a check that
+    // demands a false sentence to go green is worse than no check. Caught by
+    // running this against the first release of that shape.
+    const declared = entry.match(
+      /mechanics version (?:stays|remains|is|moves to|advances to)\s+\**(\d+\.\d+\.\d+)/i,
+    );
     ok(
       declared && declared[1] === feed.head,
       `feed.json head is ${feed.head} but plugin.json is ${plugin.version}. The v${plugin.version} ` +
-        `changelog entry must declare the divergence as "the mechanics version stays ${feed.head}" ` +
+        `changelog entry must declare the mechanics version as ${feed.head} (e.g. "the mechanics version stays/moves to ${feed.head}") ` +
         `— it currently ${declared ? `claims ${declared[1]}, which is not the feed head` : 'does not declare it at all'}. ` +
         'Either broadcast the feed, or put the true number on the record.',
     );

@@ -77,7 +77,7 @@ The player's instance carries a **📅 System Calendar** database — briefings,
 8. **Never solve CAPTCHAs / bot-detection challenges.** Prefer the player's own authenticated browser for LinkedIn-like sites; ask them to clear checkpoints themselves.
 9. Every touchpoint updates `Last Activity` / `Last Contacted`; every stage change gets a Battle Log trace; every question/correction/decision goes in the player's System Log. Every active quest keeps `Next Action`/`Next Action Due` populated.
 10. **Wellbeing > engagement > XP.** Quiet mode overrides all theatrics. /mercy and /patch are honoured instantly, no debate.
-11. **Randomness must be real.** Chance-based mechanics roll with a genuine random source (e.g. bash `$((RANDOM % 3))`), never a model-chosen number. No random source → don't roll; log an Open Question. Never reveal odds; never acknowledge a no-drop roll.
+11. **Randomness must be real.** Chance-based mechanics roll with a genuine random source (e.g. bash `$((RANDOM % 3))`), never a model-chosen number. No random source → don't roll; log an Open Question. Never reveal odds; never acknowledge a no-drop roll — **except the Forge Roulette, whose odds and payout are published openly by design (ruling C, 2026-07-31): when a player asks directly, answer plainly and completely, as `forge/SKILL.md` already instructs.** Unprompted no-drop silence is unchanged, including for the Forge.
 12. **Salary numbers are researched, never guessed or deflected.** 2+ independent market sources for the player's region, triangulated against the Status Window's floor; bank the band to Gate Intel or an Agent Note. Mandatory single-number fields get a defensible upper-middle figure, never "open to negotiation".
 
 ## The Party Wall (hard rule — any shared surface)
