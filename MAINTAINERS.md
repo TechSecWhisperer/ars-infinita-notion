@@ -4,7 +4,7 @@ This file is for whoever cuts releases of this repo — not for players. It's ch
 
 ## The admin plugin is never published here
 
-`the-system` (the admin plugin, at `/root/.claude/plugins/synced/the-system/` on the admin's machine) contains sealed mechanics, the admin agent roster, admin-only configuration switches, the sealed reference material, and other content that must never reach a player-facing surface. **It must never be copied into this repository, in whole or in part, under any path.** Only `the-system-player` (the Player Edition mirror) belongs in `plugins/`.
+`the-system` (the admin plugin) contains content that must never reach a player-facing surface. **It must never be copied into this repository, in whole or in part, under any path.** Only `the-system-player` (the Player Edition mirror) belongs in `plugins/`.
 
 If you're ever unsure whether a file belongs here, ask: "would I be comfortable with all 3–6 alpha players reading this line?" If no, it doesn't go in this repo.
 
@@ -62,7 +62,8 @@ This used to say the opposite — that a release began by copying an external "c
 
    Version parity is enforced as follows — this is what the check asserts, so it is also the rule:
    - `plugin.json.version` **must equal** the newest `## vX.Y.Z` heading in `CHANGELOG.md`. Hard failure.
-   - `feed.json`'s `head` / `mechanics_version` **should equal** it, but a mismatch is a **WARN, not a failure**: during a release train the feed legitimately announces a rules change before the build that implements it lands. Ship the plugin, then the feed catches up (or vice versa) — the warning is there so the gap is deliberate rather than forgotten.
+   - `feed.json`'s `head` and `mechanics_version` **must equal each other**, and `head` must name a patch entry that exists. Hard failures both.
+   - A plugin version **ahead of** the feed head is legitimate — a delivery-only release moves one and not the other — but only if that release's `CHANGELOG.md` entry says so and names the number, e.g. "the mechanics version stays 1.3.1". Hard failure otherwise, so the gap is a decision on the record rather than something nobody noticed.
    - `feed.json` keeps `mechanics_version` and `head` because the boot card and `/doctor` name both ("compare the Kernel's Mechanics Version against the Patch Feed head"). The old third field, `feed_version`, had no consumer anywhere and was removed.
 5. **Update `CHANGELOG.md`** with a dated entry describing what shipped, in player-safe language.
 6. **Commit** with a clear message, and tag the release if you're using tags for this repo's history.

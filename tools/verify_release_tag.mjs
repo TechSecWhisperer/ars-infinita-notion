@@ -13,10 +13,9 @@
 // which are files in the commit being tagged, so a tag naming a third version
 // would sail past it and publish content under a number nobody chose.
 //
-// Deliberately its own script rather than inline workflow YAML: workflow files
-// are the one thing this repo's agent may not edit, so logic living there
-// cannot be tested or fixed by the same process that fixes everything else.
-// Keep the workflow thin and the checks here.
+// Deliberately its own script rather than inline workflow YAML, so the logic
+// is testable and reviewable like any other file. Keep the workflow thin and
+// the checks here.
 
 import fs from 'node:fs';
 import path from 'node:path';

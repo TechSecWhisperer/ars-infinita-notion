@@ -92,20 +92,32 @@ const MUTATIONS = [
       const p = path.join(w, 'plugins/the-system-player/skills/petition/SKILL.md');
       fs.writeFileSync(p, fs.readFileSync(p, 'utf8').replace(/gh issue create/g, 'gh nope create'));
     } },
-  // Needs the v1.3.5 tag, which `actions/checkout@v4` does not fetch by
-  // default (--depth 1 --no-tags). Returning SKIP rather than throwing is the
-  // difference between a counted, named omission and the whole audit dying
-  // mid-run on a shallow clone — and a skip that is not printed is exactly the
-  // silent-coverage-loss this file exists to catch, so it is reported, not
-  // swallowed.
+  // Needs the v1.3.5 tag. A default `actions/checkout@v4` clone has no tags, so
+  // in CI this mutation would always skip — meaning the negative control for
+  // the installer guard would never actually run in the one place the audit
+  // runs automatically. A skip that happens every time is not a skip, it is a
+  // hole with a label on it.
+  //
+  // So fetch the tag first and only skip if that fails too (no network, no
+  // remote). The skip is still counted and named rather than swallowed, because
+  // silent coverage loss is the thing this file exists to catch.
   { gate: 'checks', name: 'installer reverted to remove-then-copy',
     mutate: (w) => {
+      const read = () => execFileSync(
+        'git', ['-C', REPO_ROOT, 'show', `v1.3.5:${PKG}/install-codex.mjs`],
+        { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] },
+      );
       let old;
       try {
-        old = execFileSync('git', ['-C', REPO_ROOT, 'show', `v1.3.5:${PKG}/install-codex.mjs`],
-          { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
+        old = read();
       } catch {
-        return 'SKIP: tag v1.3.5 not present (shallow clone?) — run `git fetch --tags`';
+        try {
+          execFileSync('git', ['-C', REPO_ROOT, 'fetch', '--depth=1', 'origin', 'tag', 'v1.3.5'],
+            { stdio: 'ignore' });
+          old = read();
+        } catch {
+          return 'SKIP: tag v1.3.5 unavailable and could not be fetched (offline or no remote)';
+        }
       }
       fs.writeFileSync(path.join(w, PKG, 'install-codex.mjs'), old);
       return undefined;

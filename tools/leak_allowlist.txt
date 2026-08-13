@@ -13,8 +13,7 @@
 # See MAINTAINERS.md > "Known pending items" for the current status of
 # items sealed in this session (below).
 
-# [FORGE VALUES UNSEALED 2026-07-31 — ruling C, System Log row
-#  3ae56d8e-806b-811d-83cb-f45efd32b19f — supersedes the 2026-07-24 seal]
+# [FORGE VALUES UNSEALED 2026-07-31 — Forge ruling C — supersedes the 2026-07-24 seal]
 #
 # Forge Roulette odds and payout: NO LONGER SEALED. Ruling C redesigned the
 # mechanic so it needs no hidden value to operate — the 1-in-3 odds and +15
@@ -26,7 +25,7 @@
 # actually ship) is retired: a value a player's own agent must read to run a
 # mechanic cannot be secret from that player in an open-source plugin.
 #
-# [SEALED 2026-07-24 via warden/seal-forge-odds-and-class-engine — Class Engine only]
+# [SEALED 2026-07-24 via the seal PR — Class Engine only]
 #
 # Class Engine name: removed from intake/SKILL.md step 2. Reworded from
 # "Class Engine's daily menu" to "System's adaptive quest recommendations"
