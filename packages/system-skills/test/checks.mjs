@@ -381,40 +381,24 @@ check('release-metadata-check', () => {
     'feed.json head does not match the newest patch entry',
   );
 
-  // DECIDABLE 3: the plugin version must be one the CHANGELOG accounts for,
-  // and a plugin version AHEAD of the feed head is only legitimate if the
-  // changelog entry for it says so. This replaces the undecidable comparison
-  // with the question that actually has an answer: was the divergence declared?
+  // DECIDABLE 3: the feed head and the plugin version must be EQUAL.
   //
-  // The declaration must NAME THE VERSION, and the name must be right. A first
-  // draft only grepped for the phrase "mechanics version stays" — which meant a
-  // changelog reading "the mechanics version stays 9.9.9" passed while the feed
-  // head was 1.3.1. That checks whether the author wrote the blessed words, not
-  // whether the words are true, and moving undecidability somewhere less
-  // visible is worse than leaving it where everyone could see it.
-  if (feed.head && feed.head !== plugin.version) {
-    const changelog = fs.readFileSync(CHANGELOG_PATH, 'utf8');
-    // Anchor the boundary: without it, looking for v1.3.6 would match a
-    // v1.3.60 entry.
-    const entry =
-      changelog.split(/^## /m).find((s) => new RegExp(`^v${plugin.version}(\\s|$|—|-)`).test(s)) || '';
-    // The verb is NOT prescribed, only the number. An earlier version required
-    // the literal phrase "mechanics version stays X" — which modelled only one
-    // of the two legitimate divergences. When the mechanics version MOVES and
-    // the plugin sits ahead of it, "stays" is factually wrong, and a check that
-    // demands a false sentence to go green is worse than no check. Caught by
-    // running this against the first release of that shape.
-    const declared = entry.match(
-      /mechanics version (?:stays|remains|is|moves to|advances to)\s+\**(\d+\.\d+\.\d+)/i,
-    );
-    ok(
-      declared && declared[1] === feed.head,
-      `feed.json head is ${feed.head} but plugin.json is ${plugin.version}. The v${plugin.version} ` +
-        `changelog entry must declare the mechanics version as ${feed.head} (e.g. "the mechanics version stays/moves to ${feed.head}") ` +
-        `— it currently ${declared ? `claims ${declared[1]}, which is not the feed head` : 'does not declare it at all'}. ` +
-        'Either broadcast the feed, or put the true number on the record.',
-    );
-  }
+  // This used to permit a divergence if the changelog declared it, because a
+  // delivery-only release moved the plugin version while the mechanics version
+  // stayed put. Will ruled on 2026-08-13 that the two series track each other,
+  // which removes the divergence rather than documenting it — and removes the
+  // failure it caused: a delivery-only release could not move the feed head, so
+  // four consecutive releases reached nobody. One number, so shipping anything
+  // always moves the head players compare against.
+  //
+  // No declaration escape hatch. A check that can be satisfied by writing a
+  // sentence is satisfied by writing a sentence.
+  ok(
+    feed.head === plugin.version,
+    `feed.json head is ${feed.head} but plugin.json is ${plugin.version}. These track each ` +
+      'other (Will, 2026-08-13) — move the feed head, the Patch Feed entry and the Rule ' +
+      'Manifest together with the release, or do not cut the release.',
+  );
 });
 
 // ---------------------------------------------------------------------------

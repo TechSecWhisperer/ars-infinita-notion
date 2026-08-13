@@ -2,7 +2,7 @@
 
 All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here. Dates are UTC.
 
-Version numbers here are the **plugin version** — the one set in `plugins/the-system-player/.claude-plugin/plugin.json`, and the only hand-set version in this repo. It is **usually** the same number the Patch Feed calls `mechanics_version`, because most releases ship a mechanics change and its build together. **They can legitimately differ:** a delivery-only release (bug fixes, docs, or getting already-merged work into your hands) moves the plugin version while the mechanics version stays put until the Patch Feed publishes the next one. When they differ, the entry says so. Nothing player-side compares the two — your agent checks its Kernel's Mechanics Version against the Patch Feed head, and both are the mechanics number. One other number appears elsewhere and versions a different thing: the **Seed / template-schema revision** (the shape of your Notion template). It is not expected to match this one. The `@ars-infinita-notion/system-skills` **npm package** used to be in that list, but **now tracks this number exactly** — as of v1.3.2 it ships the skills prebuilt rather than only the tooling that builds them, so its version is what a Codex or Antigravity user actually receives. A build check fails if the two diverge.
+Version numbers here are the **plugin version** — set in `plugins/the-system-player/.claude-plugin/plugin.json`, the only hand-set version in this repo. **It and the Patch Feed's `mechanics_version` track each other exactly** (ruled 2026-08-13). They used to be allowed to diverge on a delivery-only release, and that permission caused the problem it was meant to describe: four consecutive releases could not move the feed head, so nothing in them reached anyone. One number now — every release moves the head your agent checks against, and a build check fails if the two ever differ. Two other numbers version different things and are not expected to match: the **Seed / template-schema revision** (the shape of your Notion template), and nothing else. The `@ars-infinita-notion/system-skills` **npm package** tracks this number exactly — since v1.3.2 it ships the skills prebuilt, so its version is what a Codex or Antigravity user actually receives.
 
 ## v1.3.8 — 2026-08-13
 
@@ -12,7 +12,9 @@ Version numbers here are the **plugin version** — the one set in `plugins/the-
 
 **Also corrected:** the XP table row for a development action named an internal alias rather than your **Competency Matrix**, which is what the database is actually called in your workspace. The amount is unchanged at 30.
 
-**Note on numbering:** this release carries the plugin build for the rules change published as Patch Feed v1.3.2, so the **mechanics version moves to 1.3.2**. No XP value, level threshold or unlock criterion changed; nothing is re-scored and there is nothing to do. The plugin and mechanics series diverged across the delivery-only run 1.3.2–1.3.7 and are still separate numbers.
+**One version number from here on.** The plugin version and the Patch Feed's mechanics version used to be allowed to differ on a delivery-only release. That permission caused the failure it was meant to describe: releases 1.3.2 through 1.3.7 could not move the feed head, so **nothing in them reached anyone**. The two series are now reconverged at **1.3.8** and track each other exactly — every release moves the head your agent checks against, and a build check fails if they ever drift apart again.
+
+No XP value, level threshold or unlock criterion changed; nothing is re-scored and there is nothing to do.
 
 ## v1.3.7 — 2026-08-13
 
