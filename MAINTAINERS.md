@@ -35,7 +35,7 @@ This used to say the opposite — that a release began by copying an external "c
    node tools/delivery_gate.mjs   # did shipped code change without the version moving?
    ```
    **It can only PASS after the release is committed.** Run it here to see what is stranded; it reports BLOCKED once you have bumped but not yet committed (the version exists only in your working tree, so there is no commit to measure from), and PASSes when you re-run it after step 6.
-   **This answers a question `test/checks.mjs` structurally cannot.** That gate compares release surfaces *to each other at a point in time*, so it passes whenever they agree — including when they agree on a stale number and nothing has moved. On 2026-08-10 three PRs merged six changes into `plugins/the-system-player/`, every surface still agreed at 1.3.1, `checks.mjs` passed, and **no player received any of it**, because a client that sees the same version offers no update. `delivery_gate.mjs` diffs the shipped tree against the commit that last moved `plugin.json`'s `version` and fails while anything sits undelivered. It exits `2` (BLOCKED, never PASS) if it cannot read history — a shallow clone needs `fetch-depth: 0` — and self-tests against known-bad fixtures first, because a gate that cannot fail is not a gate.
+   **This asks a different question from `test/checks.mjs`: not "do the release surfaces agree?" but "did the change reach a player?"** Those come apart. On 2026-08-10 three PRs merged six changes into `plugins/the-system-player/` while every surface sat at 1.3.1, and **no player received any of it**, because a client that sees the same version offers no update. `delivery_gate.mjs` diffs the shipped tree against the commit that last moved `plugin.json`'s `version` and fails while anything sits undelivered. It exits `2` (BLOCKED, never PASS) if it cannot read history — a shallow clone needs `fetch-depth: 0` — and self-tests against known-bad fixtures first, so that it has to prove it still reports failure before its success means anything.
 
    A quick one-liner for the SKILL.md check:
    ```bash
@@ -55,7 +55,18 @@ This used to say the opposite — that a release began by copying an external "c
    ```bash
    python3 tools/leak_check.py
    ```
-   This scans every player-facing file (README, `docs/`, `plugins/the-system-player/**`) for sealed-mechanics patterns — admin agent names, sealed page IDs, awakening XP-split numbers, class-engine internals, and so on. It must exit `0` (or only report allowlisted hits) before you commit. See `tools/leak_allowlist.txt` for the current accepted exceptions and why each one is there — don't add an entry to that file without a real justification comment, and treat every new addition as something that needs your explicit sign-off, not something to wave through by default.
+   This scans **every file in the repository** — source, docs, generated output and compiled bytecode alike — for sealed-mechanics patterns: admin agent names, sealed page IDs, awakening XP-split numbers, class-engine internals, and so on. It asserts a coverage floor, so the scan may widen but never narrow. It must exit `0` (or only report allowlisted hits) before you commit. See `tools/leak_allowlist.txt` for the current accepted exceptions and why each one is there — don't add an entry to that file without a real justification comment, and treat every new addition as something that needs your explicit sign-off, not something to wave through by default.
+
+   It also enforces the rule below. In CI it additionally scans the pull request title and body, and the commit messages the branch adds — those are public too, and no file scanner can see them.
+
+### What is candid, and what is internal
+
+Two different things, and they are easy to conflate:
+
+- **Defects that affect players are told in full.** The CHANGELOG, the package README and `feed.json`'s `player_facing_summary` are deliberately frank about what broke, who it touched and what to check. Keep them that way. Softening a defect notice to look tidier is a worse failure than any of the ones being described.
+- **The state of our own verification is internal.** Which surfaces a check reaches, what it does not reach, and how a payload could be shaped to satisfy one — that belongs in the private admin plane, not in a public file, comment, commit message or pull request body.
+
+The practical rule follows from the repository being public and git history not being rewritable at acceptable cost: **a public artifact is write-once.** There is no retraction, only a diff on top of something people can still read — and edited pull request bodies keep their earlier versions. So the check runs before the merge, and the phrasing habit is: *say what the change does, not what was previously unguarded.*
 4. **Bump the version — in exactly one place:** `plugins/the-system-player/.claude-plugin/plugin.json`. Setting an explicit `version` means players only get prompted to update when this field changes — if you skip it, every commit to the tracked branch counts as a new version instead.
 
    **Do not mirror it into `.claude-plugin/marketplace.json`.** That entry deliberately carries only `name`, `source` and marketplace-level classification. Claude Code resolves the plugin's own manifest, so a second `version`/`description` there does not win — it just sits there disagreeing, which is exactly how the 1.3.1 release shipped a feed at 1.3.1 with manifests still at 1.3.0 and no update prompt. `node builder.mjs` regenerates the file; `node test/checks.mjs` fails if a duplicate `version` or `description` reappears in it.
@@ -120,7 +131,7 @@ It has to stay **shared publicly** (or at minimum, shared such that "Duplicate" 
 
 ## Known pending items (not blockers, but need your ruling)
 
-- **Forge Roulette values — RESOLVED 2026-07-24.** The exact odds and bonus value were removed from the shipped player skill and moved behind the sealed layer (see `tools/leak_allowlist.txt`). This note previously restated both values in plaintext, in a file the leak gate did not scan — which made this document the last place in the repo they appeared. It no longer states them, and `MAINTAINERS.md` is now inside `SCAN_TARGETS`. **Standing rule: never restate a sealed value in order to describe it. Reference the mechanic, not the number.**
+- **Forge Roulette values — RESOLVED 2026-07-24.** The exact odds and bonus value were removed from the shipped player skill and moved behind the sealed layer (see `tools/leak_allowlist.txt`). This note previously restated both values in plaintext. It no longer states them, and the scan now covers the whole repository, this file included. **Standing rule: never restate a sealed value in order to describe it. Reference the mechanic, not the number.**
 
 - **Sealed engine name — RESOLVED 2026-07-24.** The player intake skill previously named a sealed internal engine in passing. It was reworded to describe the behaviour without the internal name. No engine internals were ever disclosed.
 
