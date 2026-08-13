@@ -2,8 +2,7 @@
 """
 leak_check.py — Admin leak-verification gate for ars-infinita-notion.
 
-Scans every player-facing file in this repo (README.md, feed.json, docs/**, and
-plugins/the-system-player/**) for sealed-mechanics leaks: admin-only
+Scans the whole repository (see SCAN_ROOT) for sealed-mechanics leaks: admin-only
 terminology, exact formula values, admin agent names, and raw admin
 page IDs that must never reach a published, player-facing surface.
 
@@ -138,8 +137,7 @@ VALUE_CATEGORIES = frozenset({
     "awakening-xp-split-total",
     "engagement-watch-cadence-numbers",
 })
-# Retired 2026-07-31 (Forge ruling C, System Log row 3ae56d8e-806b-811d-83cb-
-# f45efd32b19f): "forge-roulette-odds-value", "sealed-odds-as-code", and
+# Retired 2026-07-31 (Forge ruling C): "forge-roulette-odds-value", "sealed-odds-as-code", and
 # "forge-roulette-bonus-xp-value". Under ruling C the Forge Roulette carries
 # no sealed value — the 1-in-3 odds and +15 payout live openly in forge/SKILL.md
 # by design, so guarding them here would flag the intended state as a leak.
@@ -165,6 +163,14 @@ SEALED_ADMIN_PAGE_ID_HASHES = {
     "42e5cfef1f51fe90242668f0224e9e6cec174ec71cc29d638b63687705629eb9",
     "85747f0bd04b37ba75c781cdb8b499b4be9ae6fbd9a3b9f641573c8ec40567e2",
     "1fb82b88b0a4921a3c9a0c7ef3eb74ea210eebfb44e08d5d502ab35870c55af3",
+    # Added 2026-08-13. A System Log row ID was being cited in plain text in
+    # this file and in the allowlist, and its digest was NOT in this set — so
+    # the gate that exists to stop admin IDs reaching a public surface would
+    # never have flagged one sitting inside its own source. The citations are
+    # now by date; this entry stops the ID coming back. It remains in merged
+    # commit history, which is not rewritable at acceptable cost and which
+    # this file-scanning gate structurally cannot see.
+    "12bb4020d85fe6315be33c3c8987d093976ab2452db7059508db8b8bfbf0807a",
 }
 
 # Any 32-hex Notion ID, dashed or undashed. Deliberately broad — it is a
@@ -247,8 +253,7 @@ PATTERNS = [
         "trigger-insights",
         re.compile(r"\btrigger\s+insights\b", re.IGNORECASE),
     ),
-    # RETIRED 2026-07-31 — Forge ruling C (System Log row 3ae56d8e-806b-811d-
-    # 83cb-f45efd32b19f). Three patterns previously lived here guarding the
+    # RETIRED 2026-07-31 — Forge ruling C, 2026-07-31. Three patterns previously lived here guarding the
     # Forge Roulette odds and payout: "forge-roulette-odds-value" (the
     # "<n>-in-<n>" shape near a roll/odds word), "sealed-odds-as-code" (a
     # modulus literal near "roulette"), and "forge-roulette-bonus-xp-value"
