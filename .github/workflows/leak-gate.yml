@@ -32,3 +32,28 @@ jobs:
         with:
           node-version: "20"
       - run: node tools/delivery_gate.mjs
+
+  # Added 2026-08-13 with the owner's explicit grant (workflows are otherwise
+  # out of bounds to the maintenance agent). It closes a real hole: until now
+  # NOTHING ran test/checks.mjs on a pull request. The battery ran only inside
+  # `npm publish`, via prepublishOnly — so a PR reverting install-codex to the
+  # version that destroyed players' own skills went green, and was caught only
+  # at publish, which is the worst moment: it blocks a release instead of a
+  # review, and only if someone publishes.
+  #
+  # gate_audit.mjs is deliberately NOT here. It rebuilds the tree once per
+  # mutation and is slow; it belongs at publish and before any gate change.
+  structural-gate:
+    name: Structural gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # The battery hard-fails on an unbuilt dist/ rather than reporting
+      # success without running, so this build step is load-bearing.
+      - run: node builder.mjs
+        working-directory: packages/system-skills
+      - run: node test/checks.mjs
+        working-directory: packages/system-skills
