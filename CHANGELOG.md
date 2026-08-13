@@ -4,6 +4,16 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — set in `plugins/the-system-player/.claude-plugin/plugin.json`, the only hand-set version in this repo. **It and the Patch Feed's `mechanics_version` track each other exactly** (ruled 2026-08-13). They used to be allowed to diverge on a delivery-only release, and that permission caused the problem it was meant to describe: four consecutive releases could not move the feed head, so nothing in them reached anyone. One number now — every release moves the head your agent checks against, and a build check fails if the two ever differ. Two other numbers version different things and are not expected to match: the **Seed / template-schema revision** (the shape of your Notion template), and nothing else. The `@ars-infinita-notion/system-skills` **npm package** tracks this number exactly — since v1.3.2 it ships the skills prebuilt, so its version is what a Codex or Antigravity user actually receives.
 
+## v1.3.9 — 2026-08-13
+
+**Codex CLI users: if you installed before v1.3.6, check your own skills.** Versions up to and including 1.3.5 installed 27 skills into your shared `~/.codex/skills/` folder and **replaced anything already sitting under the same name** — so a skill you wrote yourself called `status`, `log`, `report`, `browse`, `doctor` or `patch` may have been overwritten without warning. **Nothing in your Notion workspace was affected**, and **Antigravity installs were never affected**. The installer was fixed in v1.3.6 and now refuses to overwrite anything it did not install, telling you the exact paths instead.
+
+This notice is late, and the reason is worth stating: the channel that delivers it compares a version number, and four consecutive releases had not moved that number — so the warning had nowhere to land. That was fixed in v1.3.8 by making the plugin and mechanics versions one number. This release is the first that can carry the advisory.
+
+**Also in this release:** the plugin's own description no longer lists every command or pins a version highlight. It had drifted — it still advertised "v1.3" features while shipping 1.3.8 — and the same string is generated into the Antigravity manifest, so it drifted in two places at once. It now describes what The System is and what it will not do, and the catalogue lives where the catalogue lives.
+
+**Note on numbering:** the mechanics version moves to 1.3.9, in lockstep, as it now does on every release. No XP value, level threshold, badge criterion or rule surface changed.
+
 ## v1.3.8 — 2026-08-13
 
 **If you ask how the Forge works, you get a straight answer — and now every page in The System says so.** Since 31 July the `/forge` command has answered plainly when you ask about the Forge Roulette's odds and payout; ruling C redesigned that mechanic so it carries no hidden value at all. But the shared rules reference still carried a blanket "never reveal odds" line, contradicting the command sitting next to it in the same install. The rule now names the exception.
