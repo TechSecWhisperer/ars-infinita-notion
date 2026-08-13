@@ -5,13 +5,14 @@
 //
 // Exit 0 = PASS, 1 = FAIL, 2 = BLOCKED (could not run — never treated as PASS).
 //
-// WHY THIS EXISTS, and why release-metadata-check did not catch it.
+// WHY THIS EXISTS.
 //
 // On 2026-08-10 three PRs merged, changing eight files inside the shipped
-// player plugin. `release-metadata-check` passed, because every surface it
-// compares agreed: plugin.json 1.3.1, marketplace generated from it, CHANGELOG
-// newest heading v1.3.1, feed.json head 1.3.1. All true, all consistent, and
-// all stale — the version had not moved since 2026-08-05.
+// player plugin — and no player received any of them. Every release surface
+// agreed on 1.3.1 and had done since 2026-08-05, and a client that sees an
+// unchanged version offers no update. Agreement between surfaces is therefore
+// not the same question as delivery to a player, and this gate asks the
+// second one.
 //
 // A player's client compares their installed version against the published
 // one. Equal versions mean no update is offered, so none of those eight files
@@ -67,11 +68,11 @@ const PKG_REL = rel(PKG_ROOT);
 //   plugins/the-system-player/  → the Claude Code marketplace
 //   packages/system-skills/     → npm, for the Codex and Antigravity CLIs
 //
-// The npm package was a blind spot of exactly the shape this gate exists to
-// catch. Its README.md and cli.mjs ARE the install instructions a codex/agy
-// user reads, and both could change with every check green and reach nobody,
-// because an unchanged version offers no update — one directory across from
-// the 2026-08-10 defect, and invisible to the check written to prevent it.
+// Both channels are watched, deliberately. The npm package's README.md and
+// cli.mjs ARE the install instructions a codex/agy user reads, so a change to
+// either is a change to what a player receives — and, exactly as on
+// 2026-08-10, an unchanged version number means an update is never offered.
+// Watching one channel would answer the delivery question for half the players.
 //
 // Two deliberate calls inside the package:
 //   - `test/` is NOT watched. It is absent from package.json "files" and
@@ -194,8 +195,9 @@ function selfTest({ quiet = false } = {}) {
       `${PLUGIN_REL}/skills/doctor/SKILL.md`,
       `${PLUGIN_REL}/skills/vitals/SKILL.md`,
     ], expect: FAIL },
-    // The 2026-08-12 blind spot, replayed: install copy on the npm channel
-    // changed and this gate said PASS, because it watched one channel of two.
+    // The 2026-08-12 case, replayed: install copy on the npm channel changed
+    // while the version stood still. Must FAIL, or the second channel is
+    // watched in name only.
     { name: 'npm-channel install copy changed', input: [
       `${PKG_REL}/README.md`,
       `${PKG_REL}/cli.mjs`,

@@ -168,8 +168,9 @@ SEALED_ADMIN_PAGE_ID_HASHES = {
     # the gate that exists to stop admin IDs reaching a public surface would
     # never have flagged one sitting inside its own source. The citations are
     # now by date; this entry stops the ID coming back. It remains in merged
-    # commit history, which is not rewritable at acceptable cost and which
-    # this file-scanning gate structurally cannot see.
+    # commit history, which is not rewritable at acceptable cost — rotating
+    # the ID is the only remedy that actually settles it, and that is ruled
+    # and pending.
     "12bb4020d85fe6315be33c3c8987d093976ab2452db7059508db8b8bfbf0807a",
 }
 
@@ -395,6 +396,87 @@ def iter_scan_files():
         yield path, mode
 
 
+# ---------------------------------------------------------------------------
+# Coverage disclosure (Will's ruling, 2026-08-13)
+#
+# Product defects that affect players are told in full — the CHANGELOG, the
+# package README and feed.json's player_facing_summary are all deliberately
+# candid, and must stay that way. What is NOT public is the state of our own
+# verification: which surfaces a check does or does not reach, and how a
+# payload could be shaped to satisfy one. Those are internal.
+#
+# This exists because the rule was set, applied correctly to a pull request
+# body, and then broken eight minutes later in a workflow comment inside the
+# same change. A rule that lives only in the author's head binds nobody. The
+# repository is public and git history is not rewritable at acceptable cost,
+# so a public artifact is WRITE-ONCE: there is no retraction, only a diff on
+# top of something people can still read. That makes a pre-merge check the
+# only mechanism that can actually hold.
+#
+# The phrases below were chosen empirically, not guessed — every candidate was
+# run against the whole tree first, and anything that collided with legitimate
+# player-facing defect language was dropped rather than allowlisted, because a
+# check that cries wolf gets ignored and is worse than no check.
+#
+# They are assembled from split literals so this file cannot trip its own
+# check while defining it. That is deliberate and not cosmetic: on 2026-08-13
+# a raw sealed admin ID was found sitting inside THIS file, unnoticed, because
+# nothing scanned the scanner. Exempting the checker's own source is precisely
+# the hole a tired maintainer walks through at one in the morning.
+COVERAGE_DISCLOSURE_PATTERNS = [
+    (
+        "coverage-disclosure",
+        re.compile(pattern, re.IGNORECASE),
+    )
+    for pattern in [
+        # EVERY fragment is r"" — including the second and third. An adjacent
+        # non-raw fragment makes its backslash escapes invalid (SyntaxWarning
+        # today, SyntaxError on a future Python), which would take the whole
+        # gate down at import time rather than failing a single pattern.
+        r"(?:went|goes|going|would go)\s+gr" r"een",
+        r"pass(?:ed|es|ing)\s+the\s+(?:gate|batt" r"ery)",
+        r"noth" r"ing\s+(?:ran|checked|verified|caught)",
+        r"no\s+(?:check|gate|test)\s+(?:ran|reads|covers|watches|sees)",
+        r"hand-sc" r"an|scan\s+(?:them|it|these)\s+by\s+h" r"and",
+        r"(?:would|will|could|does|did)\s+not\s+ca" r"tch",
+        r"wave(?:s|d)?\s+it\s+thro" r"ugh",
+        r"structurally\s+can" r"not",
+        r"bl" r"ind\s+spot",
+        r"tauto" r"log",
+        r"no\s+agent\s+can\s+(?:fix|write|reach|correct)",
+        r"cover" r"age\s+gap",
+    ]
+]
+
+
+def scan_text(text, patterns=None):
+    """Scan an arbitrary string. Used for surfaces that are not files.
+
+    A pull request body and a commit message are as public as any committed
+    file, and the 2026-08-13 incident put disclosure in both. A file scanner
+    cannot see either, so CI pipes them through here.
+    """
+    hits = []
+    lines = text.splitlines()
+    # Default MUST include the disclosure patterns. The first draft defaulted to
+    # PATTERNS alone, so `--text` silently ran only the sealed-value checks and
+    # reported the very comment that prompted this whole check as clean. It was
+    # caught by replaying the real 2026-08-13 text instead of a synthetic
+    # sample — which is the only reason it is not still true.
+    default = PATTERNS + COVERAGE_DISCLOSURE_PATTERNS
+    for category, pattern in (patterns if patterns is not None else default):
+        for match in pattern.finditer(text):
+            line_no = text.count("\n", 0, match.start()) + 1
+            line_text = lines[line_no - 1] if 0 < line_no <= len(lines) else ""
+            hits.append((category, line_no, line_text.strip()))
+    for match in NOTION_ID_CANDIDATE.finditer(text):
+        if _id_digest(match.group(0)) in SEALED_ADMIN_PAGE_ID_HASHES:
+            line_no = text.count("\n", 0, match.start()) + 1
+            line_text = lines[line_no - 1] if 0 < line_no <= len(lines) else ""
+            hits.append(("sealed-admin-page-id", line_no, line_text.strip()))
+    return hits
+
+
 def scan_file(path, mode="full"):
     """Return a list of (category, line_number, line_text) hits for one file.
 
@@ -427,6 +509,15 @@ def scan_file(path, mode="full"):
     else:
         active = list(PATTERNS)
 
+    # Coverage disclosure applies in EVERY mode, including "hash" (this file)
+    # and binaries. HASH_ONLY_FILES exists so that files which must legitimately
+    # contain sealed-value vocabulary are not tripped by it — that exemption has
+    # nothing to do with disclosure, and extending it here would exempt the
+    # checker's own source from the one rule it is being taught to enforce.
+    # Safe to run unconditionally because the patterns are split-literal.
+    if not binary:
+        active = active + COVERAGE_DISCLOSURE_PATTERNS
+
     for category, pattern in active:
         for match in pattern.finditer(text):
             line_no = text.count("\n", 0, match.start()) + 1
@@ -449,7 +540,43 @@ def scan_file(path, mode="full"):
     return hits
 
 
+def main_text(label):
+    """Scan stdin as one public artifact (a PR body, a commit message range).
+
+    No allowlist applies here. An allowlist is keyed by path:line, and neither
+    of these surfaces has a stable one — but more to the point, both are
+    composed fresh by whoever is opening the change, so the right response to a
+    hit is always to reword before publishing, never to record an exception.
+    """
+    text = sys.stdin.read()
+    hits = scan_text(text)
+    if not hits:
+        print(f"leak_check: {label} clean.")
+        return 0
+    print(f"leak_check: {len(hits)} BLOCKING hit(s) in {label}:")
+    for category, line_no, line_text in hits:
+        if len(line_text) > 200:
+            line_text = line_text[:200] + " …[truncated]"
+        print(f"  line {line_no} ({category}): {line_text}")
+    print()
+    print(
+        "This text is public the moment it is pushed, and stays readable "
+        "afterwards — editing it later does not unpublish it. Reword it before "
+        "publishing.\n"
+        "  sealed-*            — a sealed value or admin ID; strip it.\n"
+        "  coverage-disclosure — describes what our own checks do or do not\n"
+        "                        reach. Player-affecting defects are told in\n"
+        "                        full; the state of our verification is not.\n"
+        "                        Say what the change does, not what was\n"
+        "                        previously unguarded."
+    )
+    return 1
+
+
 def main():
+    if len(sys.argv) > 2 and sys.argv[1] == "--text":
+        return main_text(sys.argv[2])
+
     allowed = load_allowlist()
     all_hits = []  # (rel_path, category, line_no, line_text, allowlisted)
     bytecode = []
