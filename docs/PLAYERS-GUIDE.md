@@ -105,7 +105,9 @@ The public rules you can rely on:
 - **History is permanent.** New mechanics that ship later never rewrite what you've already earned, and your existing XP is never re-scored retroactively — what you have, you keep, no matter how the System evolves around it.
 - **Duplicate-proofing is built in.** Idempotent commands like `/awaken` and lifecycle-tracked actions like `/forge` and `/intake` guard against double-counting the same action twice.
 
-The exact XP values, level thresholds, and any bonus mechanics are intentionally not published here — some content in The System stays sealed and is discovered by playing rather than by reading a spec. If you're curious about something you've noticed but that isn't documented anywhere in the plugin's own command descriptions, that's expected — ask the admin with `/petition` if you want to understand it better.
+**The exact XP values and level thresholds are published** — they are in the plugin's own shared boot reference (`plugins/the-system-player/references/boot-card.md`), which ships with every install and which you are welcome to read. Nothing about the scoring you earn is hidden from you.
+
+Some content in The System does stay sealed and is discovered by playing rather than by reading a spec — that is a deliberate part of the design, and it is a smaller set than "the numbers". If you're curious about something you've noticed but that isn't documented anywhere in the plugin's own command descriptions, that's expected — ask the admin with `/petition` if you want to understand it better.
 
 ---
 
