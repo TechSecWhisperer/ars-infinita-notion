@@ -71,13 +71,26 @@ const MUTATIONS = [
   { gate: 'checks', name: 'feed head names a patch that does not exist',
     mutate: (w) => editJSON(w, 'feed.json',
       (d) => { d.head = '9.9.9'; d.mechanics_version = '9.9.9'; }) },
-  { gate: 'checks', name: 'plugin ahead of feed, undeclared in changelog',
-    mutate: (w) => {
-      const p = path.join(w, 'CHANGELOG.md');
-      // Strip the sentence that declares the divergence, leaving it undeclared.
-      fs.writeFileSync(p, fs.readFileSync(p, 'utf8')
-        .replace(/\*\*Note on numbering:\*\*[^\n]*\n/, ''));
-    } },
+  // Replaced 2026-08-13. This slot used to strip a changelog sentence declaring
+  // a plugin/feed version divergence, back when a declared divergence was
+  // legal. Will ruled the two versions track each other, so the declaration
+  // stopped existing — and this mutation went from testing an invariant to
+  // testing nothing, silently. It survived a publish run and blocked the
+  // release, which is the audit working: a mutation nothing catches is a
+  // mutation whose invariant is gone.
+  //
+  // The lesson is not "update the list". `MUTATIONS` is a hand-maintained
+  // enumeration auditing a hand-maintained battery, and nothing links a check
+  // to the mutation that proves it. Filed as the known weakness of this file.
+  { gate: 'checks', name: 'feed head behind the plugin version',
+    mutate: (w) => editJSON(w, 'feed.json', (d) => {
+      // Keep the feed internally consistent so the ONLY thing broken is the
+      // head-equals-plugin-version rule — otherwise a pass proves nothing
+      // about which assertion caught it.
+      d.head = '1.0.0';
+      d.mechanics_version = '1.0.0';
+      d.patches[d.patches.length - 1].version = '1.0.0';
+    }) },
   { gate: 'checks', name: 'a public command dropped from feed.json',
     mutate: (w) => editJSON(w, 'feed.json', (d) => { d.commands = d.commands.slice(0, -1); }) },
   { gate: 'checks', name: 'hidden /handover published in feed.json',

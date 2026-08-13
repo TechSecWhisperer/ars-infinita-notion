@@ -1,7 +1,7 @@
 {
   "name": "the-system-player",
-  "version": "1.3.8",
-  "description": "The System — Player Edition. Gamified job-search tracker in your own Notion (Quest Board, XP/levels, Gate Intel, Hunter Network). Commands: /awaken, /quest, /engage, /report, /log, /grind, /status, /intake, /appraise, /scout, /ghost, /forge, /armor, /raid, /respawn, /gather, /recruit, /touch, /patch, /levelup, /theme, /petition, /party, /vitals, /doctor, /browse. v1.3: stage-weighted follow-up; setup now asks which theme you want. IDs resolve via your Kernel.",
+  "version": "1.3.9",
+  "description": "The System — Player Edition. Your job hunt becomes a solo-leveling RPG inside your own Notion workspace: postings become quests, interviews become boss fights, follow-ups have SLAs, and every action banks XP that is never re-scored. Start with /awaken — the tutorial questline that builds your world and levels you to 4 by the end of setup. Draft-only by design: it never sends anything on your behalf, and your job-search data never leaves your own workspace.",
   "author": {
     "name": "William Moses (Game Admin)"
   },
