@@ -14,8 +14,12 @@
 //   shared-reference-build-check — one authored boot card; every skill resolves
 //       it; every build-stamped copy is byte-identical to it.
 //   release-metadata-check      — plugin.json is the only hand-set version;
-//       marketplace.json is generated and carries no duplicate of it; the
-//       changelog agrees; the feed is compared but only WARNs.
+//       marketplace.json's generated half is generated and its authored half is
+//       pinned; the changelog agrees; every feed comparison is decidable and
+//       hard-fails. This battery emits no advisory-only output: a warning does
+//       not affect the exit code, so a check that only warns is a check that
+//       cannot stop anything, and a check that reports success without running
+//       is worse still — an unbuilt dist/ now fails rather than warns.
 //   command-catalog-check       — the skills/ directories are the catalog and
 //       feed.json's command list is exactly the public subset of them.
 //   single-surface-lint         — the specific duplicated instructions removed
@@ -141,8 +145,13 @@ check('shared-reference-build-check', () => {
   //    with no shared parent, so those copies are the one sanctioned mirror —
   //    generated only, and byte-identical to the single source after that
   //    target's own text rewrite. A hand-edited copy dies here.
+  // HARD FAIL, not a warning. This used to warn and return, which meant a tree
+  // with no dist/ printed "passed" while verifying zero stamped copies. Every
+  // legitimate caller builds first — prepublishOnly, gate_audit, both install
+  // scripts, and now `npm test` — so an unbuilt dist here means the caller is
+  // wrong, not that the check is inapplicable.
   if (!distBuilt) {
-    warn('dist/ not built — run `node builder.mjs` to verify the stamped copies');
+    fail('dist/ is not built — run `node builder.mjs`. This check cannot verify anything without it.');
     return;
   }
   const targets = [
@@ -152,14 +161,14 @@ check('shared-reference-build-check', () => {
   ];
   let stamped = 0;
   for (const [label, profile, locate] of targets) {
+    // If the boot card contains Claude-specific wording, this target's copy is
+    // a rewrite of the source rather than a byte copy. That is intended, and
+    // the per-copy assertion below verifies every copy against `expected`
+    // either way — so there was nothing here to act on. It used to emit a
+    // warning saying so; advisory output in a gate is what this battery now
+    // refuses to carry, so the fact lives in this comment instead.
     const expected = stripClaudeIdioms(source, profile);
     const expectedHash = sha(expected);
-    if (expectedHash !== sourceHash) {
-      warn(
-        `${label}: the boot card now contains Claude-specific wording, so its copy is a ` +
-          'rewrite of the source rather than a byte copy — intended, but worth knowing',
-      );
-    }
     for (const name of names) {
       const copy = locate(name);
       if (!fs.existsSync(copy)) {
@@ -213,13 +222,60 @@ check('release-metadata-check', () => {
     `plugin.json description is ${(plugin.description || '').length} chars (max 500)`,
   );
 
-  // marketplace.json must be exactly what the builder generates — i.e. it was
-  // regenerated and committed, not hand-edited.
+  // marketplace.json: this assertion USED to claim it proved the file "was
+  // regenerated and committed, not hand-edited". It proved no such thing.
+  //
+  // `renderMarketplace(plugin, existing)` opens with `...existing` and then
+  // overwrites only `plugins` (builder.mjs). So comparing the file to
+  // renderMarketplace(plugin, THE FILE ITSELF) compares four of its five
+  // top-level fields against themselves. `name`, `owner`, `description` and
+  // `$schema` could be edited to anything at all and this passed.
+  //
+  // Demonstrated 2026-08-13: rewriting `owner` to a different person left the
+  // whole battery green. That matters — `description` is the copy shown on the
+  // Claude Code marketplace, and `owner` carries a real email address.
+  //
+  // Fixed by asserting the two things that ARE derivable, and by narrowing the
+  // claim to what is actually verified. `description` stays authored and is
+  // called out as unverified rather than silently implied to be checked.
   const marketplace = readJSON(MARKETPLACE_PATH);
   const expected = renderMarketplace(plugin, marketplace);
   ok(
-    JSON.stringify(marketplace) === JSON.stringify(expected),
-    'marketplace.json is not what `node builder.mjs` generates — rebuild and commit it',
+    JSON.stringify(marketplace.plugins) === JSON.stringify(expected.plugins),
+    'marketplace.json plugins[] is not what `node builder.mjs` generates — rebuild and commit it',
+  );
+  // Derivable from the repository this file ships in.
+  ok(
+    marketplace.name === 'ars-infinita-notion',
+    `marketplace.json name is ${JSON.stringify(marketplace.name)}, expected the repository name`,
+  );
+
+  // The rest — $schema, owner, description — is genuinely AUTHORED. Nothing
+  // derives it, and inventing a derivation would be the check bending reality
+  // to have something to assert. (The first draft of this asserted
+  // owner.name === plugin.json author. That failed immediately: the manifests
+  // read "William Moses" and "William Moses (Game Admin)". Making them equal
+  // would have meant editing a public-facing name to satisfy a check written
+  // minutes earlier. The divergence is filed for the owner to settle, not
+  // normalised here.)
+  //
+  // What IS decidable is that authored copy cannot change SILENTLY. The subset
+  // is pinned by content hash, the same idiom the build already uses for the
+  // boot card. Editing any of it is fine — the edit just has to update this
+  // pin, which puts the change in the diff where a reviewer sees it.
+  const authored = JSON.stringify({
+    $schema: marketplace.$schema,
+    name: marketplace.name,
+    owner: marketplace.owner,
+    description: marketplace.description,
+  });
+  const AUTHORED_PIN = '88e6d4a0ddf3797985fd0ed9befcad8c';
+  const authoredHash = createHash('sha256').update(authored).digest('hex').slice(0, 32);
+  ok(
+    authoredHash === AUTHORED_PIN,
+    `marketplace.json authored fields changed (hash ${authoredHash}). This is allowed — update ` +
+      `AUTHORED_PIN in test/checks.mjs to ${authoredHash} in the same commit, so the copy shown ` +
+      'on the marketplace never moves without a reviewer seeing it.',
   );
 
   const entry = (marketplace.plugins || []).find((p) => p.name === PLUGIN_SLUG);
@@ -284,26 +340,73 @@ check('release-metadata-check', () => {
       'manifest would not match this file',
   );
 
-  // The feed is compared but only WARNs. During a release train the Patch Feed
-  // legitimately announces a rules change before the build implementing it
-  // lands (see MAINTAINERS.md, "Cutting a release") — the warning exists so the
-  // gap is a decision rather than an oversight.
+  // The feed used to be compared against plugin.version and only WARN on a
+  // mismatch, with the text "fine mid-release-train, stale otherwise".
+  //
+  // That comparison was UNDECIDABLE, by this repo's own documentation. The
+  // CHANGELOG preamble states that a delivery-only release moves the plugin
+  // version while the mechanics version legitimately stays put — so the two
+  // numbers differing is a normal, healthy state, and the warning could not
+  // distinguish it from a stale feed. It fired on every healthy delivery
+  // release, which is exactly how FOUR consecutive releases walked past it
+  // (1.3.2 through 1.3.5, feed head stuck at 1.3.1 the whole way).
+  //
+  // Two structural problems, either of which is disqualifying in a gate:
+  //   1. Warnings do not affect the exit code. Nothing stops on them.
+  //   2. The comparison had no correct answer, so no reader could act on it.
+  //
+  // A check that cannot fail is not a check, and a warning nobody can act on
+  // trains every reader to walk past output. Both halves are now decidable
+  // comparisons that hard-fail, and the undecidable one is gone rather than
+  // downgraded. Nothing in this battery warns; unrunnable checks fail.
   const feed = readJSON(FEED_PATH);
   ok(!('feed_version' in feed), 'feed.json still carries feed_version — it has no consumer, drop it');
   for (const field of ['mechanics_version', 'head']) {
     ok(field in feed, `feed.json is missing "${field}" — the boot card and /doctor name it verbatim`);
-    if (feed[field] && feed[field] !== plugin.version) {
-      warn(
-        `feed.json ${field} is ${feed[field]} but plugin.json is ${plugin.version} — ` +
-          'fine mid-release-train, stale otherwise',
-      );
-    }
   }
+
+  // DECIDABLE 1: the feed's two version fields describe the same thing — the
+  // rule-surface version — and the boot card reads both. They must agree.
+  ok(
+    feed.mechanics_version === feed.head,
+    `feed.json mechanics_version (${feed.mechanics_version}) and head (${feed.head}) disagree — ` +
+      'both name the rule-surface version and the boot card reads both',
+  );
+
+  // DECIDABLE 2: the head must name a patch entry that actually exists. This
+  // is what makes the feed internally honest regardless of the release train.
   const newestPatch = (feed.patches || [])[feed.patches.length - 1];
   ok(
     newestPatch && newestPatch.version === feed.head,
     'feed.json head does not match the newest patch entry',
   );
+
+  // DECIDABLE 3: the plugin version must be one the CHANGELOG accounts for,
+  // and a plugin version AHEAD of the feed head is only legitimate if the
+  // changelog entry for it says so. This replaces the undecidable comparison
+  // with the question that actually has an answer: was the divergence declared?
+  //
+  // The declaration must NAME THE VERSION, and the name must be right. A first
+  // draft only grepped for the phrase "mechanics version stays" — which meant a
+  // changelog reading "the mechanics version stays 9.9.9" passed while the feed
+  // head was 1.3.1. That checks whether the author wrote the blessed words, not
+  // whether the words are true, and moving undecidability somewhere less
+  // visible is worse than leaving it where everyone could see it.
+  if (feed.head && feed.head !== plugin.version) {
+    const changelog = fs.readFileSync(CHANGELOG_PATH, 'utf8');
+    // Anchor the boundary: without it, looking for v1.3.6 would match a
+    // v1.3.60 entry.
+    const entry =
+      changelog.split(/^## /m).find((s) => new RegExp(`^v${plugin.version}(\\s|$|—|-)`).test(s)) || '';
+    const declared = entry.match(/mechanics version stays\s+\**(\d+\.\d+\.\d+)/i);
+    ok(
+      declared && declared[1] === feed.head,
+      `feed.json head is ${feed.head} but plugin.json is ${plugin.version}. The v${plugin.version} ` +
+        `changelog entry must declare the divergence as "the mechanics version stays ${feed.head}" ` +
+        `— it currently ${declared ? `claims ${declared[1]}, which is not the feed head` : 'does not declare it at all'}. ` +
+        'Either broadcast the feed, or put the true number on the record.',
+    );
+  }
 });
 
 // ---------------------------------------------------------------------------
@@ -385,8 +488,13 @@ check('single-surface-lint', () => {
 // control: run against that installer, it fails — a guard that passes against
 // the bug it was written for is worthless.
 check('codex-install-guard', () => {
+  // HARD FAIL. This is the guard on a shipped data-loss bug, and it used to
+  // warn-and-return when dist/ was absent — so `npm test` on a fresh clone
+  // printed "5 passed" while this guard executed nothing at all. A gate that
+  // reports success without running is worse than no gate, because the exit
+  // code gets quoted as evidence.
   if (!distBuilt) {
-    warn('dist/ is not built — run `node builder.mjs`; the guard cannot run without it');
+    fail('dist/ is not built — run `node builder.mjs`. This guard cannot run without it, and it will not report success without running.');
     return;
   }
 

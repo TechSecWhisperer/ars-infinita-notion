@@ -35,14 +35,60 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parent.parent
 ALLOWLIST_PATH = REPO_ROOT / "tools" / "leak_allowlist.txt"
 
-# Player-facing surfaces this gate protects. Anything under these paths
-# ships to players (directly, or via the marketplace/plugin install) and
-# must never contain sealed admin mechanics.
+# WHAT THIS GATE SCANS: the whole repository, minus a short exclusion list.
 #
-# tools/ is included even though it never ships to players: this repo is
-# public and MIT-licensed, so anything committed here is world-readable
-# regardless of whether it reaches a plugin zip.
-SCAN_TARGETS = [
+# It used to be the other way round — an allowlist of "player-facing surfaces",
+# enumerated by hand. That list was extended twice, each time *after* the gap
+# had already shipped, and each time with a comment explaining why skipping
+# that path had been wrong all along:
+#
+#   - `packages/` was unscanned until 2026-08-11. It builds and ships the
+#     skills to npm, so its dist/ is a distribution surface carrying
+#     transformed copies of player content. Transformed, not byte-identical —
+#     so proving the source is clean does not prove the artifact is.
+#   - `.github/` was unscanned until 2026-08-12. Issue forms and the pull
+#     request template are authored prose rendered into every filed issue and
+#     every PR description.
+#
+# A third audit (2026-08-13) found four tracked files still outside the list,
+# including `.claude-plugin/marketplace.json` — the marketplace listing, which
+# is among the most public surfaces this repo has — and `AGENTS.md`, an
+# instruction file for agents and therefore exactly the prose most likely to
+# name admin machinery. Neither contained a hit at the time; the defect was
+# that nothing would have caught one.
+#
+# Three instances of the same failure in one list is a design answer, not three
+# oversights. The premise of the allowlist was wrong: this repository is public
+# and MIT-licensed, so EVERY committed file is world-readable whether or not it
+# reaches a player. There is no such thing as an unpublished path here, and a
+# gate whose coverage must be remembered is a gate that will be forgotten.
+#
+# So the default is now "scan it". Adding a directory to this repo puts it in
+# scope automatically. Exclusions must be justified in place, and the only ones
+# that qualify are paths whose contents this repository does not author.
+SCAN_ROOT = REPO_ROOT
+
+# Directory NAMES excluded at any depth. Keep this list short and boring —
+# every entry is a hole, and the point of the inversion above is that holes are
+# now deliberate rather than inherited.
+EXCLUDED_DIR_NAMES = {
+    # Object storage: content is unreachable prose in packed form, and the
+    # working tree it was built from is scanned directly anyway.
+    ".git",
+    # Third-party code this repo does not author or publish. (The package
+    # declares no dependencies today; this is here so that adding one does not
+    # turn the gate into a scan of the npm ecosystem.)
+    "node_modules",
+    # Local interpreter environments.
+    ".venv",
+    "venv",
+    "env",
+}
+
+# Paths that were covered before the inversion. Asserted at startup so a future
+# refactor of the walk cannot silently shrink coverage back to where it was —
+# the regression this change exists to prevent is *narrowing*, not widening.
+COVERAGE_FLOOR = [
     REPO_ROOT / "README.md",
     REPO_ROOT / "MAINTAINERS.md",
     REPO_ROOT / "CHANGELOG.md",
@@ -50,21 +96,12 @@ SCAN_TARGETS = [
     REPO_ROOT / "docs",
     REPO_ROOT / "plugins" / "the-system-player",
     REPO_ROOT / "tools",
-    # packages/ was unscanned until 2026-08-11, which the comment above already
-    # argued against: it is in this public repo, so it is world-readable whether
-    # or not it reaches a player. It now also BUILDS AND SHIPS the skills to npm
-    # for the codex/agy targets, so its dist/ is a distribution surface carrying
-    # transformed copies of player content. Transformed, not byte-identical —
-    # so proving the source is clean does not prove the artifact is.
-    # dist/ is gitignored and only exists after a build; a missing directory
-    # yields no candidates rather than an error, so this is safe pre-build.
     REPO_ROOT / "packages",
-    # .github/ was unscanned until 2026-08-12. Issue forms and the pull request
-    # template are authored prose on the most public surface in the repository —
-    # every filed issue and every PR description is rendered from them. A gate
-    # that skips them lets a clean exit code be quoted as evidence for files it
-    # never opened, which is worse than not running it.
     REPO_ROOT / ".github",
+    # Added by the inversion, and named explicitly so that dropping them again
+    # is a visible edit rather than an accident of the walk.
+    REPO_ROOT / ".claude-plugin",
+    REPO_ROOT / "AGENTS.md",
 ]
 
 # The gate's own source cannot be fully scanned by itself: a pattern-based
@@ -275,30 +312,82 @@ def load_allowlist():
     return allowed
 
 
-def iter_scan_files():
-    """Yield (path, values_only) for every file under the scan targets.
+def _walk_scan_root():
+    """Every file under SCAN_ROOT, minus EXCLUDED_DIR_NAMES, sorted."""
+    out = []
+    stack = [SCAN_ROOT]
+    while stack:
+        current = stack.pop()
+        try:
+            entries = sorted(current.iterdir())
+        except (NotADirectoryError, PermissionError, FileNotFoundError):
+            continue
+        for entry in entries:
+            if entry.is_symlink():
+                # Do not follow: a symlink out of the tree is not this repo's
+                # content, and following one can loop.
+                continue
+            if entry.is_dir():
+                if entry.name not in EXCLUDED_DIR_NAMES:
+                    stack.append(entry)
+            elif entry.is_file():
+                out.append(entry)
+    return sorted(out)
 
-    Nothing is skipped. Compiled bytecode in particular MUST be scanned:
+
+def assert_coverage_floor(files):
+    """Fail loudly if the walk covers less than the old allowlist did.
+
+    The inversion above widened coverage. The regression worth guarding is the
+    opposite one — a future refactor of the walk quietly narrowing it back. A
+    gate whose coverage silently shrinks is worse than one that never widened,
+    because the exit code still reads as proof.
+    """
+    covered = set(files)
+    missing = []
+    for required in COVERAGE_FLOOR:
+        if required.is_file():
+            if required not in covered:
+                missing.append(required)
+        elif required.is_dir():
+            if not any(required in path.parents for path in covered):
+                missing.append(required)
+        # A path that exists in neither form is not asserted: the floor lists
+        # what must be scanned IF present, and this repo's shape may change.
+    return missing
+
+
+def iter_scan_files():
+    """Yield (path, mode) for every file in the repository.
+
+    Scan-by-default: everything under SCAN_ROOT except EXCLUDED_DIR_NAMES. See
+    the note on SCAN_ROOT for why the previous hand-enumerated allowlist was
+    the wrong shape — three separate gaps, each found only after it shipped.
+
+    Nothing else is skipped. Compiled bytecode in particular MUST be scanned:
     a .pyc built from an older revision of this very file embeds the old
     plaintext constants, so skipping binaries would let the gate certify a
     tree that republishes every secret it was written to suppress.
     """
-    seen = set()
-    for target in SCAN_TARGETS:
-        candidates = [target] if target.is_file() else (
-            sorted(target.rglob("*")) if target.is_dir() else []
+    files = _walk_scan_root()
+
+    missing = assert_coverage_floor(files)
+    if missing:
+        rels = ", ".join(str(p.relative_to(REPO_ROOT)) for p in missing)
+        raise SystemExit(
+            f"leak_check: coverage regression — the walk no longer reaches: {rels}\n"
+            "This gate's coverage may widen, never narrow. Fix the walk, do not "
+            "shorten COVERAGE_FLOOR."
         )
-        for path in candidates:
-            if not path.is_file() or path in seen:
-                continue
-            seen.add(path)
-            if path in HASH_ONLY_FILES:
-                mode = "hash"
-            elif path in VALUE_ONLY_FILES:
-                mode = "values"
-            else:
-                mode = "full"
-            yield path, mode
+
+    for path in files:
+        if path in HASH_ONLY_FILES:
+            mode = "hash"
+        elif path in VALUE_ONLY_FILES:
+            mode = "values"
+        else:
+            mode = "full"
+        yield path, mode
 
 
 def scan_file(path, mode="full"):
