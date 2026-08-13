@@ -429,18 +429,22 @@ COVERAGE_DISCLOSURE_PATTERNS = [
         re.compile(pattern, re.IGNORECASE),
     )
     for pattern in [
-        r"(?:went|goes|going|would go)\s+gr" "een",
-        r"pass(?:ed|es|ing)\s+the\s+(?:gate|batt" "ery)",
-        r"noth" "ing\s+(?:ran|checked|verified|caught)",
+        # EVERY fragment is r"" — including the second and third. An adjacent
+        # non-raw fragment makes its backslash escapes invalid (SyntaxWarning
+        # today, SyntaxError on a future Python), which would take the whole
+        # gate down at import time rather than failing a single pattern.
+        r"(?:went|goes|going|would go)\s+gr" r"een",
+        r"pass(?:ed|es|ing)\s+the\s+(?:gate|batt" r"ery)",
+        r"noth" r"ing\s+(?:ran|checked|verified|caught)",
         r"no\s+(?:check|gate|test)\s+(?:ran|reads|covers|watches|sees)",
-        r"hand-sc" "an|scan\s+(?:them|it|these)\s+by\s+h" "and",
-        r"(?:would|will|could|does|did)\s+not\s+ca" "tch",
-        r"wave(?:s|d)?\s+it\s+thro" "ugh",
-        r"structurally\s+can" "not",
-        r"bl" "ind\s+spot",
-        r"tauto" "log",
+        r"hand-sc" r"an|scan\s+(?:them|it|these)\s+by\s+h" r"and",
+        r"(?:would|will|could|does|did)\s+not\s+ca" r"tch",
+        r"wave(?:s|d)?\s+it\s+thro" r"ugh",
+        r"structurally\s+can" r"not",
+        r"bl" r"ind\s+spot",
+        r"tauto" r"log",
         r"no\s+agent\s+can\s+(?:fix|write|reach|correct)",
-        r"cover" "age\s+gap",
+        r"cover" r"age\s+gap",
     ]
 ]
 
