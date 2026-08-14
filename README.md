@@ -56,6 +56,7 @@ Your workspace is a set of linked Notion databases the System reads and writes f
 
 A slice of the 27 commands you'll actually use — the full reference lives in [Getting Started](#-getting-started) below:
 
+<!-- BEGIN generated: featured-commands -->
 | Command | What it does |
 |---|---|
 | `/awaken` | Builds your world and teaches the loop — the tutorial *is* the setup. |
@@ -68,6 +69,7 @@ A slice of the 27 commands you'll actually use — the full reference lives in [
 | `/status` | Your level, XP, and streak. |
 | `/ghost` | Rewrite anything AI-sounding back into how *you* actually talk. |
 | `/doctor` | Run diagnostics and self-repair your setup. |
+<!-- END generated: featured-commands -->
 
 Type a slash command, or just say what you want in plain language — the System understands both.
 

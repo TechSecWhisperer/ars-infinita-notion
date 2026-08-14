@@ -28,6 +28,10 @@ export const BOOT_CARD_LOCAL_REF = 'references/boot-card.md';
 export const MARKETPLACE_PATH = path.join(REPO_ROOT, '.claude-plugin', 'marketplace.json');
 export const FEED_PATH = path.join(REPO_ROOT, 'feed.json');
 export const CHANGELOG_PATH = path.join(REPO_ROOT, 'CHANGELOG.md');
+// The root README carries a GENERATED block: the curated featured-command
+// teaser table, rendered from skill frontmatter by lib/catalog.mjs. Everything
+// outside the markers is hand-written.
+export const README_PATH = path.join(REPO_ROOT, 'README.md');
 
 // The one deliberately non-public command: it exists as a skill but is kept out
 // of the published command list. Anything else missing from feed.json is a bug.

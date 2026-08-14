@@ -1,6 +1,8 @@
 ---
 name: grind
 description: Scans the player's whole Quest Board pipeline for what needs attention — follow-ups due, quests going stale, and open next actions. Strictly read-only — it reports, it never writes anywhere. Use when the player says "check my pipeline", "what's due", "grind", "what should I work on today", or "/grind".
+featured: 7
+tagline: "See your whole pipeline — what's due, what's going cold."
 ---
 
 Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and query mechanics. This command is **read-only, with no exceptions** — it reports, it never writes anywhere (that's what /report, /log, /engage etc. are for).
