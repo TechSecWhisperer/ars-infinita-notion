@@ -1,6 +1,8 @@
 ---
 name: awaken
 description: Initialises, repairs, or migrates the player's instance of The System — the Level-0 tutorial questline that builds the workspace, writes the Kernel, and levels the player to 4 by the time setup is done. Use when the player says "/awaken", "arise", "set up The System", "initialise my system", "my workspace is broken — fix it", or when a Migration-required patch directs a re-run. Idempotent and resumable — re-running never double-builds or double-awards; it picks up wherever the last run stopped. This is also the repair tool for a half-broken workspace.
+featured: 1
+tagline: "Builds your world and teaches the loop — the tutorial *is* the setup."
 ---
 
 # /awaken — the Awakening
