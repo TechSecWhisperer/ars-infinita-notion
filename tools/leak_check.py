@@ -172,6 +172,38 @@ SEALED_ADMIN_PAGE_ID_HASHES = {
     # the ID is the only remedy that actually settles it, and that is ruled
     # and pending.
     "12bb4020d85fe6315be33c3c8987d093976ab2452db7059508db8b8bfbf0807a",
+    # Added 2026-08-16, by reconciliation rather than by incident. Every
+    # entry above arrived one at a time, each because a specific ID had
+    # become relevant on a specific day — the same shape as the hand-written
+    # path list that SCAN_ROOT replaced with scan-by-default, and carrying
+    # the same defect: the set was believed to stand for "the admin-only
+    # pages", and had never once been compared against what that phrase
+    # actually enumerates today.
+    #
+    # It was compared this run. The eleven digests below are the difference:
+    # the agent-only page tree, its children, and the operational surfaces
+    # that hang off it. A scan of the whole tree first confirmed that none of
+    # the eleven is present in this repository, so this widens what the gate
+    # reaches rather than repairing anything published.
+    #
+    # No ID is written here or anywhere else in this repository — only its
+    # digest, per the standing rule at the top of this file.
+    #
+    # This set is still a hand-maintained enumeration, and so is
+    # gate_audit's MUTATIONS list; both carry the weakness the SCAN_ROOT
+    # inversion removed from path selection. Reconcile it whenever an
+    # admin-side page is created, and do not assume its length is evidence.
+    "233f982f42d8fb48bcd20b9770df48fd8f719eff6bfb7287a9849c607055e2ae",
+    "a53bab18dcad07ba505153ded54a66e8843ca90a226438e6ba6bc9430da662d7",
+    "94b184bb23ffba7844d76b3c01b9364b6785d8f663a9faefec5f04f0db2c029c",
+    "42d7091252f7bcdfedfda580488b60ee7cebf528ab4e5af047af40a260e857d6",
+    "4933ba872dc9e5444236b5bcebca02fecbef9dcd056e5ada5b9e1ec71605049d",
+    "5379d076d871ce6996afd94b22c9c54cd338990566d902a580b89614135d6adf",
+    "57791aa925b2b8ebf8269ee9647fafc393917b1bbb676dd2d122d2acc27eaf73",
+    "3b44412ba11147582bf108d8e952ef68cab21f52fe4b074a83e3b3d38c09a38d",
+    "9a6c73e25012ce15a0e4d1e32257faa63f9799ef3e8e72187d9175cd5492c5b4",
+    "93b8839fc8835f5dda49edab0cbb9dc13808fa0f9cd6f7f2f2e7677654ec093b",
+    "bdb83a7d0f2fcddcf0c126b7e2b8e7591771c05cebe33eff9840def90938210e",
 }
 
 # Any 32-hex Notion ID, dashed or undashed. Deliberately broad — it is a
@@ -540,6 +572,77 @@ def scan_file(path, mode="full"):
     return hits
 
 
+# ---------------------------------------------------------------------------
+# Negative control for the sealed-ID comparison.
+#
+# tools/gate_audit.mjs proves the other half of this gate: it plants a
+# synthetic marker phrase in a tree and requires the gate to go red. The ID
+# comparison is the one assertion it cannot audit that way, because a fixture
+# capable of tripping it would have to BE a sealed ID, and committing one is
+# precisely the outcome this gate exists to prevent.
+#
+# So the proof lives here instead, in process, against a throwaway ID that is
+# sealed for the duration of the assertion and nowhere else. It runs on every
+# invocation — including both --text invocations in CI — because a proof that
+# has to be remembered is a proof that will be skipped.
+#
+# The three assertions are the three ways this path has been observed to break:
+# a spelling the extractor did not reach (the dashed/undashed split, before
+# digests replaced literal substrings), a run-together match in compiled
+# bytecode where \b never holds, and the opposite failure of reporting every
+# ID-shaped string as sealed.
+_FIXTURE_ID = "0123456789abcdef0123456789abcdef"
+_FIXTURE_SPELLINGS = (
+    ("undashed", _FIXTURE_ID),
+    ("dashed", "01234567-89ab-cdef-0123-456789abcdef"),
+    ("uppercase", _FIXTURE_ID.upper()),
+)
+_CONTROL_ID = "fedcba9876543210fedcba9876543210"
+
+
+def self_test_sealed_id_path():
+    """Assert the sealed-ID comparison fires, in every spelling, and only when it should."""
+    digest = _id_digest(_FIXTURE_ID)
+    if digest in SEALED_ADMIN_PAGE_ID_HASHES:
+        raise SystemExit(
+            "leak_check: the self-test fixture collides with a real sealed digest. "
+            "Change _FIXTURE_ID — leaving it would mask a live entry."
+        )
+
+    def sealed_hits(text):
+        return [h for h in scan_text(text) if h[0] == "sealed-admin-page-id"]
+
+    SEALED_ADMIN_PAGE_ID_HASHES.add(digest)
+    try:
+        for spelling, form in _FIXTURE_SPELLINGS:
+            if not sealed_hits(f"a page at {form} here"):
+                raise SystemExit(
+                    f"leak_check: SELF-TEST FAILED — a planted sealed ID written "
+                    f"{spelling} was not reported. The ID half of this gate is "
+                    "inert; repair it before trusting an exit code from it."
+                )
+        # Bytecode packs constants against each other, so the anchored regex
+        # is the wrong tool there and the lookahead variant is the right one.
+        packed = f"xx{_FIXTURE_ID}yy"
+        if not any(
+            _id_digest(m.group(1)) == digest
+            for m in NOTION_ID_CANDIDATE_BINARY.finditer(packed)
+        ):
+            raise SystemExit(
+                "leak_check: SELF-TEST FAILED — the binary extractor missed a "
+                "sealed ID with no word boundary around it. Compiled bytecode "
+                "would be scanned without result."
+            )
+        if sealed_hits(f"an ordinary identifier {_CONTROL_ID} here"):
+            raise SystemExit(
+                "leak_check: SELF-TEST FAILED — an ID that is not sealed was "
+                "reported as one. Every ID-shaped string in the tree would be "
+                "flagged, which makes the gate unusable rather than strict."
+            )
+    finally:
+        SEALED_ADMIN_PAGE_ID_HASHES.discard(digest)
+
+
 def main_text(label):
     """Scan stdin as one public artifact (a PR body, a commit message range).
 
@@ -574,6 +677,10 @@ def main_text(label):
 
 
 def main():
+    # Before any scanning, and on every entry point: an exit code from this
+    # gate is only worth as much as the assertions behind it still working.
+    self_test_sealed_id_path()
+
     if len(sys.argv) > 2 and sys.argv[1] == "--text":
         return main_text(sys.argv[2])
 
