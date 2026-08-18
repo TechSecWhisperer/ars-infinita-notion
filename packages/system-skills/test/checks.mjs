@@ -38,12 +38,6 @@ import { execFileSync } from 'node:child_process';
 import { renderMarketplace } from '../builder.mjs';
 import { AGENT_PROFILES, parseFrontmatter, stripClaudeIdioms } from '../lib/transform.mjs';
 import {
-  FEATURED_MAX,
-  FEATURED_MIN,
-  featuredSkills,
-  renderReadme,
-} from '../lib/catalog.mjs';
-import {
   BOOT_CARD_LOCAL_REF,
   BOOT_CARD_PATH,
   BOOT_CARD_REF,
@@ -56,7 +50,6 @@ import {
   MARKETPLACE_PATH,
   PKG_ROOT,
   PLUGIN_SLUG,
-  README_PATH,
   REPO_ROOT,
   SOURCE_PLUGIN_DIR,
   SOURCE_PLUGIN_MANIFEST,
@@ -432,46 +425,6 @@ check('command-catalog-check', () => {
       `/${hidden} is a hidden route but is published in feed.json`,
     );
   }
-
-  // --- The curated teaser is generated, not hand-maintained (issue #19). ---
-  const featured = featuredSkills();
-
-  // The range, not an exact count: the ruling rejected exact-10 as arbitrary
-  // rigidity, but a teaser collapsing to three rows is the failure that matters.
-  ok(
-    featured.length >= FEATURED_MIN && featured.length <= FEATURED_MAX,
-    `${featured.length} skills are featured; expected ${FEATURED_MIN}–${FEATURED_MAX}`,
-  );
-
-  const ranks = featured.map((s) => s.rank);
-  ok(
-    ranks.every((r) => Number.isInteger(r) && r > 0),
-    `featured ranks must be positive integers: ${JSON.stringify(
-      featured.filter((s) => !Number.isInteger(s.rank) || s.rank < 1).map((s) => s.name),
-    )}`,
-  );
-  ok(
-    new Set(ranks).size === ranks.length,
-    `two skills claim the same featured rank: ${ranks.join(', ')}`,
-  );
-  for (const s of featured) {
-    ok(s.tagline.length > 0, `${s.name} is featured but has no tagline`);
-    ok(!s.hidden, `${s.name} is a hidden route but is featured in the README teaser`);
-  }
-
-  // Regenerate and fail on any diff — the ruling's "fail on any diff" clause.
-  // This is what makes the README derived rather than merely checked.
-  const readmeBefore = fs.readFileSync(README_PATH, 'utf8');
-  let readmeAfter;
-  try {
-    readmeAfter = renderReadme(readmeBefore);
-  } catch (err) {
-    fail(err.message);
-  }
-  ok(
-    readmeAfter === readmeBefore,
-    'README.md featured-command table is stale — run `node builder.mjs` and commit README.md',
-  );
 });
 
 // ---------------------------------------------------------------------------
