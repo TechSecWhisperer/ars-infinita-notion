@@ -1,6 +1,8 @@
 ---
 name: ghost
 description: Rewrites AI-sounding text (a draft email, cover letter, LinkedIn message, CV bullet) into the player's real voice, stripping the tells that make it read as Claude-written. Use when the player says "de-AI this", "make this sound like me", "this reads too robotic/generic", "ghost this", or pastes a draft and says "/ghost".
+featured: 9
+tagline: "Rewrite anything AI-sounding back into how *you* actually talk."
 ---
 
 Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for hard rules (draft-only — this produces a rewritten draft, still never sends anything).

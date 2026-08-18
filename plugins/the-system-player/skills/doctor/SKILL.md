@@ -1,6 +1,8 @@
 ---
 name: doctor
 description: Diagnoses and repairs the player's instance of The System — a battery of PASS/WARN/FAIL checks (Notion access, Kernel and rule-surface integrity, schedules, Player-Card vs XP-Ledger reconciliation, version-vs-feed), each classified local or remote, then fixes local problems via the idempotent /awaken repair path and escalates remote ones via /petition. Use when the player says "/doctor", "something's broken", "run diagnostics", "check my system", "is my setup healthy", or after an error. Needs no browser — every check runs off the Notion connector or a plain HTTPS fetch.
+featured: 10
+tagline: "Run diagnostics and self-repair your setup."
 ---
 
 Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first (Sigil Check, boot ritual, "/vitals and /doctor"). `/doctor` is diagnostics + repair in the `flutter doctor` / `brew doctor` idiom — a battery of checks, each PASS / WARN / FAIL with specifics, then fixes.

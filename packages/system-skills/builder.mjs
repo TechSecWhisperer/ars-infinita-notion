@@ -32,6 +32,7 @@ import {
   residualClaudeMentions,
   stripClaudeIdioms,
 } from './lib/transform.mjs';
+import { renderReadme } from './lib/catalog.mjs';
 import {
   BOOT_CARD_LOCAL_REF,
   BOOT_CARD_PATH,
@@ -41,6 +42,7 @@ import {
   DIST_DIR,
   MANIFEST_PATH,
   MARKETPLACE_PATH,
+  README_PATH,
   PLUGIN_SLUG,
   REPO_ROOT,
   SOURCE_PLUGIN_MANIFEST,
@@ -170,6 +172,18 @@ function writeMarketplace(sourcePlugin) {
   return { changed: before !== next };
 }
 
+/**
+ * Regenerate the README's featured-command teaser from skill frontmatter.
+ * Same shape as writeMarketplace: derive, compare, write only on change, and
+ * report whether the tracked file moved so the build log says "commit this".
+ */
+function writeReadme() {
+  const before = fs.readFileSync(README_PATH, 'utf8');
+  const next = renderReadme(before);
+  if (before !== next) fs.writeFileSync(README_PATH, next);
+  return { changed: before !== next };
+}
+
 function main() {
   fs.rmSync(DIST_DIR, { recursive: true, force: true });
   fs.mkdirSync(DIST_CODEX, { recursive: true });
@@ -256,6 +270,7 @@ function main() {
   }
 
   const marketplace = writeMarketplace(sourcePlugin);
+  const readme = writeReadme();
 
   fs.writeFileSync(
     MANIFEST_PATH,
@@ -293,6 +308,9 @@ function main() {
   );
   console.log(
     `  marketplace -> ${MARKETPLACE_PATH}${marketplace.changed ? ' (REWRITTEN — commit this)' : ' (already in sync)'}`,
+  );
+  console.log(
+    `  README teaser -> ${README_PATH}${readme.changed ? ' (REWRITTEN — commit this)' : ' (already in sync)'}`,
   );
 
   if (residuals.length) {
