@@ -1,8 +1,6 @@
 ---
 name: scout
 description: Does deep research on a company the player's job-hunting at (strategy, recent news, culture signal, likely stakeholders) and writes it to the Gate Intel record in Notion. Use when the player says "scout this company", "research X for me", "what's the deal with this company", or as a natural follow-up after tracking or appraising a role there. This is analysis-heavy research work — take the time to actually search rather than guessing from prior knowledge, since company leadership and news change often.
-featured: 4
-tagline: "Deep-research a company."
 ---
 
 Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules. This wants careful, unhurried research (boot card rule 7) — company leadership and news turn over fast, don't rely on stale training knowledge.
