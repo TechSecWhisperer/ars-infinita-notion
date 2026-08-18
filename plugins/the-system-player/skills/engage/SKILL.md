@@ -1,8 +1,6 @@
 ---
 name: engage
 description: Marks a tracked job on the player's Quest Board as applied — moves its stage, sets dates, logs the application to the Battle Log, and awards XP. Use when the player says "I applied to X", "just submitted my application for X", "engage on X", or "/engage [role]" — this is for reporting a completed submission, not for tracking a new posting (/quest) or scoring fit before deciding to apply (/appraise).
-featured: 6
-tagline: "Log a submitted application."
 ---
 
 Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules.
