@@ -64,6 +64,10 @@ drafts a tailored cover letter from the job description, your profile, and the G
 
 builds your tailored CV the same way — an editable master, a voice pass, and both a send-ready copy and an editable file attached to the quest.
 
+Your CV is assembled from a library of named sections, so you can rearrange it in plain language — "move my skills above experience", "drop the interests bit", "put certifications at the top", "add a work rights line". There are layout presets too (graduate, career change, technical, academic, cleared/government), and switching between them reorders your sections without touching a word of what they say.
+
+It also adapts to where the job is, not where you are. Resume convention genuinely differs by country — two pages is right in the UK and wrong in the US, a photo is normal in Germany and can get your application binned in Australia, and a Polish employer may discard a CV that has no data-consent line. `/armor` reads the target country off the quest, applies that market's conventions, and tells you in one line what it changed so you can overrule it.
+
 ### 6. Engage
 
 When you actually submit the application (not before):

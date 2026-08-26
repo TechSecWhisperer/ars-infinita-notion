@@ -1,0 +1,690 @@
+{
+  "libraryVersion": "1.0.0",
+  "generates": "RESUME-LIBRARY.md",
+  "generator": "tools/resume_library.mjs",
+  "summary": "The section library, layout presets, regional conventions and formatting standards behind `/armor`. Everything here is authored in `resume-library.json` and rendered from it — edit the JSON, then run `node tools/resume_library.mjs build`.",
+
+  "provenance": {
+    "legend": {
+      "V": "VERIFIED against the cited source page, read in full during an authoring session. Carries the source id and the date it was read.",
+      "S": "SECONDARY / UNVERIFIED. Attributed to a cited source by search-engine summaries or third-party write-ups, but the source page itself was NOT read. Treat as a lead to confirm, not as a quotation.",
+      "G": "GENERAL PRACTICE. A widely-established convention across career-services guidance and applicant-tracking documentation. Not attributed to any single source and does not need to be."
+    },
+    "rule": "No rule in this file may be presented to a player as coming from a named institution unless its tag is V. This is the same provenance discipline the System Log applies to claimed rulings: an uncited claim is struck or downgraded, never repeated with confidence it has not earned.",
+    "authoringNote": "At v1.0.0 NO rule is tagged V, and that is a deliberate record of what the authoring session could actually establish. The session (2026-08-27) could not read any external page: the environment's egress proxy refused every outbound fetch, for every domain — curl returned CONNECT 403, and the fetch tool returned EGRESS_BLOCKED for the source URL and for a control URL alike, so the block was environmental rather than specific to the source host. Every S tag below is therefore a lead awaiting confirmation, not a quotation. `node tools/resume_library.mjs sources` is the mechanism that confirms them from a networked environment: it records a content snapshot per source, after which a rule can be promoted from S to V by a human or agent who has actually read the page."
+  },
+
+  "sources": [
+    {
+      "id": "harvard-strong-resume",
+      "label": "Harvard FAS Mignone Center for Career Success — Create a Strong Resume",
+      "url": "https://careerservices.fas.harvard.edu/resources/create-a-strong-resume/",
+      "role": "primary",
+      "lastRead": null,
+      "lastReadStatus": "never-read",
+      "contentSha256": null,
+      "note": "Requested by Will as the research basis. Never successfully retrieved — see provenance.authoringNote. The first run of `resume_source_check.mjs` from a networked environment records lastRead, contentSha256 and a text snapshot, after which drift is detectable."
+    },
+    {
+      "id": "harvard-bullet-template",
+      "label": "Harvard College Bullet Point Resume Template",
+      "url": "https://careerservices.fas.harvard.edu/resources/bullet-point-resume-template/",
+      "role": "secondary",
+      "lastRead": null,
+      "lastReadStatus": "never-read",
+      "contentSha256": null,
+      "note": "Surfaced by search alongside the primary. Likely carries the concrete section order and bullet formula."
+    },
+    {
+      "id": "harvard-guide-pdf",
+      "label": "Harvard College Resumes & Cover Letters Guide",
+      "url": "https://careerservices.fas.harvard.edu/resources/harvard-college-guide-to-resumes-cover-letters/",
+      "role": "secondary",
+      "lastRead": null,
+      "lastReadStatus": "never-read",
+      "contentSha256": null,
+      "note": "The long-form guide the shorter pages summarise."
+    }
+  ],
+
+  "standards": {
+    "formatting": [
+      { "t": "One page for most candidates. A second page is earned by content, not filled to look substantial — and in most markets is normal past roughly ten years of relevant experience.", "p": "G" },
+      { "t": "Single column. Multi-column layouts read out of order in most applicant-tracking parsers, which silently scrambles dates against employers.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "No graphics, photos, colour blocks, icons, text boxes or headshots on an ATS-bound resume. They either drop out or corrupt the parse.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "Standard serif or sans-serif face at 10–12pt body size. Consistency matters more than which face.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "Margins around 1 inch / 2.5cm; never below 0.5 inch / 1.25cm, which reads as cramped and breaks print.", "p": "G" },
+      { "t": "Dates right-aligned and formatted identically everywhere. Mixed formats are the single most common self-inflicted parse failure.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "The resume and its cover letter use the same font family and size — they are one document set.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "Submit as PDF unless the posting asks for .docx. PDF preserves layout; .docx is what some ATS explicitly demand.", "p": "G" },
+      { "t": "Name the file predictably: Firstname-Lastname-Role.pdf. Never 'resume-final-v3.pdf'.", "p": "G" },
+      { "t": "Section headings in the conventional words for the target market. A parser looks for 'Experience' and 'Education'; it does not know what 'My Journey' means.", "p": "G" }
+    ],
+    "bullets": [
+      { "t": "Every bullet opens with a past-tense action verb. No 'Responsible for', no 'Duties included', no leading pronoun.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "Quantify the result wherever a real number exists — scale, money, time, percentage, headcount, volume.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "Formula: ACTION VERB + WHAT YOU DID + HOW / WITH WHAT + MEASURED RESULT. Not every bullet reaches all four, but a bullet with none of the last two is a job description, not evidence.", "p": "G" },
+      { "t": "Accomplishment, not duty. What changed because you were there, rather than what you were assigned.", "p": "G" },
+      { "t": "Three to six bullets for a recent, relevant role; one to three for older or less relevant ones. Depth follows relevance, not chronology.", "p": "G" },
+      { "t": "One to two lines per bullet. A bullet that wraps to three is two bullets or an over-written one.", "p": "G" },
+      { "t": "Mirror the posting's own vocabulary where it is honestly true of you — the same skill named two ways scores as neither.", "p": "S", "src": "harvard-strong-resume" },
+      { "t": "Never fabricate a metric. An honest unquantified bullet beats an invented number, and an invented number is the one thing a reference check reliably catches.", "p": "G" }
+    ],
+    "ats": [
+      { "t": "No tables. A parser flattens them and the columns interleave.", "p": "G" },
+      { "t": "No headers or footers for content that matters — many parsers discard that region entirely, including contact details placed there.", "p": "G" },
+      { "t": "No text inside images. It is invisible to every parser.", "p": "G" },
+      { "t": "Spell out an acronym once with the acronym alongside: 'Security Information and Event Management (SIEM)'. Postings search for either.", "p": "G" },
+      { "t": "Standard bullet characters only. Wingdings and custom glyphs arrive as question marks.", "p": "G" }
+    ],
+    "actionVerbs": {
+      "note": "Grouped by what the verb claims. Pick for accuracy, not for force — an inflated verb is a claim the interview will test.",
+      "p": "S",
+      "src": "harvard-strong-resume",
+      "groups": {
+        "Led / owned": ["Led", "Directed", "Managed", "Oversaw", "Chaired", "Coordinated", "Headed", "Supervised", "Orchestrated"],
+        "Built / created": ["Built", "Designed", "Developed", "Engineered", "Architected", "Created", "Established", "Founded", "Launched", "Implemented"],
+        "Improved / changed": ["Improved", "Optimized", "Streamlined", "Reduced", "Increased", "Accelerated", "Consolidated", "Modernized", "Refactored", "Automated"],
+        "Analysed / found": ["Analyzed", "Assessed", "Audited", "Diagnosed", "Evaluated", "Investigated", "Identified", "Measured", "Researched", "Synthesized"],
+        "Delivered / executed": ["Delivered", "Executed", "Completed", "Deployed", "Shipped", "Migrated", "Integrated", "Resolved", "Maintained"],
+        "Persuaded / worked with": ["Advised", "Negotiated", "Presented", "Influenced", "Partnered", "Facilitated", "Trained", "Mentored", "Briefed", "Secured"]
+      }
+    }
+  },
+
+  "sections": [
+    {
+      "id": "header",
+      "label": "Header / Contact",
+      "aliases": ["contact", "contact details", "contact info", "top", "name block", "personal info"],
+      "core": true,
+      "movable": false,
+      "purpose": "Says who you are and how to reach you. Always first — this is the one section that cannot move.",
+      "rules": [
+        { "t": "Name, phone with country code, professional email, city + country, LinkedIn. Nothing else is mandatory.", "p": "G" },
+        { "t": "Never in the page header/footer region — parsers discard it.", "p": "G" },
+        { "t": "Full street address is obsolete in most markets; city and country are enough and are what recruiters filter on.", "p": "G" },
+        { "t": "One professional email. Not a work address — screening a candidate on their current employer's mail is a hazard for both sides.", "p": "G" }
+      ]
+    },
+    {
+      "id": "summary",
+      "label": "Professional Summary",
+      "aliases": ["profile", "summary", "professional profile", "about", "personal statement", "career summary", "executive summary"],
+      "core": false,
+      "movable": true,
+      "purpose": "Two to four lines positioning you for THIS role. The highest-leverage lines on the page because they are the ones actually read.",
+      "rules": [
+        { "t": "Rewritten per application. A generic summary is worse than none — it costs prime space to say nothing.", "p": "G" },
+        { "t": "Name the discipline, the seniority, and the two or three things this posting is actually buying.", "p": "G" },
+        { "t": "No first person, no adjective piles. 'Passionate self-starter' is unfalsifiable and reads as filler.", "p": "G" },
+        { "t": "Distinct from an Objective: a summary says what you bring, an objective says what you want. Prefer the summary except in a deliberate career change.", "p": "G" }
+      ]
+    },
+    {
+      "id": "objective",
+      "label": "Objective",
+      "aliases": ["career objective", "goal", "target role"],
+      "core": false,
+      "movable": true,
+      "purpose": "States the role sought. Largely retired in favour of a summary; still useful for a career change or an early-career candidate where the direction is not obvious from the history.",
+      "rules": [
+        { "t": "Use instead of a summary, never alongside it.", "p": "G" },
+        { "t": "If it could be pasted onto any application unchanged, cut it.", "p": "G" }
+      ]
+    },
+    {
+      "id": "skills",
+      "label": "Core Skills",
+      "aliases": ["skills", "technical skills", "key skills", "competencies", "core competencies", "expertise", "tech stack", "toolkit"],
+      "core": true,
+      "movable": true,
+      "purpose": "A scannable keyword surface. Does double duty: a human reads it in three seconds, a parser matches it against the posting.",
+      "rules": [
+        { "t": "Group into labelled clusters rather than one long comma run — 'Cloud & Infrastructure:', 'Governance & Risk:'.", "p": "G" },
+        { "t": "Only skills you would defend in an interview. This section is the most over-claimed on the page and the easiest to test.", "p": "G" },
+        { "t": "Drop proficiency bars and star ratings. They are unparseable and self-assessed, so they carry no information.", "p": "G" },
+        { "t": "Place high when the role is skills-gated (technical, contract, career change); place lower when the employer names carry the story.", "p": "G" }
+      ]
+    },
+    {
+      "id": "experience",
+      "label": "Professional Experience",
+      "aliases": ["experience", "work experience", "employment", "work history", "career history", "roles", "professional background"],
+      "core": true,
+      "movable": true,
+      "purpose": "The evidence base. Reverse-chronological by default.",
+      "rules": [
+        { "t": "Per role: title, employer, location, dates. Consistent order and format across every entry.", "p": "G" },
+        { "t": "Reverse-chronological — most recent first — unless deliberately using a functional or hybrid layout.", "p": "G" },
+        { "t": "Bullets selected for THIS posting from the full history, not the same block reused everywhere.", "p": "G" },
+        { "t": "A promotion within one employer is nested under that employer, not duplicated as a separate company.", "p": "G" },
+        { "t": "Employment gaps: state them plainly and briefly if they exceed several months. An unexplained gap draws more attention than an explained one.", "p": "G" },
+        { "t": "Add a one-line company descriptor when the employer is not internationally recognised — 'Origin (ASX-listed energy retailer, 4,000 staff)'. Essential when applying across borders.", "p": "G" }
+      ]
+    },
+    {
+      "id": "education",
+      "label": "Education",
+      "aliases": ["education", "academic background", "qualifications", "degrees", "schooling", "academics"],
+      "core": true,
+      "movable": true,
+      "purpose": "Formal qualifications.",
+      "rules": [
+        { "t": "Degree, institution, location, completion year. Reverse-chronological.", "p": "G" },
+        { "t": "Above Experience while a student or within roughly two years of graduating; below it thereafter.", "p": "G" },
+        { "t": "Include grade only where the market expects it and it helps — see the region profile; GPA is a US convention and reads as odd elsewhere.", "p": "G" },
+        { "t": "Add an equivalence note for a foreign qualification: 'Bachelor of Engineering (4 years, equivalent to AQF Level 7)'. A reader who cannot place your degree discounts it.", "p": "G" },
+        { "t": "Secondary schooling drops off once you hold a degree.", "p": "G" }
+      ]
+    },
+    {
+      "id": "projects",
+      "label": "Projects",
+      "aliases": ["projects", "selected projects", "portfolio", "side projects", "personal projects", "key projects"],
+      "core": false,
+      "movable": true,
+      "purpose": "Demonstrated capability where employment history does not yet show it — career changers, early career, or skills used outside a paid role.",
+      "rules": [
+        { "t": "Same bullet discipline as Experience: action, substance, outcome.", "p": "G" },
+        { "t": "Link to something inspectable where one exists.", "p": "G" },
+        { "t": "State your own contribution on anything collaborative.", "p": "G" }
+      ]
+    },
+    {
+      "id": "certifications",
+      "label": "Certifications & Licences",
+      "aliases": ["certifications", "certs", "licences", "licenses", "credentials", "accreditations", "professional certifications"],
+      "core": false,
+      "movable": true,
+      "purpose": "Named credentials, especially where a role gates on them.",
+      "rules": [
+        { "t": "Full name, issuing body, year. Include expiry where the credential has one.", "p": "G" },
+        { "t": "Move high — even directly under the summary — when the posting lists a certification as a requirement.", "p": "G" },
+        { "t": "Mark in-progress credentials honestly with an expected date. Never list an unearned one as held.", "p": "G" }
+      ]
+    },
+    {
+      "id": "leadership",
+      "label": "Leadership & Activities",
+      "aliases": ["leadership", "activities", "extracurricular", "involvement", "societies", "clubs", "community"],
+      "core": false,
+      "movable": true,
+      "purpose": "Responsibility carried outside a job title. Weighted heavily for students and early career; thins out as employment history grows.",
+      "rules": [
+        { "t": "Treat like Experience — role, organisation, dates, outcome bullets.", "p": "G" },
+        { "t": "Retain later in a career only where it carries genuine scope: a board seat, a chaired committee, a conference track.", "p": "G" }
+      ]
+    },
+    {
+      "id": "publications",
+      "label": "Publications",
+      "aliases": ["publications", "papers", "articles", "writing", "authored works"],
+      "core": false,
+      "movable": true,
+      "purpose": "Published work. Expected in academic and research contexts, selective elsewhere.",
+      "rules": [
+        { "t": "One consistent citation style throughout.", "p": "G" },
+        { "t": "On an industry resume, select three to five and title the section 'Selected Publications'. A full list belongs on an academic CV.", "p": "G" }
+      ]
+    },
+    {
+      "id": "presentations",
+      "label": "Talks & Presentations",
+      "aliases": ["presentations", "talks", "speaking", "conferences", "keynotes", "speaking engagements"],
+      "core": false,
+      "movable": true,
+      "purpose": "Conference talks, invited lectures, panels — external credibility a job title does not convey.",
+      "rules": [
+        { "t": "Title, venue, year. Note invited or keynote status where it applies.", "p": "G" }
+      ]
+    },
+    {
+      "id": "awards",
+      "label": "Awards & Honours",
+      "aliases": ["awards", "honors", "honours", "recognition", "prizes", "scholarships", "distinctions"],
+      "core": false,
+      "movable": true,
+      "purpose": "Third-party recognition — the only section where someone else is doing the claiming.",
+      "rules": [
+        { "t": "Award, awarding body, year, and one clause on selectivity where it is not obvious: 'top 2% of 1,400 staff'.", "p": "G" },
+        { "t": "May be folded into Education or Experience when there are only one or two.", "p": "G" }
+      ]
+    },
+    {
+      "id": "volunteering",
+      "label": "Volunteering",
+      "aliases": ["volunteering", "volunteer work", "pro bono", "community service", "charity"],
+      "core": false,
+      "movable": true,
+      "purpose": "Unpaid contribution. Also a legitimate way to account for a career break.",
+      "rules": [
+        { "t": "Include where it shows relevant skill, sustained commitment, or covers a gap. Otherwise optional.", "p": "G" },
+        { "t": "Political and religious affiliations are a discrimination risk in most markets — include only where genuinely relevant to the role.", "p": "G" }
+      ]
+    },
+    {
+      "id": "languages",
+      "label": "Languages",
+      "aliases": ["languages", "language skills", "spoken languages", "fluency"],
+      "core": false,
+      "movable": true,
+      "purpose": "Working languages and level. Materially more important outside monolingual markets.",
+      "rules": [
+        { "t": "Name a recognised scale: CEFR (A1–C2) in Europe, or plain words — Native / Fluent / Professional working / Conversational.", "p": "G" },
+        { "t": "Do not list the posting's own language as a skill when you are applying in it natively.", "p": "G" }
+      ]
+    },
+    {
+      "id": "work-authorization",
+      "label": "Work Authorisation",
+      "aliases": ["work authorization", "visa", "visa status", "right to work", "work rights", "immigration status", "sponsorship"],
+      "core": false,
+      "movable": true,
+      "purpose": "Whether you can legally work in the target country. The single most consequential line on an international application and the one most often left off.",
+      "rules": [
+        { "t": "State it plainly in one line when applying across a border. Recruiters screen on it first, and silence is read as 'needs sponsorship'.", "p": "G" },
+        { "t": "State the entitlement, not the personal circumstance: 'Australian citizen — unrestricted work rights' or 'UK Skilled Worker visa, valid to 2029'.", "p": "G" },
+        { "t": "Where sponsorship IS required, saying so early saves both sides a cycle. It is not a weakness to hide; it is a filter to pass honestly.", "p": "G" },
+        { "t": "Sits in the header line or immediately under the summary — it is a screening fact, not an afterthought.", "p": "G" }
+      ]
+    },
+    {
+      "id": "security-clearance",
+      "label": "Security Clearance",
+      "aliases": ["clearance", "security clearance", "vetting", "baseline", "nv1", "sc", "dv"],
+      "core": false,
+      "movable": true,
+      "purpose": "Held clearance level and status. Gates entire job families in defence, government and adjacent industry.",
+      "rules": [
+        { "t": "Level, sponsoring country, and current status only. Never project details, agency names, or anything the clearance itself covers.", "p": "G" },
+        { "t": "Place high where the posting requires it — it is often a hard filter before anything else is read.", "p": "G" },
+        { "t": "Clearances are country-specific and rarely transfer. State the issuing country.", "p": "G" }
+      ]
+    },
+    {
+      "id": "memberships",
+      "label": "Professional Memberships",
+      "aliases": ["memberships", "affiliations", "professional bodies", "associations", "chartered status"],
+      "core": false,
+      "movable": true,
+      "purpose": "Professional body membership and chartered status — load-bearing in engineering, accounting, law and medicine.",
+      "rules": [
+        { "t": "Body, membership grade, and year admitted. Chartered or registered status is a qualification, not a hobby — say it clearly.", "p": "G" }
+      ]
+    },
+    {
+      "id": "interests",
+      "label": "Interests",
+      "aliases": ["interests", "hobbies", "personal interests", "outside work", "activities outside work"],
+      "core": false,
+      "movable": true,
+      "purpose": "A short human line. Genuinely conventional in some markets, space-wasting in others.",
+      "rules": [
+        { "t": "One line, three or four specifics. 'Reading, travel, music' says nothing about anyone.", "p": "G" },
+        { "t": "First thing to cut when the page is tight.", "p": "G" }
+      ]
+    },
+    {
+      "id": "referees",
+      "label": "Referees",
+      "aliases": ["references", "referees", "reference contacts"],
+      "core": false,
+      "movable": true,
+      "purpose": "Named referees with contact details. Expected up front in some markets, actively discouraged in others.",
+      "rules": [
+        { "t": "'References available on request' is filler in every market. Either list them because the market expects it, or omit the section entirely.", "p": "G" },
+        { "t": "Never list a referee you have not asked. It costs you the reference and the referee's goodwill at once.", "p": "G" },
+        { "t": "Where listed: name, title, organisation, relationship to you, and a contact channel they have agreed to.", "p": "G" }
+      ]
+    },
+    {
+      "id": "personal-details",
+      "label": "Personal Details",
+      "aliases": ["personal details", "photo", "date of birth", "dob", "nationality", "marital status", "personal data"],
+      "core": false,
+      "movable": true,
+      "purpose": "Photo, date of birth, nationality, marital status. Conventional in parts of Europe, Asia, the Middle East and Latin America; a legal and discrimination hazard in the US, UK, Canada and Australia.",
+      "rules": [
+        { "t": "Governed entirely by the region profile. Include ONLY where the target market expects it.", "p": "G" },
+        { "t": "In the US, UK, Canada, Australia, New Zealand and Ireland, a photo or date of birth can force an employer to discard the application to protect themselves against a discrimination claim. This is not a style preference.", "p": "G" },
+        { "t": "Never volunteer marital status, dependants, religion, or health information in any market unless a legal requirement is documented.", "p": "G" }
+      ]
+    },
+    {
+      "id": "gdpr-clause",
+      "label": "Data Processing Consent",
+      "aliases": ["gdpr", "gdpr clause", "data consent", "privacy clause", "rodo"],
+      "core": false,
+      "movable": true,
+      "purpose": "A short consent line permitting the employer to process your personal data. Conventional and sometimes required in parts of the EU, most strictly in Poland.",
+      "rules": [
+        { "t": "One line at the foot of the document. Where required, an application without it may be discarded unread.", "p": "G" },
+        { "t": "Meaningless outside the jurisdictions that ask for it — omit rather than include 'just in case'.", "p": "G" }
+      ]
+    },
+    {
+      "id": "additional",
+      "label": "Additional Information",
+      "aliases": ["additional", "additional information", "other", "miscellaneous", "extras"],
+      "core": false,
+      "movable": true,
+      "purpose": "A deliberate catch-all for one-line facts that earn a mention but not a section: a driving licence where the job needs one, willingness to relocate, notice period.",
+      "rules": [
+        { "t": "Keep it to a few lines. A long 'Additional' section means something in it deserved its own heading.", "p": "G" }
+      ]
+    }
+  ],
+
+  "layouts": [
+    {
+      "id": "ats-reverse-chron",
+      "label": "ATS Reverse-Chronological",
+      "default": true,
+      "whenToUse": "The default, and correct for the large majority of applications — any online portal, any recruiter, any established career in one field.",
+      "order": ["header", "summary", "skills", "experience", "education", "certifications", "projects", "awards", "additional"]
+    },
+    {
+      "id": "early-career",
+      "label": "Early Career / Graduate",
+      "default": false,
+      "whenToUse": "Student, new graduate, or within roughly two years of finishing study. Education carries the weight that employment cannot yet.",
+      "order": ["header", "summary", "education", "skills", "experience", "projects", "leadership", "awards", "additional"]
+    },
+    {
+      "id": "career-change",
+      "label": "Career Change / Hybrid",
+      "default": false,
+      "whenToUse": "Moving between fields, where transferable capability matters more than the sequence of employers.",
+      "order": ["header", "summary", "skills", "projects", "experience", "certifications", "education", "additional"]
+    },
+    {
+      "id": "technical",
+      "label": "Technical / Engineering",
+      "default": false,
+      "whenToUse": "Roles gated on a named stack, where the first screen is a keyword match against tools.",
+      "order": ["header", "summary", "skills", "experience", "projects", "certifications", "education", "additional"]
+    },
+    {
+      "id": "cleared-govt",
+      "label": "Cleared / Government",
+      "default": false,
+      "whenToUse": "Defence, government or regulated roles where clearance and citizenship are hard filters applied before the resume is read properly.",
+      "order": ["header", "work-authorization", "security-clearance", "summary", "skills", "experience", "certifications", "education", "additional"]
+    },
+    {
+      "id": "academic-cv",
+      "label": "Academic CV",
+      "default": false,
+      "whenToUse": "Faculty, postdoctoral, research and fellowship applications. Length is driven by the record — multi-page is expected, not a fault.",
+      "order": ["header", "education", "experience", "publications", "presentations", "awards", "memberships", "languages", "referees"]
+    },
+    {
+      "id": "international-relocation",
+      "label": "International / Relocating",
+      "default": false,
+      "whenToUse": "Applying across a border. Front-loads the two facts a foreign recruiter screens on before anything else — can you work here, and can I place your background.",
+      "order": ["header", "work-authorization", "summary", "skills", "experience", "education", "languages", "certifications", "additional"]
+    }
+  ],
+
+  "regions": [
+    {
+      "id": "au-nz",
+      "label": "Australia & New Zealand",
+      "countries": ["Australia", "New Zealand"],
+      "docName": "Resume (or CV — used interchangeably)",
+      "length": "2–3 pages is normal and expected. The one-page rule is a US convention and reading it as universal actively hurts you here.",
+      "spelling": "Australian/British — organisation, specialise, programme.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": [],
+      "omit": ["personal-details"],
+      "notes": {
+        "referees": "Commonly listed, or 'available on request' is tolerated here more than elsewhere. Two referees is standard.",
+        "education": "No GPA convention. WAM or a class of honours may be given where strong.",
+        "work-authorization": "Citizenship or visa status is routinely stated and often explicitly asked for. Say it.",
+        "security-clearance": "AGSVA levels (Baseline, NV1, NV2, PV) are widely recognised and worth naming precisely."
+      },
+      "warnings": ["No photo, date of birth, marital status or nationality beyond work rights."]
+    },
+    {
+      "id": "us",
+      "label": "United States",
+      "countries": ["United States"],
+      "docName": "Resume ('CV' means the academic document only)",
+      "length": "One page is the strong default; two pages past roughly ten years of experience.",
+      "spelling": "US — organization, specialize, program.",
+      "dateFormat": "MM/YYYY",
+      "require": [],
+      "omit": ["personal-details", "referees"],
+      "notes": {
+        "education": "GPA conventionally included if 3.0+ and within a few years of graduating; dropped thereafter.",
+        "referees": "Never on the resume. Supplied separately when asked.",
+        "work-authorization": "State it if you are not a citizen or permanent resident — 'Authorized to work in the US without sponsorship' is the standard line."
+      },
+      "warnings": ["A photo, date of birth or marital status can force an employer to discard the application to avoid a discrimination claim. This is the strictest market on this point."]
+    },
+    {
+      "id": "uk-ie",
+      "label": "United Kingdom & Ireland",
+      "countries": ["United Kingdom", "Ireland"],
+      "docName": "CV",
+      "length": "Two pages is the firm convention. One page reads as thin, three as undisciplined.",
+      "spelling": "British — organisation, specialise, programme.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": [],
+      "omit": ["personal-details"],
+      "notes": {
+        "referees": "'References available on request' is still common but adds nothing. Omitting the section is safe.",
+        "education": "Degree classification (First, 2:1) is expected and is the grade signal — not GPA.",
+        "memberships": "Chartered status (CEng, CITP, ACA) is significant and belongs high.",
+        "work-authorization": "Post-Brexit this matters for EU nationals too. State settled status or visa type."
+      },
+      "warnings": ["No photo, date of birth, nationality or marital status."]
+    },
+    {
+      "id": "ca",
+      "label": "Canada",
+      "countries": ["Canada"],
+      "docName": "Resume",
+      "length": "One to two pages.",
+      "spelling": "Canadian — a British/US hybrid; 'organization' but 'centre'.",
+      "dateFormat": "YYYY-MM or MM/YYYY",
+      "require": [],
+      "omit": ["personal-details", "referees"],
+      "notes": {
+        "languages": "English/French bilingualism is a genuine differentiator, especially federally and in Quebec.",
+        "work-authorization": "State PR or citizenship status plainly.",
+        "education": "Foreign credentials benefit from an equivalency note (WES or similar) where you have one."
+      },
+      "warnings": ["Human rights legislation makes photo, age, marital status and nationality inappropriate."]
+    },
+    {
+      "id": "dach",
+      "label": "Germany, Austria & Switzerland",
+      "countries": ["Germany", "Austria", "Switzerland"],
+      "docName": "Lebenslauf (CV), usually inside a full Bewerbung application set",
+      "length": "One to two pages, tabular and factual.",
+      "spelling": "German where applying in German; otherwise standard English.",
+      "dateFormat": "DD.MM.YYYY",
+      "require": ["personal-details"],
+      "omit": [],
+      "notes": {
+        "personal-details": "A professional headshot remains conventional, though declining. Date and place of birth and nationality are commonly included. This is the inverse of the Anglophone markets — follow the local norm, not the US one.",
+        "experience": "Gaps are scrutinised more than in most markets; account for them explicitly.",
+        "certifications": "Reference letters (Arbeitszeugnisse) from prior employers are a distinct expected artefact — not part of the CV, but assemble them.",
+        "languages": "CEFR levels expected. German level is often the deciding factor."
+      },
+      "warnings": ["Signing and dating the document is still conventional in traditional sectors."]
+    },
+    {
+      "id": "fr",
+      "label": "France",
+      "countries": ["France"],
+      "docName": "CV",
+      "length": "One page strongly preferred, even at senior level.",
+      "spelling": "French where applying in French.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": [],
+      "omit": [],
+      "notes": {
+        "personal-details": "Photo is common but no longer expected; age is sometimes included. Optional either way — omitting it is safe.",
+        "education": "The grande école / university distinction carries real weight; name the institution precisely.",
+        "languages": "Expected, with CEFR levels."
+      },
+      "warnings": ["Anti-discrimination guidance has moved against photos; treat them as optional, never mandatory."]
+    },
+    {
+      "id": "nl-nordics",
+      "label": "Netherlands, Belgium & the Nordics",
+      "countries": ["Netherlands", "Belgium", "Denmark", "Sweden", "Norway", "Finland", "Iceland"],
+      "docName": "CV",
+      "length": "Two pages.",
+      "spelling": "British English where applying in English.",
+      "dateFormat": "DD-MM-YYYY",
+      "require": [],
+      "omit": [],
+      "notes": {
+        "personal-details": "Photo is optional and increasingly skipped. Date of birth is still fairly common in the Netherlands.",
+        "summary": "A short personal profile is conventional and read.",
+        "languages": "Expected. English fluency is assumed rather than impressive; the local language is the differentiator."
+      },
+      "warnings": ["Flat organisational cultures — over-claimed seniority reads badly."]
+    },
+    {
+      "id": "southern-eu",
+      "label": "Spain, Italy & Portugal",
+      "countries": ["Spain", "Italy", "Portugal"],
+      "docName": "CV / Curriculum Vitae",
+      "length": "One to two pages.",
+      "spelling": "Local language where applying locally.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": [],
+      "omit": [],
+      "notes": {
+        "personal-details": "Photo and date of birth remain common.",
+        "gdpr-clause": "A data-processing consent line is conventional.",
+        "languages": "Expected with CEFR levels."
+      },
+      "warnings": ["The Europass format is recognised but generic — a tailored CV usually reads better unless a public-sector posting asks for Europass specifically."]
+    },
+    {
+      "id": "cee",
+      "label": "Poland & Central/Eastern Europe",
+      "countries": ["Poland", "Czechia", "Slovakia", "Hungary", "Romania"],
+      "docName": "CV",
+      "length": "One to two pages.",
+      "spelling": "Local language or English depending on the employer.",
+      "dateFormat": "DD.MM.YYYY",
+      "require": ["gdpr-clause"],
+      "omit": [],
+      "notes": {
+        "gdpr-clause": "In Poland this is the strictest case anywhere: a CV without a data-processing consent clause is routinely discarded unread, because the employer has no lawful basis to retain it.",
+        "personal-details": "Photo is common."
+      },
+      "warnings": ["Do not omit the consent clause to match an Anglophone template. It is the one section that can void the application outright."]
+    },
+    {
+      "id": "jp",
+      "label": "Japan",
+      "countries": ["Japan"],
+      "docName": "Rirekisho + Shokumu keirekisho (two distinct documents)",
+      "length": "Prescribed by the form, not by you.",
+      "spelling": "Japanese for domestic employers; English for international firms.",
+      "dateFormat": "YYYY/MM",
+      "require": ["personal-details"],
+      "omit": [],
+      "notes": {
+        "personal-details": "The rirekisho is a standardised form with a required photo, date of birth and personal particulars. Deviating from the form is itself a negative signal.",
+        "experience": "The shokumu keirekisho is the separate narrative career-history document where achievements actually go.",
+        "languages": "JLPT level where you hold one."
+      },
+      "warnings": ["A Western-style resume is not a substitute for the rirekisho at a domestic employer. Foreign-owned firms in Japan often accept a standard CV — confirm which you are applying to."]
+    },
+    {
+      "id": "cn-hk-sg",
+      "label": "China, Hong Kong & Singapore",
+      "countries": ["China", "Hong Kong", "Singapore", "Taiwan"],
+      "docName": "Resume / CV",
+      "length": "One to two pages.",
+      "spelling": "British English in Singapore and Hong Kong; simplified Chinese for mainland domestic employers.",
+      "dateFormat": "YYYY-MM or DD/MM/YYYY",
+      "require": [],
+      "omit": [],
+      "notes": {
+        "personal-details": "Photo, date of birth and nationality are commonly included in mainland China; less so in Singapore and Hong Kong, where Anglophone norms increasingly apply.",
+        "work-authorization": "Singapore employment pass eligibility and Hong Kong residency status are primary screening facts. State them.",
+        "languages": "Mandarin and Cantonese proficiency stated precisely — spoken and written levels may differ and both matter."
+      },
+      "warnings": ["Singapore's Fair Consideration Framework has moved employers away from personal particulars — when unsure there, follow the Anglophone convention."]
+    },
+    {
+      "id": "in",
+      "label": "India",
+      "countries": ["India"],
+      "docName": "Resume / CV / Biodata (biodata is the older, more personal format)",
+      "length": "Two to three pages is accepted.",
+      "spelling": "British English.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": [],
+      "omit": [],
+      "notes": {
+        "personal-details": "Date of birth, marital status and father's name appear in traditional formats. Modern private-sector and multinational employers do not expect them — match the employer, not the tradition.",
+        "education": "Percentages and class of degree are the expected grade signal. Include the board or university.",
+        "additional": "Notice period is conventionally stated and recruiters screen on it."
+      },
+      "warnings": ["When applying to a multinational, use the international convention and drop the biodata fields."]
+    },
+    {
+      "id": "gulf",
+      "label": "UAE & the Gulf",
+      "countries": ["United Arab Emirates", "Saudi Arabia", "Qatar", "Kuwait", "Bahrain", "Oman"],
+      "docName": "CV",
+      "length": "Two to three pages.",
+      "spelling": "British English.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": ["work-authorization"],
+      "omit": [],
+      "notes": {
+        "personal-details": "Photo, date of birth and nationality are conventional and widely expected.",
+        "work-authorization": "Visa status and sponsorship transferability are decisive screening facts. State current visa type and whether an NOC is required.",
+        "languages": "Arabic proficiency is a genuine differentiator where you have it."
+      },
+      "warnings": ["Nationality materially affects hiring and packages in this market. State it, since it will be asked immediately regardless."]
+    },
+    {
+      "id": "latam",
+      "label": "Brazil & Latin America",
+      "countries": ["Brazil", "Mexico", "Argentina", "Chile", "Colombia", "Peru"],
+      "docName": "Currículo / Hoja de vida / CV",
+      "length": "One to two pages.",
+      "spelling": "Portuguese in Brazil; Spanish elsewhere.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": [],
+      "omit": [],
+      "notes": {
+        "personal-details": "Photo and date of birth are common. Brazil conventionally includes CPF on domestic applications.",
+        "languages": "English fluency is a strong differentiator — state the level precisely.",
+        "education": "Name the institution; regional reputation carries weight."
+      },
+      "warnings": ["Never include a national identity number on an international application — only on a domestic one where it is conventional."]
+    },
+    {
+      "id": "za",
+      "label": "South Africa",
+      "countries": ["South Africa"],
+      "docName": "CV",
+      "length": "Two to three pages.",
+      "spelling": "British English.",
+      "dateFormat": "DD/MM/YYYY",
+      "require": [],
+      "omit": [],
+      "notes": {
+        "referees": "Commonly listed in full with contact details.",
+        "personal-details": "Employment-equity status is often requested on a separate form; it does not belong in the CV body.",
+        "work-authorization": "State citizenship or permit type."
+      },
+      "warnings": ["Identity numbers are conventional domestically but should never appear on an international application."]
+    }
+  ]
+}
