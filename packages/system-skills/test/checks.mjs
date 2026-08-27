@@ -28,6 +28,11 @@
 //       did not install. Behavioural, not structural: it runs the real
 //       installer against a sandboxed CODEX_HOME. It lives here rather than in
 //       smoke.mjs so `prepublishOnly` runs it and no workflow edit can skip it.
+//   resume-library-check        — /armor's RESUME-LIBRARY.md is generated from
+//       resume-library.json and stays that way. Without this, "generated" is a
+//       comment in a header rather than a property: the markdown could be
+//       hand-edited into a second, disagreeing source and nothing would notice
+//       — which is the defect issue #20 describes on another surface.
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -471,6 +476,33 @@ check('single-surface-lint', () => {
       `/${name} does not give the raw feed URL any agent can fetch`,
     );
   }
+});
+
+// ---------------------------------------------------------------------------
+
+check('resume-library-check', () => {
+  // Delegates to the generator's own `check`, rather than re-implementing the
+  // render here. A second renderer would be a second source of truth about what
+  // the first one produces — the exact duplication this battery exists to cut.
+  const tool = path.join(REPO_ROOT, 'tools/resume_library.mjs');
+  if (!fs.existsSync(tool)) {
+    fail('tools/resume_library.mjs is missing — /armor references a library nothing regenerates');
+    return;
+  }
+  try {
+    execFileSync(process.execPath, [tool, 'check'], { cwd: REPO_ROOT, stdio: 'pipe' });
+  } catch (e) {
+    const out = `${e.stdout ?? ''}${e.stderr ?? ''}`.trim();
+    fail(`resume library is not self-consistent:\n${out.replace(/^/gm, '      ')}`);
+  }
+
+  // The skill must actually point at the generated file. A library nothing
+  // reads is documentation, not behaviour.
+  const armor = fs.readFileSync(path.join(SOURCE_SKILLS_DIR, 'armor', 'SKILL.md'), 'utf8');
+  ok(
+    armor.includes('references/RESUME-LIBRARY.md'),
+    '/armor does not reference references/RESUME-LIBRARY.md',
+  );
 });
 
 // ---------------------------------------------------------------------------

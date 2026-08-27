@@ -1,7 +1,7 @@
 {
   "name": "@ars-infinita-notion/system-skills",
-  "version": "1.3.9",
-  "description": "The System (Player Edition) skills, built for the OpenAI Codex CLI and the Antigravity CLI (agy). Ships prebuilt — install with `npx @ars-infinita-notion/system-skills install-codex`. Claude Code users should install the native plugin from the marketplace instead.",
+  "version": "1.3.10",
+  "description": "The System (Player Edition) skills, built for the OpenAI Codex CLI and the Antigravity CLI (agy). Ships prebuilt \u2014 install with `npx @ars-infinita-notion/system-skills install-codex`. Claude Code users should install the native plugin from the marketplace instead.",
   "license": "MIT",
   "author": "William Moses (Game Admin)",
   "type": "module",
