@@ -1,7 +1,7 @@
 {
   "name": "the-system-player",
-  "version": "1.3.9",
-  "description": "The System — Player Edition. Your job hunt becomes a solo-leveling RPG inside your own Notion workspace: postings become quests, interviews become boss fights, follow-ups have SLAs, and every action banks XP that is never re-scored. Start with /awaken — the tutorial questline that builds your world and levels you to 4 by the end of setup. Draft-only by design: it never sends anything on your behalf, and your job-search data never leaves your own workspace.",
+  "version": "1.3.10",
+  "description": "The System \u2014 Player Edition. Your job hunt becomes a solo-leveling RPG inside your own Notion workspace: postings become quests, interviews become boss fights, follow-ups have SLAs, and every action banks XP that is never re-scored. Start with /awaken \u2014 the tutorial questline that builds your world and levels you to 4 by the end of setup. Draft-only by design: it never sends anything on your behalf, and your job-search data never leaves your own workspace.",
   "author": {
     "name": "William Moses (Game Admin)"
   },
