@@ -26,3 +26,12 @@ Thumbs.db
 *~
 .idea/
 .vscode/
+
+# Agent worktrees and local session scratch. Claude Code creates
+# .claude/worktrees/agent-*/ containing full working copies of this repo,
+# including MAINTAINERS.md and everything under tools/. Untracked AND
+# unignored, they sat one `git add -A` away from committing a duplicate tree
+# to a public repo. They also broke the admin surface census, which enumerates
+# with `ls-files --others`: it failed on a developer machine and passed in a
+# clean container, so the committed map was reproducible by neither.
+.claude/
