@@ -82,6 +82,25 @@ EXCLUDED_DIR_NAMES = {
     ".venv",
     "venv",
     "env",
+    # Agent worktrees and session scratch. Claude Code creates
+    # .claude/worktrees/agent-*/ holding full working copies of this
+    # repository. They qualify under the rule above — this repo does not
+    # author them, and as of 2026-08-28 they are gitignored, so nothing here
+    # can ever be committed or published.
+    #
+    # This exclusion is not cosmetic: it is the difference between a gate that
+    # runs and one that is routinely ignored. Measured 2026-08-28, the gate
+    # reported 14 BLOCKING hits on a developer machine and 0 in a clean
+    # container. Every hit was a copy of THIS FILE and of leak_allowlist.txt
+    # inside a worktree, flagged on their own explanatory comments — the
+    # value-only carve-out below applies to the originals by path, not to
+    # duplicates of them. So the gate cried wolf on itself, on the one machine
+    # a human runs it from. A check that fails for a reason no commit can fix
+    # teaches its operator to skip it.
+    #
+    # Coverage is not narrowed: nothing under .claude/ is in COVERAGE_FLOOR,
+    # nothing under it is tracked, and the assertion below still runs.
+    ".claude",
 }
 
 # Paths that were covered before the inversion. Asserted at startup so a future
