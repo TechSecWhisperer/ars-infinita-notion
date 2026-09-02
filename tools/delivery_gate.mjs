@@ -179,6 +179,70 @@ function changedSince(commit) {
     .filter(isWatched);
 }
 
+// A shallow clone has no history to read, and this gate used to answer that by
+// printing `actions/checkout fetch-depth: 0` and exiting BLOCKED. That is CI
+// advice, and CI is not the only caller: a scheduled container is cloned by
+// whatever runs it, with no workflow file the caller can edit. So the caller
+// that runs this gate unattended got a remedy it could not apply — and BLOCKED
+// is never PASS, which means outside CI the delivery question stopped being
+// asked at all.
+//
+// Deepen the history instead, and keep the CI line for the case where that
+// cannot happen. What the fetch does and does not touch, stated exactly
+// because the rest of this file is held to the same standard: it downloads
+// missing objects, creates tag refs, and advances remote-tracking refs. It
+// moves no local branch, no HEAD, no index and no working tree. It is not a
+// no-op on a complete repo — `--unshallow` there is `fatal`, exit 128 — but
+// that case is unreachable, guarded by the shallow check on the first line.
+//
+// Returns { state: 'already' | 'deepened' | 'blocked', detail? }. Callers
+// announce a deepen on EVERY exit path, because a gate that silently changed
+// the repo it measures is worse than one that blocks.
+function deepenIfShallow() {
+  if (git(['rev-parse', '--is-shallow-repository']) !== 'true') return { state: 'already' };
+  try {
+    execFileSync('git', ['fetch', '--unshallow', '--quiet'], {
+      cwd: REPO_ROOT,
+      encoding: 'utf8',
+      timeout: 120_000,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+  } catch (err) {
+    // git's failure is several lines and the useful one is FIRST: taking the
+    // last line yields "and the repository exists.", a fragment of the generic
+    // access-rights advice, which reads as a non-sequitur. Prefer the first
+    // fatal/error line and fall back to the first non-empty one.
+    //
+    // Redact credentials before printing: git echoes the remote URL, which can
+    // carry a token in `https://user:token@host/...` form, and this output goes
+    // to stdout and into CI logs.
+    const lines = String(err.stderr || err.message || '')
+      // The character class must NOT exclude `/`: base64's alphabet includes
+      // it, so a `/`-containing secret would stop the match and print the URL
+      // verbatim. Over-redacting a path that merely contains `@` is the safe
+      // direction to be wrong in.
+      .replace(/(\w+:\/\/)[^\s@]*@/g, '$1<redacted>@')
+      .split('\n')
+      .map((l) => l.trim())
+      .filter(Boolean);
+    const detail = lines.find((l) => /^(fatal|error):/.test(l)) || lines[0];
+    return { state: 'blocked', detail: detail || 'git fetch --unshallow failed without a message' };
+  }
+  // Re-read the flag rather than trusting the exit code, and report THAT as the
+  // cause when it is. A fetch that succeeds while leaving the shallow boundary
+  // in place would let findBumpCommit() measure from the wrong commit and hand
+  // back a confident, wrong verdict — the one outcome worse than BLOCKED. This
+  // is not hypothetical: with no remote configured, `git fetch --unshallow`
+  // exits 0 and changes nothing, so the catch above never fires.
+  if (git(['rev-parse', '--is-shallow-repository']) === 'true') {
+    return {
+      state: 'blocked',
+      detail: 'git fetch --unshallow exited 0 but the clone is still shallow (no remote configured?)',
+    };
+  }
+  return { state: 'deepened' };
+}
+
 // A gate that cannot fail is not a gate. Before issuing any verdict we prove
 // the verdict function still discriminates — Fable's fixture rule, in the
 // smallest form that fits one check.
@@ -235,14 +299,25 @@ function main() {
     console.log('  no .git — this gate reads history and cannot run from an export');
     process.exit(BLOCKED);
   }
-  if (git(['rev-parse', '--is-shallow-repository']) === 'true') {
-    console.log('BLOCKED delivery-freshness-gate');
-    console.log('  shallow clone — fetch full history (actions/checkout fetch-depth: 0)');
-    process.exit(BLOCKED);
-  }
+  // Self-test BEFORE touching the network: this file's own principle is that a
+  // gate proves it can still fail before its success means anything, and that
+  // ordering also keeps a broken gate from fetching.
   if (!selfTest({ quiet: true })) {
     console.log('BLOCKED delivery-freshness-gate');
     console.log('  self-test failed — the gate cannot discriminate, so its verdict means nothing');
+    process.exit(BLOCKED);
+  }
+
+  const depth = deepenIfShallow();
+  // Announced here, ahead of every verdict, so FAIL and BLOCKED say it too.
+  if (depth.state === 'deepened') {
+    console.log('note: deepened a shallow clone to read history');
+  }
+  if (depth.state === 'blocked') {
+    console.log('BLOCKED delivery-freshness-gate');
+    console.log('  shallow clone, and `git fetch --unshallow` did not complete it:');
+    console.log(`    ${depth.detail}`);
+    console.log('  In CI, clone with actions/checkout fetch-depth: 0 instead.');
     process.exit(BLOCKED);
   }
 
