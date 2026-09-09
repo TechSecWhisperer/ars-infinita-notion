@@ -15,7 +15,7 @@ The job market is a void of spreadsheets and silence. A.I.N imposes order on it 
 
 **[Full guide →](docs/PLAYERS-GUIDE.md)** · **[Commands →](docs/COMMANDS.md)** · **[Troubleshooting →](docs/TROUBLESHOOTING.md)**
 
-## Quick start
+## 🚀 Quick start
 
 You need:
 
@@ -54,7 +54,7 @@ Every path is four steps and ends the same way: you run `/awaken` and the agent 
    ```
    Accept the confirm view if one opens, then `/reload-plugins`.
 
-Now [run `/awaken`](#then-run-awaken).
+Now [run `/awaken`](#-then-run-awaken).
 
 ### Claude desktop app
 
@@ -63,7 +63,7 @@ Now [run `/awaken`](#then-run-awaken).
 3. **Connect Notion.** In the **Code** tab, click the **+** next to the prompt box → **Connectors** → **Notion**, and follow the sign-in flow. Grant access to the workspace holding your Seed copy. (Settings → Connectors is where you *manage* one later, not where you add it.)
 4. **Install the commands.** In the **Code** tab, click the **+** next to the prompt box → **Plugins**, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it. (You can also type the two slash commands from the [Claude Code](#claude-code) path straight into the prompt box.)
 
-Now [run `/awaken`](#then-run-awaken).
+Now [run `/awaken`](#-then-run-awaken).
 
 ### Codex, Antigravity & other CLIs
 
@@ -83,9 +83,9 @@ Now [run `/awaken`](#then-run-awaken).
 
 Then **start a new session** so your CLI picks the skills up. `/awaken` will not exist in the shell you installed from.
 
-Now [run `/awaken`](#then-run-awaken).
+Now [run `/awaken`](#-then-run-awaken).
 
-## Then run `/awaken`
+## 🎮 Then run `/awaken`
 
 ```text
 /awaken
@@ -95,7 +95,7 @@ Now [run `/awaken`](#then-run-awaken).
 
 Stuck? **[Troubleshooting →](docs/TROUBLESHOOTING.md)**
 
-## What you get
+## ⚙️ What you get
 
 - **Track it** — a job link becomes a Quest, with the company logged for research.
 - **Appraise it** — your fit scored against your profile, gaps named, talking points pulled.
@@ -108,17 +108,17 @@ Every real action earns XP. XP earns levels. Levels and streaks give you the one
 
 **[All 26 commands →](docs/COMMANDS.md)**
 
-## Questions, bugs, ideas
+## 🙋 Questions, bugs, ideas
 
 **[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out. Once installed, `/petition` does it for you: with an authenticated `gh` CLI it files the Issue after showing you the exact text; without one it hands you that text and the link to post yourself. Answers are best-effort: this is a beta run by one Game Admin.
 
-## Status
+## ⚠️ Status
 
 **Beta.** Open beyond the first small circle and no longer changing shape underneath you. Expect rough edges; report them and they get fixed. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
 
 **Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
 
-## License
+## 📄 License
 
 [MIT](LICENSE) — © 2026 William Moses. The game's sealed mechanics live only in the author's admin workspace; nothing here is withheld from you by licence.
 
