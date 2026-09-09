@@ -434,6 +434,52 @@ check('command-catalog-check', () => {
 
 // ---------------------------------------------------------------------------
 
+// Every KERNEL:<Entity> a skill names must resolve against the Seed's canonical
+// entity list or its alias table. An unresolvable one is not a typo: the boot
+// card orders an agent meeting an unknown KERNEL: reference to treat it as
+// drift and log an Open Question rather than guess. So a bad reference converts
+// a working command into a logged question, silently, for every player.
+//
+// This exists because v1.3.11 shipped `KERNEL:Agent Boot Card`, which no page
+// creates and no alias maps, and every gate passed. Consistency checks cannot
+// catch a reference that is internally well-formed and points at nothing.
+check('kernel-reference-check', () => {
+  const schemaPath = path.join(SOURCE_SKILLS_DIR, 'awaken', 'references', 'template-schemas.md');
+  const schema = fs.readFileSync(schemaPath, 'utf8');
+
+  // Strip a leading emoji/symbol run so "📖 Operating Manual" registers as the
+  // "Operating Manual" a skill actually writes.
+  const bare = (n) => n.replace(/^[^\p{L}\p{N}]+/u, '').trim();
+
+  const resolvable = new Set();
+  // Alias table: | `KERNEL:Stat Sheet` | **Competency Matrix** |
+  for (const m of schema.matchAll(/\|\s*`KERNEL:([^`]+)`\s*\|/g)) resolvable.add(bare(m[1]));
+  // Bold entity names: page skeletons ("- **🧬 Kernel** — …") and the numbered
+  // database list ("10. **Networking Events**: …").
+  for (const m of schema.matchAll(/^(?:[-*]|\d+\.)\s+\*\*([^*]+)\*\*/gm)) resolvable.add(bare(m[1]));
+
+  ok(resolvable.size > 10, `only ${resolvable.size} entities parsed from template-schemas.md — the parser is broken, not the references`);
+
+  const unresolved = new Map();
+  for (const name of names) {
+    const file = path.join(SOURCE_SKILLS_DIR, name, 'SKILL.md');
+    const text = fs.readFileSync(file, 'utf8');
+    for (const m of text.matchAll(/KERNEL:([\p{L}\p{N}][\p{L}\p{N} &'\u2019-]*)/gu)) {
+      const entity = m[1].trim();
+      if (!resolvable.has(entity)) {
+        if (!unresolved.has(entity)) unresolved.set(entity, new Set());
+        unresolved.get(entity).add(name);
+      }
+    }
+  }
+
+  for (const [entity, skills] of unresolved) {
+    fail(`KERNEL:${entity} resolves to nothing — not in the Seed entity list and not in the alias table (used by: ${[...skills].sort().join(', ')})`);
+  }
+});
+
+// ---------------------------------------------------------------------------
+
 check('single-surface-lint', () => {
   // Regression guards for the duplicate write-paths cut in this release. Each
   // one is a literal that only ever appeared in the instruction being removed.
