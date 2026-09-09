@@ -1,6 +1,6 @@
 # Player's Guide
 
-A longer walkthrough for once you're installed and connected. If you haven't done that yet, start with the [Quick start](../README.md#quick-start) section of the README — this doc picks up right after `/awaken` finishes.
+A longer walkthrough for once you're installed and connected. If you haven't done that yet, start with the [Quick start](../README.md#quick-start) section of the README. Every command is listed in the [command reference](COMMANDS.md), and setup snags are in [Troubleshooting](TROUBLESHOOTING.md) — this doc picks up right after `/awaken` finishes.
 
 ---
 
@@ -141,7 +141,7 @@ Your workspace is a set of linked Notion databases the System reads and writes f
 
 ## The browser layer
 
-For company research and job postings that need real rendering, the System drives a headless browser (`agent-browser`) on your machine. `/awaken` offers to set it up, and **`/browse` is the only command that drives it** — everything else hands it the page. That is deliberate: one probe, one place that can be wrong.
+For company research and job postings that need real rendering, the System drives a headless browser (`agent-browser`) on your machine. `/awaken` offers to set it up, and **`/browse` is the command that drives it** — everything else hands it the page. That is deliberate: one probe, one place that can be wrong.
 
 Without a browser — mobile-only, or a session that cannot run one — the System says so and offers to work from text you paste, rather than reporting research it never did. Tracking, appraising, forging and the whole XP loop keep working fully.
 

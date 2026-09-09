@@ -10,7 +10,13 @@
 
 ## Quick start
 
-You need a **Notion account** (free plan is enough) and a **paid AI agent plan** — that is the one thing you pay for. Then pick your agent:
+You need:
+
+- A **Notion account** — the free plan is enough.
+- A **paid AI agent plan** — the one thing you pay for. For Claude that means **Pro or Max**.
+- An agent that can run **scheduled routines**, if you want your morning briefing to arrive on its own. **A paid plan does not guarantee this** — check before you start. Without it everything still works; you just say *"run my daily briefing"* yourself.
+
+Then pick your agent:
 
 | | Best for | Install |
 |---|---|---|
@@ -21,6 +27,8 @@ You need a **Notion account** (free plan is enough) and a **paid AI agent plan**
 Every path is four steps and ends the same way: you run `/awaken` and the agent builds the rest.
 
 ### Claude Code
+
+**First, install Claude Code itself** if you haven't — `curl -fsSL https://claude.ai/install.sh | bash` on macOS, Linux or WSL; `irm https://claude.ai/install.ps1 | iex` in Windows PowerShell. `claude --version` should print a version. Other install routes and system requirements: [Claude Code setup](https://code.claude.com/docs/en/setup).
 
 1. **Make a folder and work from it.** `/awaken` writes a `CLAUDE.md` there so later sessions pick up where you left off.
    ```sh
@@ -43,27 +51,30 @@ Now [run `/awaken`](#then-run-awaken).
 
 ### Claude desktop app
 
-1. **Connect a folder to your session first.** In the prompt area, before you send anything, use the **Project folder** dropdown to pick the folder Claude works in. The desktop app has *no* file access until you do, and `/awaken` writes a file at the end. Without it, setup finishes looking successful and every later session starts cold.
+1. **Connect a folder to your session first.** Create a folder on your computer for The System, then — in the prompt area, before you send anything — use the **Project folder** dropdown to pick it. The desktop app has *no* file access until you do, and `/awaken` writes a file at the end. Without it, setup finishes looking successful and every later session starts cold.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** In the **Code** tab, click the **+** next to the prompt box → **Connectors** → **Notion**, and follow the sign-in flow. Grant access to the workspace holding your Seed copy. (Settings → Connectors is where you *manage* one later, not where you add it.)
-4. **Install the commands.** Open the plugins panel, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it.
+4. **Install the commands.** In the **Code** tab, click the **+** next to the prompt box → **Plugins**, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it. (You can also type the two slash commands from the [Claude Code](#claude-code) path straight into the prompt box.)
 
 Now [run `/awaken`](#then-run-awaken).
 
 ### Codex, Antigravity & other CLIs
 
-1. **Make a folder and work from it.** `/awaken` writes an `AGENTS.md` there — not `CLAUDE.md`; the installer rewrites it for your CLI.
+1. **Make a folder and work from it.** `/awaken` writes an `AGENTS.md` there so later sessions pick up where you left off.
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
+   The build rewrites it for your CLI, so on Codex and Antigravity the file is `AGENTS.md` — do not go looking for a `CLAUDE.md`.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` to your CLI's MCP config and complete the OAuth flow, granting access to your Seed copy. Codex: `~/.codex/config.toml`, under `[mcp_servers.notion]`. Antigravity: `~/.gemini/config/`, or `agy mcp add` if your build has it. Your CLI's own docs win over this line.
-4. **Install the commands.** No clone needed:
+4. **Install the commands.** No clone needed; Node 18+, no dependencies:
    ```sh
-   npx @ars-infinita-notion/system-skills install-codex   # Codex CLI  -> $CODEX_HOME/skills
+   npx @ars-infinita-notion/system-skills install-codex   # Codex CLI  -> $CODEX_HOME/skills (default ~/.codex/skills)
    npx @ars-infinita-notion/system-skills install-agy     # Antigravity -> ~/.gemini/config/plugins
    ```
-   Add `--dry-run` to see every path it would touch. **If you already have a skill named `status`, `log`, `report` or any other command name, it stops without writing and prints the clash** — re-run with `--force`, which moves yours aside into a backup folder rather than deleting them.
+   Add `--dry-run` to see every path it would touch. **Codex only:** if you already have a skill named `status`, `log`, `report` or any other command name, `install-codex` stops without writing and prints the clash — re-run with `--force`, which moves yours aside into a backup folder rather than deleting them. `install-agy` writes only inside its own plugin directory, so it never collides — but by the same token it replaces edits you made *inside* that directory on update.
+
+Then **start a new session** so your CLI picks the skills up. `/awaken` will not exist in the shell you installed from.
 
 Now [run `/awaken`](#then-run-awaken).
 
@@ -90,11 +101,13 @@ Every real action earns XP. XP earns levels. **[All 26 commands →](docs/COMMAN
 
 ## Questions, bugs, ideas
 
-**[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out. Once installed, `/petition` files one for you. Answers are best-effort: this is a beta run by one Game Admin.
+**[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out. Once installed, `/petition` does it for you: with an authenticated `gh` CLI it files the Issue after showing you the exact text; without one it hands you that text and the link to post yourself. Answers are best-effort: this is a beta run by one Game Admin.
 
 ## Status
 
-**Beta.** Open beyond the first small circle and no longer changing shape underneath you. Expect rough edges; report them and they get fixed. **Your data lives in your Notion and never leaves it.** New mechanics never rewrite your history and your XP is never re-scored.
+**Beta.** Open beyond the first small circle and no longer changing shape underneath you. Expect rough edges; report them and they get fixed. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
+
+**Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
 
 ## License
 
