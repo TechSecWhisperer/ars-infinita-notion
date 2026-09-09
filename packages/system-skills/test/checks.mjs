@@ -803,14 +803,42 @@ check('context-file-check', () => {
     'Step 7.5 no longer shows the @AGENTS.md import line for CLAUDE.md',
   );
 
+  // 1b. UNCONDITIONAL. An independent review got a regression past the first
+  //     version of this check by making the second file conditional -- "write
+  //     AGENTS.md; if this session is Claude Code, also write CLAUDE.md" -- which
+  //     satisfied the heading, the import line and the body count while
+  //     reintroducing the exact defect: a Codex player's folder with no
+  //     CLAUDE.md, cold the moment they open it in Claude Code. The point is
+  //     that both files are written on EVERY harness, so the check has to assert
+  //     the unconditionality, not merely that both names appear somewhere.
+  ok(
+    authored.includes('**Write both files, on every harness.**'),
+    'Step 7.5 no longer states that both files are written on every harness - if the second file has become conditional, the folder is cold for whichever agent reads the missing name',
+  );
+  for (const conditional of [
+    /also write [`*]*CLAUDE\.md/i,
+    /if (?:this|the) session is Claude Code/i,
+    /\(Claude Code only\)/i,
+  ]) {
+    ok(
+      !conditional.test(authored),
+      `Step 7.5 makes a context file conditional (${conditional}) - both files are written on every target`,
+    );
+  }
+
   // 2. It is an import, not a copy. The body lives in AGENTS.md once; if the
   //    boot ritual line appears twice, someone pasted the content into both.
-  const bodyMarker = 'On session start:';
-  const bodyCount = authored.split(bodyMarker).length - 1;
-  ok(
-    bodyCount === 1,
-    `the context body appears ${bodyCount}x in awaken/SKILL.md - it must live in AGENTS.md only, with CLAUDE.md importing it`,
-  );
+  //    The first version of this keyed on the literal 'On session start:', and a
+  //    review defeated it by pasting the body into both blocks with the marker
+  //    reworded. Key on the boot instruction's stable content instead, and on the
+  //    CLAUDE.md block being an import stub rather than a body.
+  for (const bodyMarker of ['Read the 🧬 Kernel page', 'Never cache IDs in this file']) {
+    const bodyCount = authored.split(bodyMarker).length - 1;
+    ok(
+      bodyCount === 1,
+      `"${bodyMarker}" appears ${bodyCount}x in awaken/SKILL.md - the context body must live in AGENTS.md only, with CLAUDE.md importing it`,
+    );
+  }
 
   // 3. The two statements about Claude Code's file behaviour survive the
   //    rewrite verbatim in every built copy. They are true on every target.
@@ -841,6 +869,16 @@ check('context-file-check', () => {
     ok(
       built.includes('@AGENTS.md'),
       `${label}: the @AGENTS.md import line was lost in the rewrite`,
+    );
+    // The AGENTS.md body must survive the per-target rewrite too -- it is the
+    // file that actually carries the instructions on this target.
+    ok(
+      built.includes('Read the 🧬 Kernel page'),
+      `${label}: the AGENTS.md body block did not survive the rewrite`,
+    );
+    ok(
+      built.includes('**Write both files, on every harness.**'),
+      `${label}: the unconditional both-files instruction did not survive the rewrite`,
     );
   }
 });
