@@ -97,6 +97,10 @@ When a browser-required command is invoked where agent-browser isn't available, 
 > "`/scout` needs agent-browser, which isn't available here. Run it from your desktop, or paste the company page text and I'll work from that."
 Detection is real: `/vitals` probes the session and its capability profile drives these messages.
 
+**One router: every live web page goes through `/browse`.** `/scout`, `/quest`, `/recruit` and `/gather` do not open pages themselves and do not re-implement the probe — they hand the page to `/browse`, which probes for a browser and degrades honestly when there is none. One router means one place that can be wrong.
+
+**Probe before claiming a capability — in either direction.** Do not announce that something is unavailable because of where you appear to be running, and do not announce that it worked because it usually does. Attempt the thing, read the result, and report what the attempt returned. "This is mobile, so I can't" is a guess; so is "done" without a read-back. Where an attempt is unsafe or destructive, say what you did not attempt rather than reporting an outcome you did not observe.
+
 ## /vitals and /doctor (diagnostics)
 - **`/vitals`** — a fast capability probe: is the Notion connector reachable, is agent-browser present and healthy, is this MCP-capable or app-only, is the Patch Feed reachable. Outputs a capability profile, not a repair. Run it at boot (cheap); also callable on demand.
 - **`/doctor`** — full diagnostics + repair. Runs `/vitals` first, then a PASS/WARN/FAIL battery (Notion access, Kernel integrity / Sigil Check, schedules exist, Player-Card ↔ XP-Ledger reconcile, Mechanics Version vs Patch-Feed head). Each failure is classified **local vs remote**: **local** (your instance — a missing schedule, a drifted rule surface, a partial Kernel) → run the idempotent `/awaken` repair path; **remote** (admin/Nexus-side — a broken feed, manifest drift you can't fix) → package the diagnostic and escalate via `/petition`. **No check in the battery is browser-gated** — every one runs off the Notion connector or a plain HTTPS fetch, so never report a `/doctor` check as "needs a desktop".

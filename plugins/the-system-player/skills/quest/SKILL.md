@@ -22,6 +22,8 @@ If you get **one clear match** → Continue mode, regardless of which trigger ph
 ## Mode: New
 Fetch the job posting → create a Quest Board entry (role, company, location, salary, source, full JD in the page body) → create or link a Gate Intel company record → set Stage, start the SLA clock → log +10 XP (`Quest tracked`).
 
+**Anything that needs a live web page goes through `/browse`.** It probes for a browser and degrades honestly when there is none. Do not assume a browser here, and do not re-implement the probe — one router, so there is one place that can be wrong. If `/browse` reports it cannot reach a page, say so plainly and work from whatever the player can paste instead; never report research you did not actually perform.
+
 1. **Duplicate check** (see "Two modes" above — you should have already done this before choosing New mode; if you somehow haven't, do it now and switch to Continue mode if it turns out to exist).
 
 2. **Fetch the posting.** If it's a LinkedIn URL, be ready for bot-detection: never solve a CAPTCHA/checkpoint yourself. Try a normal fetch first; if it's blocked, use the user's own already-authenticated browser (device bridge Chrome, or an existing logged-in claude-in-chrome tab) instead of a clean session, and ask the player to clear any checkpoint themselves if one appears. Extract: role title, company, location, employment type, salary (if listed — most postings omit it, that's normal, don't guess a number), and the full job description text.
