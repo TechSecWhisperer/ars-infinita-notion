@@ -146,7 +146,7 @@ So: **attempt each write, then check it landed.** Resolve the project directory,
 1. **Both wrote.** Note both full paths in the close so the player knows where they are.
 2. **Neither could be written.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If it names a missing folder or workspace, the remedy is to attach one and run `/awaken` again — it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
 3. **One wrote and the other did not.** **Report this as a failure of the step, never as a success.** Name the file that is missing and the refusal for it verbatim, and say which agent that leaves without context: no `AGENTS.md` means Codex and the Antigravity CLI start cold here, no `CLAUDE.md` means Claude Code does. Re-running `/awaken` retries the missing one. **Never report the half that succeeded as the step being done** — a folder with one of the two files is the silent cold start this step exists to prevent, and it is the outcome most likely to be mistaken for success.
-4. **App-only session, no local filesystem at all.** Skip, and note in the close that a desktop session is what seats the project context.
+4. **No filesystem at all.** Only when this session has **no file-writing tool whatsoever** — not a tool that exists and refuses. Skip, and note in the close that a desktop session is what seats the project context. **If a write tool exists and the write was refused, that is outcome 2, not this** — the Claude desktop app with no connected folder is the common case, and it belongs in outcome 2, where the remedy is to connect a folder and re-run.
 
 The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
 
@@ -156,11 +156,14 @@ The rest of setup is complete either way. This step failing is not a failed awak
 <!-- ars-infinita:the-system -->
 ```
 
-- **Marker present** → the file is one The System wrote. Replace it outright.
-- **Marker absent, file non-empty** → the file is the player's. **Do not replace it.** Append The System's block, marker line included, and leave everything already there untouched. Say in the close that you appended rather than replaced, and name the file.
-- **No file** → write the template as given.
+The block is **delimited at both ends** — the opening marker above and `<!-- /ars-infinita:the-system -->` below it. That pair, not the file, is what The System owns. Two branches, and only two:
 
-The marker is what makes this idempotent: on a re-run, an appended block is found by its marker and replaced in place, so a second `/awaken` never appends a second copy. Never treat a heading alone as proof of authorship — a player who wrote notes under The System's own heading would be clobbered by exactly the rule meant to protect them.
+- **Both markers present** → replace **only the text between them**, byte for byte, and leave every other line in the file exactly as it is. This is the re-run and migration path.
+- **Otherwise** (no file, or a file with no marker pair) → append the whole marked block, opening and closing markers included, to whatever is already there. Never overwrite existing content. If the file was non-empty, say in the close that you appended rather than replaced, and name the file.
+
+**Never replace a whole file because it contains the opening marker.** After the append branch runs once, the player's own content and The System's block live in the same file — replacing it outright on the next run destroys their work, which is the exact outcome this rule exists to prevent. The closing marker is what makes "replace in place" a real operation rather than a wish: without an end delimiter there is no way to tell where The System's block stops and the player's writing resumes.
+
+If a player deletes one of the markers by hand — they are HTML comments and invisible in a rendered-Markdown editor — the pair no longer matches and the next run appends a second block. That is the safe failure: a duplicate the player can see and delete, rather than a silent deletion of their own text.
 
 **Write both files, on every harness.** A player's folder may be opened by more than one agent — they may start in one CLI and later open the same folder in another — and the agents do not agree on a filename. Writing only the one this harness happens to read is what leaves the next agent starting cold. The two names are not alternatives to choose between; they are one instruction reachable by two conventions:
 
@@ -185,6 +188,7 @@ On session start:
 2. Read the 🧬 Kernel page (search "Kernel" inside "The System — Job Search HQ") for instance IDs, player facts, versions, and Nexus links; follow the boot ritual.
 3. Run the command asked for — /status, /grind, /quest, /forge, /doctor, … (the installed the-system-player commands).
 Never cache IDs in this file; always resolve them from the Kernel. If the Kernel is missing or empty, run /awaken.
+<!-- /ars-infinita:the-system -->
 ```
 
 `CLAUDE.md`:
@@ -197,6 +201,7 @@ Never cache IDs in this file; always resolve them from the Kernel. If the Kernel
 The line above imports this project's context. If it did not expand, open AGENTS.md in this
 folder and follow it. SOURCE OF TRUTH is the 🧬 Kernel page in Notion, never a local file.
 If the Kernel is missing or empty, run /awaken.
+<!-- /ars-infinita:the-system -->
 ```
 
 Those three fallback lines are deliberate. `@`-import expansion is documented for Claude Code but not for every surface it runs on, and a `CLAUDE.md` whose single line failed to expand is indistinguishable from no context at all — the exact cold-start this step exists to prevent. A session that cannot expand the import can still read the sentence telling it where to look.
