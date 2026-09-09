@@ -212,7 +212,20 @@ async function npmChannelStatus(version) {
     }
     return `  npm: ${name}@${version} published${when}; dist-tags.latest still reads ${truth.latest} — CDN propagation, no action needed`;
   }
-  return `  npm: ${version} absent from the registry (authoritative read; latest is ${truth.latest}) — run \`npm publish\` from packages/system-skills`;
+  // PUBLISHING IS AUTOMATED. .github/workflows/npm-publish.yml runs on every
+  // push to main and does the publish itself, so an absent version is a
+  // workflow that has not finished or has failed — not a step someone forgot.
+  //
+  // The old wording here said "run `npm publish` from packages/system-skills",
+  // and that is worse than merely stale: the workflow authenticates by OIDC
+  // trusted publishing and there is deliberately NO NPM_TOKEN anywhere in the
+  // repo, so the hand-run it recommends has no credential path. It sent a
+  // reader to a dead end on 2026-09-09, twice, while the workflow was mid-run
+  // and about to publish the very version being reported as missing.
+  //
+  // Right after a merge this line is expected. Read the workflow run before
+  // treating it as a gap.
+  return `  npm: ${version} not on the registry yet (authoritative read; latest is ${truth.latest}) — npm-publish.yml publishes on push to main, so check its run; do NOT publish by hand (OIDC only, no token exists)`;
 }
 
 // Diff the whole tree and filter in JS rather than passing a git pathspec, so
