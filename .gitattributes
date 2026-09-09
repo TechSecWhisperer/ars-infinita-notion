@@ -1,0 +1,4 @@
+# transform.mjs embeds NUL bytes as stash sentinels, so git classifies it
+# as binary and shows no diff for it. Force a text diff: changes to the
+# rewrite engine must be reviewable.
+packages/system-skills/lib/transform.mjs diff

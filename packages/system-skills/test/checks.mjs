@@ -777,6 +777,432 @@ check('codex-install-guard', () => {
 
 // ---------------------------------------------------------------------------
 
+check('rewrite-collision-check', () => {
+  // The per-target rewrite substitutes phrases mid-sentence, so it can collide
+  // with the surrounding words and produce text no author wrote. It shipped
+  // "the the assistant desktop app" into both builds: the authored source said
+  // "the Claude desktop app" and the rule [/\\bClaude\\b/ -> 'the assistant']
+  // fired inside it.
+  //
+  // This check reads the built output as text and fails on the collision family
+  // as a whole, rather than on one phrase at a time.
+  if (!distBuilt) {
+    fail('dist/ is not built - run `node builder.mjs`.');
+    return;
+  }
+  // Doubled function words AND article mismatches: 'a Claude session' ships as
+  // 'a the assistant session' -- same family, no doubled word in it.
+  const DOUBLED = /\b(the the|a a|an an|a an|an a|a the|an the|the a|the an|of of|to to|is is|and and)\b/i;
+  // The lowercase replacements read as a dropped capital at a sentence start.
+  // Allow markdown emphasis and closing punctuation between the full stop and
+  // the word: the first cut required a bare space and missed 'harness.** the
+  // assistant writes...', which is exactly the shape this file is written in.
+  const SENTENCE_START_LOWER =
+    /(?:^|[.!?][*_`)\]\s]*\s)(the assistant|an AI assistant|the model provider)\b/;
+  let scanned = 0;
+  for (const dir of [DIST_CODEX, DIST_AGY]) {
+    for (const file of walk(dir)) {
+      if (!file.endsWith('.md')) continue;
+      scanned += 1;
+      const text = fs.readFileSync(file, 'utf8');
+      for (const [i, line] of text.split('\n').entries()) {
+        const m = line.match(DOUBLED);
+        if (m) {
+          fail(`${rel(file)}:${i + 1}: the rewrite produced "${m[0]}" - a substitution collided with the surrounding words`);
+        }
+        const sl = line.match(SENTENCE_START_LOWER);
+        if (sl) {
+          fail(`${rel(file)}:${i + 1}: the rewrite left "${sl[1]}" opening a sentence in lower case`);
+        }
+      }
+    }
+  }
+  // Floor derived from the corpus rather than guessed: the previous 40 tolerated
+  // losing most of it.
+  const expected = names.length * 2;
+  ok(
+    scanned >= expected,
+    `only ${scanned} built markdown files scanned, expected at least ${expected} (${names.length} skills x 2 targets) - the walk is missing files and this check may be passing vacuously`,
+  );
+});
+
+check('context-file-check', () => {
+  // /awaken Step 7.5 seats the project context. A folder can be opened by more
+  // than one agent, and they disagree on the filename, so the step writes BOTH:
+  // AGENTS.md carries the content and CLAUDE.md imports it. Two things can
+  // silently break that, and this check is here for both.
+  //
+  //   1. The step drops back to writing one file, and whichever agent reads the
+  //      other name starts cold -- the exact failure v2.0.0 was cut to end.
+  //   2. The per-target rewrite falsifies the two sentences that describe Claude
+  //      Code's own behaviour. They are pinned in PROTECTED; if that pin is
+  //      dropped, a codex or agy player reads a false claim about their own CLI.
+  const awakenPath = path.join(SOURCE_SKILLS_DIR, 'awaken', 'SKILL.md');
+  ok(fs.existsSync(awakenPath), 'awaken/SKILL.md is missing');
+  if (!fs.existsSync(awakenPath)) return;
+  const authoredFull = fs.readFileSync(awakenPath, 'utf8');
+
+  // Scope every prose assertion to Step 7.5's own section. A review defeated the
+  // whole-file version by leaving the pinned literal untouched and undoing it a
+  // paragraph later ("skip writing CLAUDE.md there unless the player tells you
+  // they use Claude Code as well") -- every "is present" assertion still held,
+  // and the shipped instruction contradicted itself. Presence is not meaning.
+  // The slice is only worth anything if the section it finds is the only one and
+  // is still the live instruction. A review defeated the previous version by
+  // retitling this section "... -- reference / superseded by Step 7.5b below" and
+  // adding a Step 7.5b that said to write AGENTS.md alone: indexOf takes the
+  // first match and stops at the next '## ', so the check validated a section the
+  // document itself marked dead, at 8/8 green.
+  // `\s+` and a tolerant `7\.5`: the previous form required exactly one space
+  // after ##, so a heading written `##  Step 7.5b` terminated the slice (the
+  // terminator matches '\n## ') while staying invisible to this count. Markdown
+  // renders both identically, so that is a stray keystroke, not an exotic case.
+  const stepHeadings = (authoredFull.match(/^##\s+Step\s*7\.5[^\n]*$/gm) || []);
+  ok(
+    stepHeadings.length === 1,
+    `awaken/SKILL.md has ${stepHeadings.length} "## Step 7.5" headings - exactly one must exist, or the guard validates one section while another governs`,
+  );
+  for (const h of stepHeadings) {
+    ok(
+      !/\b(superseded|deprecated|reference only|kept for reference|obsolete)\b/i.test(h),
+      `the Step 7.5 heading marks itself as no longer live: "${h.trim()}"`,
+    );
+  }
+  const stepStart = authoredFull.indexOf('## Step 7.5');
+  ok(stepStart !== -1, 'awaken/SKILL.md no longer has a "## Step 7.5" heading');
+  if (stepStart === -1) return;
+  const nextHeading = authoredFull.indexOf('\n## ', stepStart + 1);
+  const authored = authoredFull.slice(
+    stepStart,
+    nextHeading === -1 ? authoredFull.length : nextHeading,
+  );
+
+  // 1. The authored step names both files and states the import relationship.
+  ok(
+    /Step 7\.5[^\n]*AGENTS\.md[^\n]*CLAUDE\.md/.test(authored),
+    'Step 7.5 no longer names both AGENTS.md and CLAUDE.md in its heading',
+  );
+  ok(
+    authored.includes('@AGENTS.md'),
+    'Step 7.5 no longer shows the @AGENTS.md import line for CLAUDE.md',
+  );
+
+  // 1b. UNCONDITIONAL. An independent review got a regression past the first
+  //     version of this check by making the second file conditional -- "write
+  //     AGENTS.md; if this session is Claude Code, also write CLAUDE.md" -- which
+  //     satisfied the heading, the import line and the body count while
+  //     reintroducing the exact defect: a Codex player's folder with no
+  //     CLAUDE.md, cold the moment they open it in Claude Code. The point is
+  //     that both files are written on EVERY harness, so the check has to assert
+  //     the unconditionality, not merely that both names appear somewhere.
+  ok(
+    authored.includes('**Write both files, on every harness.**'),
+    'Step 7.5 no longer states that both files are written on every harness - if the second file has become conditional, the folder is cold for whichever agent reads the missing name',
+  );
+  // Both the "make it conditional" and the "undo it later" families. The second
+  // set exists because an assertion that a sentence is PRESENT says nothing
+  // about a later sentence that takes it back.
+  // Swept over the WHOLE file, not the slice. A review put the contradiction
+  // outside Step 7.5 -- in the migration paragraph, and in a new section after
+  // the templates -- where a slice-scoped check cannot see it, while it still
+  // governed what the agent does.
+  //
+  // Honest about the limit: this is a blocklist over an open set of phrasings,
+  // and a determined rewording gets past it. It is here to catch the drift that
+  // actually happens (someone "optimising" the second file away), not to prove
+  // the absence of contradiction, which a string check cannot do. The structural
+  // assertions above -- one live section, both fences present, roles correct,
+  // markers delimiting -- are what carry the weight.
+  for (const conditional of [
+    /also write [`*]*CLAUDE\.md/i,
+    /if (?:this|the) session is Claude Code/i,
+    /\(Claude Code only\)/i,
+    /skip (?:writing |the )?[`*]*(?:CLAUDE|AGENTS)\.md/i,
+    /unless the player (?:tells|says|asks|uses)/i,
+    /redundant[^.]*\b(?:CLAUDE|AGENTS)\.md/i,
+    /[`*]*(?:CLAUDE|AGENTS)\.md[^.]*\bis redundant/i,
+    /only (?:write|needed) (?:on|for) (?:Claude|Codex|Antigravity)/i,
+    /omit it there/i,
+    /one file is enough/i,
+    /write [`*]*AGENTS\.md[`*]* alone/i,
+    /(?:refresh|rewrite) [`*]*AGENTS\.md[`*]* only/i,
+    /does not need rewriting/i,
+    /report the step done and move on/i,
+    /leave it entirely alone and do not write one/i,
+  ]) {
+    ok(
+      !conditional.test(authoredFull),
+      `awaken/SKILL.md makes a context file conditional or optional (${conditional}) - both files are written on every target, on every run`,
+    );
+  }
+
+  // 2. It is an import, not a copy. The body lives in AGENTS.md once; if the
+  //    boot ritual line appears twice, someone pasted the content into both.
+  //    The first version of this keyed on the literal 'On session start:', and a
+  //    review defeated it by pasting the body into both blocks with the marker
+  //    reworded. Key on the boot instruction's stable content instead, and on the
+  //    CLAUDE.md block being an import stub rather than a body.
+  for (const bodyMarker of ['Read the 🧬 Kernel page', 'Never cache IDs in this file']) {
+    const bodyCount = authored.split(bodyMarker).length - 1;
+    ok(
+      bodyCount === 1,
+      `"${bodyMarker}" appears ${bodyCount}x in awaken/SKILL.md - the context body must live in AGENTS.md only, with CLAUDE.md importing it`,
+    );
+  }
+
+  // 2b. Both fenced templates must actually exist. Without this, deleting the
+  //     CLAUDE.md block and leaving prose that merely mentions `@AGENTS.md`
+  //     passes -- the agent is told to write a file and given no content for it.
+  for (const label of ['`AGENTS.md`:', '`CLAUDE.md`:']) {
+    ok(
+      authored.includes(label),
+      `Step 7.5 no longer shows the ${label} template block - the agent is told to write a file with no content given for it`,
+    );
+  }
+  // The authorship marker is what makes the merge-don't-clobber rule executable
+  // and idempotent. Both templates carry it; without it the rule has no test.
+  // Pull the two fenced templates out by their labels and assert their ROLES, not
+  // merely that certain strings appear inside the section. A review swapped the
+  // two bodies -- AGENTS.md reduced to "see CLAUDE.md beside this file", the real
+  // body moved under the @AGENTS.md import -- and every presence assertion still
+  // held while the import became circular and Codex was pointed at a file it
+  // never opens. Presence tests cannot see that; role tests can.
+  const MARKER = '<!-- ars-infinita:the-system -->';
+  const END_MARKER = '<!-- /ars-infinita:the-system -->';
+  ok(authored.includes(MARKER), 'Step 7.5 no longer declares the authorship marker');
+
+  // Every marker the prose quotes must be one the templates actually write.
+  // Renaming only the prose passes every other assertion while telling the agent
+  // to count a marker no written file contains: counts are then always 0/0, the
+  // append branch runs on every re-run, and idempotence is gone with nothing
+  // failing.
+  const quotedMarkers = new Set(authored.match(/<!--\s*\/?\s*ars-infinita[^>]*-->/g) || []);
+  ok(quotedMarkers.size > 0, 'Step 7.5 quotes no ars-infinita marker at all');
+  for (const quoted of quotedMarkers) {
+    ok(
+      quoted === MARKER || quoted === END_MARKER,
+      `Step 7.5 mentions the marker "${quoted}", which is neither the opening nor closing marker the templates write - the agent would count a marker no file it writes ever contains, so every run takes the append branch`,
+    );
+  }
+
+  const fenceFor = (label) => {
+    const at = authored.indexOf(`\`${label}\`:`);
+    if (at === -1) return null;
+    const open = authored.indexOf('```', at);
+    if (open === -1) return null;
+    const bodyStart = authored.indexOf('\n', open) + 1;
+    const close = authored.indexOf('```', bodyStart);
+    if (close === -1) return null;
+    return authored.slice(bodyStart, close);
+  };
+
+  const agentsFence = fenceFor('AGENTS.md');
+  const claudeFence = fenceFor('CLAUDE.md');
+  ok(agentsFence !== null, 'could not find the `AGENTS.md`: fenced template in Step 7.5');
+  ok(claudeFence !== null, 'could not find the `CLAUDE.md`: fenced template in Step 7.5');
+
+  if (agentsFence !== null && claudeFence !== null) {
+    // Marker pair delimits each template, and the opening marker is the FIRST
+    // line -- a review put a heading above it, making the prose's "both templates
+    // begin with the line" false while the check still passed.
+    for (const [file, fence] of [['AGENTS.md', agentsFence], ['CLAUDE.md', claudeFence]]) {
+      ok(
+        fence.startsWith(`${MARKER}\n`),
+        `the ${file} template does not BEGIN with the opening marker - the merge rule's premise is false and it cannot find the block it owns`,
+      );
+      ok(
+        fence.trimEnd().endsWith(END_MARKER),
+        `the ${file} template does not end with the closing marker - without an end delimiter "replace in place" is not an operation an agent can perform, and the re-run branch destroys the player's own content`,
+      );
+    }
+    // Roles: the body lives in AGENTS.md; CLAUDE.md imports it and does NOT
+    // carry the body. Either half failing means the import is circular or the
+    // content is duplicated.
+    ok(
+      agentsFence.includes('Read the 🧬 Kernel page'),
+      'the AGENTS.md template no longer carries the context body - it is the file that must hold the content',
+    );
+    ok(
+      claudeFence.includes('@AGENTS.md'),
+      'the CLAUDE.md template no longer imports AGENTS.md',
+    );
+    ok(
+      !claudeFence.includes('Read the 🧬 Kernel page'),
+      'the CLAUDE.md template carries the context body - it must import AGENTS.md, not duplicate it',
+    );
+    ok(
+      !agentsFence.includes('@AGENTS.md'),
+      'the AGENTS.md template imports itself - the body belongs here and the import belongs in CLAUDE.md',
+    );
+    ok(
+      claudeFence.includes('If it did not expand'),
+      'the CLAUDE.md template lost its import-failure fallback - a CLAUDE.md whose one import line silently failed to expand is indistinguishable from no context at all, which is the cold start this step exists to prevent',
+    );
+  }
+
+  // 2b-ii. THE MERGE RULE ITSELF. e030de9 added the closing marker and a
+  //   two-branch rule and tested neither: a review restored the previous
+  //   data-eating wording ("Marker present -> replace it outright") and the
+  //   battery still read 8/8 while the shipped instruction destroyed the
+  //   player's file on the second run. The closing marker exists precisely so
+  //   the replace can be scoped; assert that the prose says so.
+  ok(
+    /replace \*\*only the text between them\*\*/.test(authored),
+    'Step 7.5 no longer scopes the replace to the text between the markers - an unscoped replace destroys the player\'s own content on the second run, which is what the closing marker exists to prevent',
+  );
+  for (const destructive of [
+    /replace it outright/i,
+    /replace the (?:whole |entire )?file/i,
+    /overwrite the (?:whole |entire )?file/i,
+  ]) {
+    ok(
+      !destructive.test(authored),
+      `Step 7.5 tells the agent to ${destructive} - the replace must be scoped to the marker pair, never the file`,
+    );
+  }
+  // Pairing discipline: any count other than one-and-one must fall to append.
+  // A hand-deleted closing marker leaves two openings and one closing, and a
+  // rule that does not say so lets the outermost reading swallow the player's
+  // writing on the run after the "safe" duplicate.
+  // Whitelist the branch outcomes rather than blocklisting phrasings. A review
+  // added a plausible third branch -- "an opening marker with no closing marker
+  // -> replace from the opening marker to the end of the file" -- the exact
+  // swallow-the-player pairing the paragraph below warns against, and it passed
+  // every other assertion. Two branches exist; a third outcome is the defect.
+  //
+  // ARROW covers the glyphs an author actually reaches for. The first cut keyed
+  // on U+2192 alone, so the same third branch written with an ASCII "->" was
+  // invisible to the count and shipped to both targets at 9/9 green: the attack
+  // was closed for one character, not for the class.
+  const ARROW = /\u2192|\u21d2|->|=>/;
+  const branchLines = authored
+    .split('\n')
+    .filter((l) => l.trimStart().startsWith('- ') && ARROW.test(l));
+  ok(
+    branchLines.length === 2,
+    `the merge rule has ${branchLines.length} branches - exactly two must exist: replace between the markers, or append`,
+  );
+
+  const resolutionOf = (line) => line.slice(line.search(ARROW));
+  const isScopedReplace = (t) => /replace \*\*only the text between them\*\*/.test(t);
+  const isAppend = (t) => /\*\*append\*\*/.test(t);
+
+  for (const line of branchLines) {
+    const after = resolutionOf(line);
+    ok(
+      isScopedReplace(after) || isAppend(after),
+      `a merge branch resolves to something other than a scoped replace or an append: "${line.trim().slice(0, 110)}"`,
+    );
+  }
+
+  // Resolutions were previously checked in isolation, so swapping the two
+  // conditions passed: replace-between-markers on a file with no markers, and
+  // append on every clean re-run -- idempotence gone, and the swallow case live.
+  // Assert which condition maps to which action, not merely that both actions
+  // appear somewhere.
+  const matchCondition = (re) =>
+    branchLines.filter((l) => re.test(l.slice(0, l.search(ARROW))));
+  const pairings = [
+    [
+      /Exactly one opening marker and exactly one closing marker/,
+      isScopedReplace,
+      'the one-and-one branch',
+      'replace **only the text between them**',
+    ],
+    [/\*\*Anything else\*\*/, isAppend, 'the "Anything else" branch', '**append**'],
+  ];
+  for (const [conditionRe, resolves, label, expected] of pairings) {
+    const found = matchCondition(conditionRe);
+    ok(
+      found.length === 1,
+      `${label} appears ${found.length} times in the merge rule - exactly one must exist`,
+    );
+    for (const line of found) {
+      ok(
+        resolves(resolutionOf(line)),
+        `${label} no longer resolves to ${expected} - the two branch conditions have been swapped or rewired, which puts a scoped replace on a file that has no marker pair and an append on every clean re-run`,
+      );
+    }
+  }
+
+  // 2c. The outcome list must still cover the half-write. Reverting to three
+  //     outcomes passed every other assertion here.
+  ok(
+    authored.includes('One of four outcomes'),
+    'Step 7.5 no longer states four outcomes - the half-write case (one file written, one not) is the one most easily mistaken for success',
+  );
+  ok(
+    /One wrote and the other did not/.test(authored),
+    'Step 7.5 no longer names the half-write outcome',
+  );
+
+  // 3. The two statements about Claude Code's file behaviour survive the
+  //    rewrite verbatim in every built copy. They are true on every target.
+  if (!distBuilt) {
+    fail('dist/ is not built - run `node builder.mjs`. This check cannot verify the built copies without it.');
+    return;
+  }
+  const PINNED = [
+    'Claude Code reads **only** `CLAUDE.md`',
+    'documented for Claude Code',
+    // Shipped false in dist/ until round three caught it: "Claude Code" here was
+    // rewritten per target, so the codex build read "no `CLAUDE.md` means OpenAI
+    // Codex CLI does" -- one CLI blamed for both files, and false. Any sentence
+    // naming Claude Code that is true on EVERY target has to be pinned.
+    'no `CLAUDE.md` means Claude Code does',
+  ];
+  const builtAwakens = [
+    ['codex', path.join(DIST_CODEX, 'awaken', 'SKILL.md')],
+    ['agy', path.join(DIST_AGY, PLUGIN_SLUG, 'skills', 'awaken', 'SKILL.md')],
+  ];
+  for (const [label, p] of builtAwakens) {
+    if (!fs.existsSync(p)) {
+      fail(`${label}: built awaken/SKILL.md is missing at ${rel(p)}`);
+      continue;
+    }
+    const built = fs.readFileSync(p, 'utf8');
+    for (const phrase of PINNED) {
+      ok(
+        built.includes(phrase),
+        `${label}: "${phrase}" did not survive the rewrite - the per-target rename has made a false claim about which file that CLI reads`,
+      );
+    }
+    ok(
+      built.includes('@AGENTS.md'),
+      `${label}: the @AGENTS.md import line was lost in the rewrite`,
+    );
+    // The AGENTS.md body must survive the per-target rewrite too -- it is the
+    // file that actually carries the instructions on this target.
+    ok(
+      built.includes('Read the 🧬 Kernel page'),
+      `${label}: the AGENTS.md body block did not survive the rewrite`,
+    );
+    ok(
+      built.includes('**Write both files, on every harness.**'),
+      `${label}: the unconditional both-files instruction did not survive the rewrite`,
+    );
+    // The bare 'CLAUDE.md' pin. packages/system-skills/README.md states this is
+    // enforced; until now it was not, and a review confirmed that dropping the
+    // pin and restoring the old rename rule passed 8/8 while shipping a build
+    // with two fences both labelled `AGENTS.md`, the second overwriting the
+    // first -- an AGENTS.md importing itself and no CLAUDE.md at all.
+    ok(
+      built.includes('`CLAUDE.md`:'),
+      `${label}: the CLAUDE.md template label was renamed by the rewrite - the bare CLAUDE.md pin has been dropped, and this build tells the player to write the same filename twice`,
+    );
+    ok(
+      built.includes('<!-- ars-infinita:the-system -->'),
+      `${label}: the authorship marker did not survive the rewrite`,
+    );
+    ok(
+      built.includes('<!-- /ars-infinita:the-system -->'),
+      `${label}: the closing marker did not survive the rewrite`,
+    );
+  }
+});
+
+// ---------------------------------------------------------------------------
+
 const failed = results.filter((r) => r.fails.length);
 const warned = results.filter((r) => !r.fails.length && r.warns.length);
 console.log(
