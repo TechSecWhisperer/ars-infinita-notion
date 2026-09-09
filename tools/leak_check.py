@@ -295,7 +295,23 @@ PATTERNS = [
     ),
     (
         "admin-agent-name",
-        re.compile(r"\bwarden\b|\bcardinal\b", re.IGNORECASE),
+        # Herald was added 2026-09-09, the day that agent was named. Until then
+        # this pattern named only two of the three, and the gap was found the
+        # way gaps like this always are: a public PR description carried both
+        # "Herald" and "Warden", and the check reported ONE hit. The commit
+        # message under it named only Herald and passed entirely clean.
+        #
+        # The rule was not wrong, it was stale — a vocabulary that has to be
+        # extended by hand every time an agent is named, with nothing tying it
+        # to the naming. Worth remembering when the next one is named.
+        #
+        # "herald" is an ordinary English word, unlike the other two, so this
+        # risks false positives in flavour text ("heralds your arrival") in a
+        # way they do not. Checked before adding: zero occurrences across
+        # README, CHANGELOG, docs/, the whole plugin tree, the npm README and
+        # feed.json. If one is ever wanted in player-facing copy, narrow this
+        # to the capitalised form rather than dropping it.
+        re.compile(r"\bwarden\b|\bcardinal\b|\bherald\b", re.IGNORECASE),
     ),
     (
         "feature-flag-registry",
