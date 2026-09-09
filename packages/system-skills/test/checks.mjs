@@ -559,8 +559,16 @@ check('single-surface-lint', () => {
     if (/feed\.json[^.]{0,200}?(needs a browser|browser-gated)/is.test(text)) {
       fail(`/${name} still describes the feed.json mirror as browser-gated`);
     }
+    const hasRawFeedUrl = Array.from(text.matchAll(/https?:\/\/[^\s)'"`]+/g)).some((m) => {
+      try {
+        const u = new URL(m[0]);
+        return u.protocol === 'https:' && u.hostname === 'raw.githubusercontent.com';
+      } catch {
+        return false;
+      }
+    });
     ok(
-      text.includes('raw.githubusercontent.com'),
+      hasRawFeedUrl,
       `/${name} does not give the raw feed URL any agent can fetch`,
     );
   }
