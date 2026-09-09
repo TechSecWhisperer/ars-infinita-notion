@@ -6,6 +6,22 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.3 — 2026-09-09
+
+**Your setup notes now work in whichever agent you open next.** At the end of setup, `/awaken` writes a small file into your project folder so a fresh session picks The System back up without you explaining it again.
+
+It used to write one file, named for the agent you installed from — `CLAUDE.md` on a Claude install, `AGENTS.md` on Codex or Antigravity. Open that same folder in a different agent and it started cold: the two conventions do not agree on a filename, and neither reads the other's.
+
+It now writes **both**, on every agent. `AGENTS.md` carries the content; `CLAUDE.md` imports it in one line, because Claude Code reads only `CLAUDE.md` and does not read a bare `AGENTS.md`. The instructions exist once and the second file points at the first, so they cannot drift apart.
+
+**Nothing to do on your side.** Run `/awaken` again if you want the second file now — it is safe to re-run — or it arrives on your next repair or migration run.
+
+**If you keep your own notes in those files:** the block is fenced between two invisible markers, and a re-run replaces only what is between them. A file you already own is appended to, never overwritten, and `/awaken` says which it did. Notes written *between* the markers are inside the block and are replaced; keep your own writing outside them.
+
+**Also:** `/awaken` now names the files it wrote, and reports a half-write — one file landed, one refused — as a failure of the step rather than a success.
+
+**Note on numbering:** mechanics version moves to 2.0.3 in lockstep. No XP value, level threshold, badge criterion or unlock rule changed.
+
 ## v2.0.2 — 2026-09-09
 
 **One command opens web pages now, instead of four pretending to.**
