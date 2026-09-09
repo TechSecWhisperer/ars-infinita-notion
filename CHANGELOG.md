@@ -4,6 +4,32 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — set in `plugins/the-system-player/.claude-plugin/plugin.json`, the only hand-set version in this repo. **It and the Patch Feed's `mechanics_version` track each other exactly** (ruled 2026-08-13). They used to be allowed to diverge on a delivery-only release, and that permission caused the problem it was meant to describe: four consecutive releases could not move the feed head, so nothing in them reached anyone. One number now — every release moves the head your agent checks against, and a build check fails if the two ever differ. Two other numbers version different things and are not expected to match: the **Seed / template-schema revision** (the shape of your Notion template), and nothing else. The `@ars-infinita-notion/system-skills` **npm package** tracks this number exactly — since v1.3.2 it ships the skills prebuilt, so its version is what a Codex or Antigravity user actually receives.
 
+**What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
+
+## v2.0.1 — 2026-09-09
+
+**A command can no longer point at something that isn't in your workspace.** Commands refer to your databases by name. If one names something your workspace doesn't have, your agent's rule is to stop and log a question rather than guess — safe, but it means the command quietly does nothing instead of failing loudly.
+
+`/gather` was doing that: it referred to your networking events database by a name the setup reference never declared. That name is now declared, and `/gather` resolves it.
+
+**The more useful half is the check behind it.** A new build check refuses to ship any command naming something your workspace has no way to provide. It was written after a change prepared earlier the same day carried exactly that kind of dead reference into every command. That change never reached anyone — it was caught and withdrawn — but it was caught by a person looking, not by a check. Every existing check passed it, because they verify that surfaces agree with each other, not that a claim is true.
+
+**Note on numbering:** mechanics version moves to 2.0.1 in lockstep. No XP value, level threshold, badge criterion or unlock rule changed.
+
+## v2.0.0 — 2026-09-09
+
+**Beta.** Nothing about how you play changes, nothing you have earned is re-scored, and there is nothing to do on your side.
+
+**Setup now tells you when it couldn't finish.** At the end of `/awaken` it writes a small file to your computer so your next session picks The System back up without you explaining it again. On the desktop app that write can fail for one reason that was invisible: the app has **no access to your files at all** until you connect a folder to the session. Setup finished looking successful, wrote nothing, and every session afterwards started cold with nothing saying why.
+
+`/awaken` now attempts the write and checks it landed. If it worked, it tells you where the file is. If it couldn't, it says so and tells you what to do — connect a folder, then run `/awaken` again, which is safe to re-run and won't rebuild anything already in your Notion. Everything built in Notion is finished either way.
+
+**Also fixed:** if `/awaken` couldn't find your duplicated template it told you to ask the Game Admin for the Seed link — a link the setup instructions had already given you. It now points you back to those instructions.
+
+**On the version jumping to 2.0.0:** the first number is a release line, not a warning. Alpha was 1.x, Beta is 2.x. Nothing you have installed stops working because it moved. See the numbering note at the top of this file.
+
+**Note on numbering:** the mechanics version moves to 2.0.0 in lockstep, as it does on every release. No XP value, level threshold, badge criterion or unlock rule changed.
+
 ## v1.3.10 — 2026-08-27
 
 **Build your CV the way you want it read.** `/armor` now assembles your CV from a library of named sections, so you can rearrange it by asking in plain language — "move my skills above experience", "drop the interests section", "put certifications at the top". Layout presets cover different situations (graduate, career change, technical, academic, and cleared or government roles), and switching between them reorders your sections without changing a word of what they say.

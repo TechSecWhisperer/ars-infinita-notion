@@ -13,6 +13,7 @@ Some skills and older surfaces reference entities by an in-fiction or legacy nam
 | `KERNEL:Stat Sheet` | **Competency Matrix** |
 | `KERNEL:Skill Inventory` | **Story Bank** |
 | `KERNEL:System Log` | **Questions & Feedback Log** |
+| `KERNEL:Raids & Gatherings` | **Networking Events** |
 
 Additionally, a migrated instance may carry **legacy database titles** (recorded in a `Legacy title` column on its Kernel ID table, e.g. `Job Tracker`=Quest Board, `People`=Hunter Network, `Comms Archive`=Battle Log, `Company Research`=Gate Intel). The Kernel's ID table is authoritative for that instance — resolve by ID, never by guessing from a title.
 
