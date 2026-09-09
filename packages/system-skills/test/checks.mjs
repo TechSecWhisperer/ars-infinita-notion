@@ -777,6 +777,37 @@ check('codex-install-guard', () => {
 
 // ---------------------------------------------------------------------------
 
+check('rewrite-collision-check', () => {
+  // The per-target rewrite substitutes phrases mid-sentence, so it can collide
+  // with the surrounding words and produce text no author wrote. It shipped
+  // "the the assistant desktop app" into both builds: the authored source said
+  // "the Claude desktop app" and the rule [/\\bClaude\\b/ -> 'the assistant']
+  // fired inside it.
+  //
+  // This check reads the built output as text and fails on the collision family
+  // as a whole, rather than on one phrase at a time.
+  if (!distBuilt) {
+    fail('dist/ is not built - run `node builder.mjs`.');
+    return;
+  }
+  const DOUBLED = /\b(the the|a a|an an|a an|an a|of of|to to|is is|and and)\b/i;
+  let scanned = 0;
+  for (const dir of [DIST_CODEX, DIST_AGY]) {
+    for (const file of walk(dir)) {
+      if (!file.endsWith('.md')) continue;
+      scanned += 1;
+      const text = fs.readFileSync(file, 'utf8');
+      for (const [i, line] of text.split('\n').entries()) {
+        const m = line.match(DOUBLED);
+        if (m) {
+          fail(`${rel(file)}:${i + 1}: the rewrite produced "${m[0]}" - a substitution collided with the surrounding words`);
+        }
+      }
+    }
+  }
+  ok(scanned > 40, `only ${scanned} built markdown files scanned - the walk found far fewer than the 27 skills x 2 targets expected, so this check may be passing vacuously`);
+});
+
 check('context-file-check', () => {
   // /awaken Step 7.5 seats the project context. A folder can be opened by more
   // than one agent, and they disagree on the filename, so the step writes BOTH:
@@ -804,7 +835,11 @@ check('context-file-check', () => {
   // adding a Step 7.5b that said to write AGENTS.md alone: indexOf takes the
   // first match and stops at the next '## ', so the check validated a section the
   // document itself marked dead, at 8/8 green.
-  const stepHeadings = (authoredFull.match(/^## Step 7\.5[^\n]*$/gm) || []);
+  // `\s+` and a tolerant `7\.5`: the previous form required exactly one space
+  // after ##, so a heading written `##  Step 7.5b` terminated the slice (the
+  // terminator matches '\n## ') while staying invisible to this count. Markdown
+  // renders both identically, so that is a stray keystroke, not an exotic case.
+  const stepHeadings = (authoredFull.match(/^##\s+Step\s*7\.5[^\n]*$/gm) || []);
   ok(
     stepHeadings.length === 1,
     `awaken/SKILL.md has ${stepHeadings.length} "## Step 7.5" headings - exactly one must exist, or the guard validates one section while another governs`,
@@ -967,7 +1002,40 @@ check('context-file-check', () => {
       !agentsFence.includes('@AGENTS.md'),
       'the AGENTS.md template imports itself - the body belongs here and the import belongs in CLAUDE.md',
     );
+    ok(
+      claudeFence.includes('If it did not expand'),
+      'the CLAUDE.md template lost its import-failure fallback - a CLAUDE.md whose one import line silently failed to expand is indistinguishable from no context at all, which is the cold start this step exists to prevent',
+    );
   }
+
+  // 2b-ii. THE MERGE RULE ITSELF. e030de9 added the closing marker and a
+  //   two-branch rule and tested neither: a review restored the previous
+  //   data-eating wording ("Marker present -> replace it outright") and the
+  //   battery still read 8/8 while the shipped instruction destroyed the
+  //   player's file on the second run. The closing marker exists precisely so
+  //   the replace can be scoped; assert that the prose says so.
+  ok(
+    /replace \*\*only the text between them\*\*/.test(authored),
+    'Step 7.5 no longer scopes the replace to the text between the markers - an unscoped replace destroys the player\'s own content on the second run, which is what the closing marker exists to prevent',
+  );
+  for (const destructive of [
+    /replace it outright/i,
+    /replace the (?:whole |entire )?file/i,
+    /overwrite the (?:whole |entire )?file/i,
+  ]) {
+    ok(
+      !destructive.test(authored),
+      `Step 7.5 tells the agent to ${destructive} - the replace must be scoped to the marker pair, never the file`,
+    );
+  }
+  // Pairing discipline: any count other than one-and-one must fall to append.
+  // A hand-deleted closing marker leaves two openings and one closing, and a
+  // rule that does not say so lets the outermost reading swallow the player's
+  // writing on the run after the "safe" duplicate.
+  ok(
+    /[Aa]nything else/.test(authored) && /append/i.test(authored),
+    'Step 7.5 no longer routes the non-matching marker counts to the append branch',
+  );
 
   // 2c. The outcome list must still cover the half-write. Reverting to three
   //     outcomes passed every other assertion here.
