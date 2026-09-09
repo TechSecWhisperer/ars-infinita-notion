@@ -16,7 +16,7 @@ repo is not the source of truth for any player's data.
 | You want to | Go to |
 |---|---|
 | Set the game up (any agent) | [`README.md`](README.md) |
-| Set it up on Codex or Antigravity | [README → Playing on another agent](README.md#playing-on-another-agent-codex-antigravity-) |
+| Set it up on Codex or Antigravity | [README → Codex, Antigravity & other CLIs](README.md#codex-antigravity--other-clis) |
 | Build the skills for a non-Claude CLI | [`packages/system-skills/`](packages/system-skills/) |
 | Read the player-facing command guide | [`docs/PLAYERS-GUIDE.md`](docs/PLAYERS-GUIDE.md) |
 | See what changed | [`CHANGELOG.md`](CHANGELOG.md) |
