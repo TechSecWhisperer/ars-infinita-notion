@@ -168,10 +168,9 @@ Regenerate this file on a **Migration-required** re-run (its contents are versio
 
 ## Step 7.6 — set up the browser (agent-browser, optional but recommended)
 
-Browser-required commands (`/scout`, a live/JS-heavy `/quest`, the research half of `/recruit` & `/gather`, form submissions) need **agent-browser** (the vercel-labs browser CLI — see the boot-card "Using agent-browser"). Probe and offer to set it up:
-- `agent-browser doctor --json` → healthy → record "agent-browser: ready" on the Kernel's capability line.
-- Not installed → explain why first ("browser commands like /scout and live /quest need it, and it drives a browser on your behalf only when you run those"), then offer the player their preferred install path from the vercel-labs repo — **npm** (`npm install -g agent-browser`), **Homebrew** on macOS (`brew install agent-browser`), or **Cargo** (`cargo install agent-browser`) — followed by `agent-browser install` (downloads Chrome for Testing on first run). If the player can't/won't now, that's fine — record "agent-browser: not installed (universal commands only)"; those commands degrade with the paste-the-text fallback until it's set up.
-- Broken → `agent-browser doctor --fix`.
+Browser work runs through `/browse`, which owns the probe, the install paths and the repair. **Do not restate any of that here** — run `/browse`'s step 1 (probe and, with the player's consent, install) and record what it returned:
+- healthy → "agent-browser: ready" on the Kernel's capability line.
+- absent, or the player would rather not install now → "agent-browser: not installed (universal commands only)". That is a fine outcome; browser commands degrade with the paste-the-text fallback until it's set up.
 
 Record the outcome on the Kernel so `/vitals` and capability-gating reflect it. No XP — plumbing, not a milestone. App-only session → skip and note that browser setup happens on their desktop.
 
