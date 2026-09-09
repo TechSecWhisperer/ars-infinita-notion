@@ -167,7 +167,14 @@ const REGISTRY = 'https://registry.npmjs.org';
 async function registryTruth(name, version) {
   // ?write=true is the documented cache-bypassing read. Cache-Control belt and
   // braces for any proxy in front of it.
-  const res = await fetch(`${REGISTRY}/${name.replace('/', '%2F')}?write=true`, {
+  //
+  // encodeURIComponent, not a hand-rolled replace: `name.replace('/', '%2F')`
+  // substitutes only the FIRST match, so it is correct here purely by accident
+  // of scoped names carrying exactly one slash, and silently wrong for any name
+  // shape that does not. CodeQL flagged it on this PR and was right. The
+  // registry serves the fully-encoded form (`%40scope%2Fname`) identically —
+  // verified HTTP 200 against both before this was changed.
+  const res = await fetch(`${REGISTRY}/${encodeURIComponent(name)}?write=true`, {
     headers: { 'Cache-Control': 'no-cache', accept: 'application/json' },
     signal: AbortSignal.timeout(30_000),
   });
