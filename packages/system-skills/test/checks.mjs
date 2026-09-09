@@ -1069,19 +1069,60 @@ check('context-file-check', () => {
   // -> replace from the opening marker to the end of the file" -- the exact
   // swallow-the-player pairing the paragraph below warns against, and it passed
   // every other assertion. Two branches exist; a third outcome is the defect.
+  //
+  // ARROW covers the glyphs an author actually reaches for. The first cut keyed
+  // on U+2192 alone, so the same third branch written with an ASCII "->" was
+  // invisible to the count and shipped to both targets at 9/9 green: the attack
+  // was closed for one character, not for the class.
+  const ARROW = /\u2192|\u21d2|->|=>/;
   const branchLines = authored
     .split('\n')
-    .filter((l) => l.trimStart().startsWith('- ') && l.includes('\u2192'));
+    .filter((l) => l.trimStart().startsWith('- ') && ARROW.test(l));
   ok(
     branchLines.length === 2,
     `the merge rule has ${branchLines.length} branches - exactly two must exist: replace between the markers, or append`,
   );
+
+  const resolutionOf = (line) => line.slice(line.search(ARROW));
+  const isScopedReplace = (t) => /replace \*\*only the text between them\*\*/.test(t);
+  const isAppend = (t) => /\*\*append\*\*/.test(t);
+
   for (const line of branchLines) {
-    const after = line.slice(line.indexOf('\u2192'));
+    const after = resolutionOf(line);
     ok(
-      /replace \*\*only the text between them\*\*/.test(after) || /\*\*append\*\*/.test(after),
+      isScopedReplace(after) || isAppend(after),
       `a merge branch resolves to something other than a scoped replace or an append: "${line.trim().slice(0, 110)}"`,
     );
+  }
+
+  // Resolutions were previously checked in isolation, so swapping the two
+  // conditions passed: replace-between-markers on a file with no markers, and
+  // append on every clean re-run -- idempotence gone, and the swallow case live.
+  // Assert which condition maps to which action, not merely that both actions
+  // appear somewhere.
+  const matchCondition = (re) =>
+    branchLines.filter((l) => re.test(l.slice(0, l.search(ARROW))));
+  const pairings = [
+    [
+      /Exactly one opening marker and exactly one closing marker/,
+      isScopedReplace,
+      'the one-and-one branch',
+      'replace **only the text between them**',
+    ],
+    [/\*\*Anything else\*\*/, isAppend, 'the "Anything else" branch', '**append**'],
+  ];
+  for (const [conditionRe, resolves, label, expected] of pairings) {
+    const found = matchCondition(conditionRe);
+    ok(
+      found.length === 1,
+      `${label} appears ${found.length} times in the merge rule - exactly one must exist`,
+    );
+    for (const line of found) {
+      ok(
+        resolves(resolutionOf(line)),
+        `${label} no longer resolves to ${expected} - the two branch conditions have been swapped or rewired, which puts a scoped replace on a file that has no marker pair and an append on every clean re-run`,
+      );
+    }
   }
 
   // 2c. The outcome list must still cover the half-write. Reverting to three
