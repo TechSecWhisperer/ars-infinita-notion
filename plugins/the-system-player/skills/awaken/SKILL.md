@@ -33,7 +33,7 @@ Keep each to a sentence. The player should always know what they're allowing, an
 
 Search the player's Notion for "The System — Job Search HQ" and a "🧬 Kernel" page.
 
-- **Nothing found:** the player hasn't duplicated the Player Template. Tell them: get the Seed link from the Game Admin, open the Player Template, hit **Duplicate** into their own workspace, then say /awaken again. Do not attempt to build the entire workspace from scratch if the template is available — duplication is faster and canonical.
+- **Nothing found:** the player hasn't duplicated the Player Template. Tell them: open the Seed link — **the project README's bootstrap section links it directly**, so ask them to follow that rather than sending them to find a person for something they already have; only if they genuinely have no link does the Game Admin supply one — hit **Duplicate** into their own workspace, then say /awaken again. Do not attempt to build the entire workspace from scratch if the template is available — duplication is faster and canonical.
 - **Template found (fresh duplicate or partial/broken instance):** proceed. /awaken inspects what exists and builds only what's missing.
 
 ## Step 0.5 — the theme gate (blocking — ask before you build)
@@ -137,9 +137,19 @@ No XP — this is plumbing, not a milestone. (The Friday `/levelup` review can b
 
 Close with: total 500 XP banked, Level 4, D-Rank; the L5 Job Change Trial waits at 1,000 XP — their first real quests carry them toward class territory. The System is awake.
 
-## Step 7.5 — seat the local desktop context (CLAUDE.md, if this session can write files)
+## Step 7.5 — seat the local desktop context (CLAUDE.md, if this session can actually write here)
 
-If this session can write local files (a Claude Code desktop session, not app-only — check via `/vitals`), write a thin **`CLAUDE.md`** into the player's Claude Code project context so a fresh desktop session boots The System without being told how. This file is a **bootstrap pointer, not a second source of truth** — the 🧬 Kernel in Notion remains authoritative; `CLAUDE.md` only says how to find and follow it. Keep it short:
+**Probe before you claim. Do not infer writability from the kind of session this is.** A session can report as file-capable and still have nowhere to write — some hosts grant *no* filesystem access at all, not restricted access but none, until the player attaches a folder or workspace to the session. Gate on session type alone and setup finishes looking successful with nothing written, and every session afterwards starts cold with nothing explaining why.
+
+So: **attempt the write, then check it landed.** Resolve the project directory, write the file, read it back. One of three outcomes, and say which:
+
+1. **It wrote.** Note the full path in the close so the player knows where it is.
+2. **It could not write.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If it names a missing folder or workspace, the remedy is to attach one and run `/awaken` again — it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
+3. **App-only session, no local filesystem at all.** Skip, and note in the close that a desktop session is what seats `CLAUDE.md`.
+
+The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
+
+The file itself is a thin **bootstrap pointer, not a second source of truth** — the 🧬 Kernel in Notion remains authoritative; `CLAUDE.md` only says how to find and follow it. Keep it short:
 
 ```
 # The System — Claude Code context
@@ -154,7 +164,7 @@ On session start:
 Never cache IDs in this file; always resolve them from the Kernel. If the Kernel is missing or empty, run /awaken.
 ```
 
-Regenerate this file on a **Migration-required** re-run (its contents are version-agnostic, but re-writing keeps it present if the workspace moved). If the session is app-only, skip silently and note in the close that desktop sessions get a CLAUDE.md. No XP — this is plumbing, not a milestone.
+Regenerate this file on a **Migration-required** re-run (its contents are version-agnostic, but re-writing keeps it present if the workspace moved) — probing the same way, with the same three outcomes. No XP — this is plumbing, not a milestone.
 
 ## Step 7.6 — set up the browser (agent-browser, optional but recommended)
 
