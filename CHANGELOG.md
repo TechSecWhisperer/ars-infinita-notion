@@ -6,6 +6,20 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.6 — 2026-09-09
+
+**🔧 The System is in maintenance. Keep playing — expect rough edges.**
+
+This is a heads-up, not a stop. Every command still runs, your Notion workspace is untouched, and nothing you have earned is re-scored or rewritten. What it means is that we are working on The System while you are using it, and you may hit a command that behaves oddly, a run that reports something strange, or an export that isn't right.
+
+**Please tell us when something looks wrong.** That is the whole reason for announcing this rather than working quietly — use `/petition`, or open an Issue directly. Issues are public, so leave confidential job-search details out. A report naming the command you ran and what you expected is worth far more than a silent workaround; the previous release came from a player who did exactly that.
+
+**Not affected:** your data, your progress, and your commands. Nothing is disabled — if something stops working, that is a bug we want to hear about, not expected behaviour.
+
+**How long:** until we publish a note saying it has lifted. No date is promised, because we do not have an honest one.
+
+**Note on numbering:** mechanics version moves to 2.0.6 in lockstep. No XP value, level threshold, badge criterion or unlock rule changed.
+
 ## v2.0.5 — 2026-09-09
 
 **`/armor` tells you when it can't build a .docx, instead of handing you a broken one.** Reported by a player.
