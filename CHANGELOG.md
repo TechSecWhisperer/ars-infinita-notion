@@ -4,6 +4,18 @@ All notable player-facing changes to Ars Infinita Notion (A.I.N) are logged here
 
 Version numbers here are the **plugin version** — set in `plugins/the-system-player/.claude-plugin/plugin.json`, the only hand-set version in this repo. **It and the Patch Feed's `mechanics_version` track each other exactly** (ruled 2026-08-13). They used to be allowed to diverge on a delivery-only release, and that permission caused the problem it was meant to describe: four consecutive releases could not move the feed head, so nothing in them reached anyone. One number now — every release moves the head your agent checks against, and a build check fails if the two ever differ. Two other numbers version different things and are not expected to match: the **Seed / template-schema revision** (the shape of your Notion template), and nothing else. The `@ars-infinita-notion/system-skills` **npm package** tracks this number exactly — since v1.3.2 it ships the skills prebuilt, so its version is what a Codex or Antigravity user actually receives.
 
+## v1.3.11 — 2026-09-09
+
+**A command that can't read the rulebook now says so instead of guessing.** Every command starts by reading one shared file that carries the hard rules — and the list of things a session isn't able to do. On some setups that file isn't where the command looks, and nothing said so. The command carried on as if it had read the rules. That's how a session ends up telling you it researched something on the web that it never fetched, or that it scheduled a task it never created.
+
+**Every command now has a second way in.** If the shared file can't be read, it reads the Boot Card from your own Notion workspace instead. If neither works, it says so plainly — and it checks before assuming it can use a browser, a shell or a scheduler, rather than assuming and failing later.
+
+Nothing you do changes and there's nothing to do on your side. Until your client offers you this update, your commands behave the old way.
+
+**Why a fallback and not 27 copies of the file.** Bundling a copy into each skill would also work, and would mean 27 copies that must stay byte-identical forever with nothing checking that they do. One line that degrades honestly has nothing to keep in sync.
+
+**Note on numbering:** the mechanics version moves to 1.3.11 in lockstep, as it does on every release. No XP value, level threshold, badge criterion or unlock rule changed, and nothing is re-scored.
+
 ## v1.3.10 — 2026-08-27
 
 **Build your CV the way you want it read.** `/armor` now assembles your CV from a library of named sections, so you can rearrange it by asking in plain language — "move my skills above experience", "drop the interests section", "put certifications at the top". Layout presets cover different situations (graduate, career change, technical, academic, and cleared or government roles), and switching between them reorders your sections without changing a word of what they say.
