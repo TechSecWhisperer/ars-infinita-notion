@@ -57,11 +57,19 @@ idioms per target:
 
 | Source (Claude) | codex | agy |
 | --- | --- | --- |
-| `CLAUDE.md` | `AGENTS.md` | `AGENTS.md` |
 | "Claude Code" | "OpenAI Codex CLI" | "Antigravity CLI (agy)" |
 | `claude-in-chrome` | "your own logged-in browser" | same |
 | `ToolSearch` | "the available tool list" | same |
 | "reads as Claude" | "reads as an AI assistant" | same |
+
+`CLAUDE.md` is deliberately **not** in that table. `/awaken` Step 7.5 writes both
+context files on every target — `AGENTS.md` carries the content, `CLAUDE.md`
+imports it — so the filename is not a per-harness idiom any more. `PROTECTED` holds that
+line: the sentences describing Claude Code's own file behaviour, which are true
+on every target and which a rename would falsify, plus bare `CLAUDE.md` itself.
+`context-file-check` asserts each of them survives into both built copies, so
+dropping a pin fails the build rather than shipping a false claim about which
+file a CLI reads.
 
 `Claude Rating (1-5)` is **protected** and never rewritten — it is a literal Notion property
 name in the Competency Matrix, not a harness reference. The builder fails the build if any
