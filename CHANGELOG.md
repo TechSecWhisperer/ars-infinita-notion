@@ -6,6 +6,16 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.1 — 2026-09-09
+
+**A command can no longer point at something that isn't in your workspace.** Commands refer to your databases by name. If one names something your workspace doesn't have, your agent's rule is to stop and log a question rather than guess — safe, but it means the command quietly does nothing instead of failing loudly.
+
+`/gather` was doing that: it referred to your networking events database by a name the setup reference never declared. That name is now declared, and `/gather` resolves it.
+
+**The more useful half is the check behind it.** A new build check refuses to ship any command naming something your workspace has no way to provide. It was written after a change prepared earlier the same day carried exactly that kind of dead reference into every command. That change never reached anyone — it was caught and withdrawn — but it was caught by a person looking, not by a check. Every existing check passed it, because they verify that surfaces agree with each other, not that a claim is true.
+
+**Note on numbering:** mechanics version moves to 2.0.1 in lockstep. No XP value, level threshold, badge criterion or unlock rule changed.
+
 ## v2.0.0 — 2026-09-09
 
 **Beta.** Nothing about how you play changes, nothing you have earned is re-scored, and there is nothing to do on your side.
