@@ -506,8 +506,20 @@ check('single-surface-lint', () => {
     petition.includes('TechSecWhisperer/ars-infinita-notion'),
     '/petition does not name the repo it files against',
   );
+  const hasManualIssueUrl = Array.from(petition.matchAll(/https?:\/\/[^\s)'"`]+/g)).some((m) => {
+    try {
+      const u = new URL(m[0]);
+      return (
+        u.protocol === 'https:' &&
+        u.hostname === 'github.com' &&
+        u.pathname === '/TechSecWhisperer/ars-infinita-notion/issues/new'
+      );
+    } catch {
+      return false;
+    }
+  });
   ok(
-    petition.includes('https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new'),
+    hasManualIssueUrl,
     '/petition has no manual-URL fallback for sessions without `gh`',
   );
 
