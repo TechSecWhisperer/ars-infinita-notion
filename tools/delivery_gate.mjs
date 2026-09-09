@@ -147,25 +147,72 @@ function baseBranchDrift() {
 // every other PR during that window — and a gate that must be bypassed
 // routinely is worse than one that reports. The publish itself is gated by
 // prepublishOnly; this is the thing that says out loud that it has not happened.
-function npmChannelStatus(version) {
+//
+// THE REGISTRY IS CACHED, AND A STALE READ IS NOT A MISSING PUBLISH.
+// `npm view` and a plain GET of the packument are both served through npm's
+// CDN, which keeps serving the previous dist-tags for a window after a publish
+// lands. On 2026-09-09 this gate reported "registry has 2.0.2, repo has 2.0.3 —
+// run npm publish" against a registry where 2.0.3 had been published seconds
+// earlier (published 10:51:12.384Z), and that flat wording was relayed onward
+// as "no player has the fix yet". It was false.
+//
+// So a mismatch is never reported as a missing publish on one cached read.
+// Confirm against `?write=true`, which bypasses the CDN and reads the source of
+// truth, and distinguish three outcomes the old code collapsed into one:
+//   - version document present  -> published; the CDN is merely behind
+//   - absent, authoritative     -> genuinely not published
+//   - unconfirmable             -> say the state is unknown, and claim nothing
+const REGISTRY = 'https://registry.npmjs.org';
+
+async function registryTruth(name, version) {
+  // ?write=true is the documented cache-bypassing read. Cache-Control belt and
+  // braces for any proxy in front of it.
+  //
+  // encodeURIComponent, not a hand-rolled replace: `name.replace('/', '%2F')`
+  // substitutes only the FIRST match, so it is correct here purely by accident
+  // of scoped names carrying exactly one slash, and silently wrong for any name
+  // shape that does not. CodeQL flagged it on this PR and was right. The
+  // registry serves the fully-encoded form (`%40scope%2Fname`) identically —
+  // verified HTTP 200 against both before this was changed.
+  const res = await fetch(`${REGISTRY}/${encodeURIComponent(name)}?write=true`, {
+    headers: { 'Cache-Control': 'no-cache', accept: 'application/json' },
+    signal: AbortSignal.timeout(30_000),
+  });
+  if (res.status === 404) return { neverPublished: true };
+  if (!res.ok) throw new Error(`registry HTTP ${res.status}`);
+  const doc = await res.json();
+  return {
+    latest: doc['dist-tags']?.latest,
+    hasVersion: Boolean(doc.versions?.[version]),
+    publishedAt: doc.time?.[version],
+  };
+}
+
+async function npmChannelStatus(version) {
   const pkgPath = path.join(REPO_ROOT, 'packages', 'system-skills', 'package.json');
   if (!fs.existsSync(pkgPath)) return null;
   const name = JSON.parse(fs.readFileSync(pkgPath, 'utf8')).name;
+
+  let truth;
   try {
-    const published = execFileSync('npm', ['view', name, 'version'], {
-      encoding: 'utf8',
-      timeout: 30_000,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    }).trim();
-    if (published === version) return `  npm: ${name}@${published} published — channel current`;
-    return `  npm: registry has ${published}, repo has ${version} — run \`npm publish\` from packages/system-skills`;
-  } catch (err) {
-    const stderr = String(err.stderr || '');
-    if (stderr.includes('E404') || stderr.includes('404 Not Found')) {
-      return `  npm: ${name} has never been published — codex/agy users cannot npm install yet`;
-    }
-    return `  npm: registry unreachable, channel state unknown (not treated as current)`;
+    truth = await registryTruth(name, version);
+  } catch {
+    return `  npm: registry unreachable, channel state unknown (not treated as current, and not reported as unpublished)`;
   }
+
+  if (truth.neverPublished) {
+    return `  npm: ${name} has never been published — codex/agy users cannot npm install yet`;
+  }
+  if (truth.hasVersion) {
+    // Published. dist-tags may still lag on the CDN; that is npm's propagation,
+    // not work left undone, and must not be reported as one.
+    const when = truth.publishedAt ? ` (${truth.publishedAt})` : '';
+    if (truth.latest === version) {
+      return `  npm: ${name}@${version} published${when} — channel current`;
+    }
+    return `  npm: ${name}@${version} published${when}; dist-tags.latest still reads ${truth.latest} — CDN propagation, no action needed`;
+  }
+  return `  npm: ${version} absent from the registry (authoritative read; latest is ${truth.latest}) — run \`npm publish\` from packages/system-skills`;
 }
 
 // Diff the whole tree and filter in JS rather than passing a git pathspec, so
@@ -286,7 +333,7 @@ function selfTest({ quiet = false } = {}) {
   return bad === 0;
 }
 
-function main() {
+async function main() {
   if (process.argv.includes('--self-test')) {
     console.log('delivery-freshness-gate self-test');
     const okAll = selfTest();
@@ -343,7 +390,7 @@ function main() {
   if (verdict(changed) === PASS) {
     console.log('PASS delivery-freshness-gate');
     console.log(`  v${version} cut ${when} (${bump.slice(0, 7)}); no shipped file has changed since`);
-    const npmLine = npmChannelStatus(version);
+    const npmLine = await npmChannelStatus(version);
     if (npmLine) console.log(npmLine);
     process.exit(PASS);
   }
@@ -372,4 +419,4 @@ function main() {
   process.exit(FAIL);
 }
 
-main();
+await main();
