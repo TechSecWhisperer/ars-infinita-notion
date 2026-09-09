@@ -6,6 +6,20 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.2 — 2026-09-09
+
+**One command opens web pages now, instead of four pretending to.**
+
+`/scout`, `/quest`, `/recruit` and `/gather` all need to read a live page sometimes. Each carried its own idea of how, and none of them checked first whether a browser was available — so on a session without one they could describe research that never happened. `/quest` was the worst of it: it carried a three-step fallback ladder of its own, so it could succeed or fail by a route nothing had tested.
+
+`/browse` was already the command that checks properly and says so when it can't reach a page. Those four now hand it the page, and their competing instructions are **deleted** rather than left sitting underneath — the point was to remove paths, not add one. `/browse` also now separates "no browser here" from "browser fine, page unreachable" (dead link, login wall, bot check), because those need different things from you.
+
+**The rule underneath it:** probe before claiming a capability, in either direction. Don't say something is unavailable because of where you appear to be running, and don't say it worked because it usually does. Attempt it, read the result, report what came back. Stated once, in the shared boot card every command loads.
+
+A build check now refuses to ship any command other than `/browse` that drives the browser itself, so this can't quietly grow back.
+
+**Note on numbering:** mechanics version moves to 2.0.2 in lockstep. No XP value, level threshold, badge criterion or unlock rule changed.
+
 ## v2.0.1 — 2026-09-09
 
 **A command can no longer point at something that isn't in your workspace.** Commands refer to your databases by name. If one names something your workspace doesn't have, your agent's rule is to stop and log a question rather than guess — safe, but it means the command quietly does nothing instead of failing loudly.

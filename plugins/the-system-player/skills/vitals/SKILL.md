@@ -11,7 +11,7 @@ A fast environment probe answering one question — "what can I do in THIS sessi
 ## Checks (quick, non-destructive)
 
 1. **Notion connector** — probe with `self` as the PRIMARY test (it always works and needs no ID); optionally also read a known page. PASS if it returns, FAIL if the connector isn't available. Everything in The System depends on this, so a FAIL is reported first. If `self` shows query tools as `limited_free_trial` (free plan), note it in the profile so downstream commands expect the view-fetch fallback rather than discovering the quota mid-run.
-2. **agent-browser** — is a browser-automation tool present and responsive? If a browser MCP is connected, note it available; if a trivial, safe health probe is available, use it. Report present-and-healthy / present-but-unhealthy / absent.
+2. **agent-browser** — run `/browse`'s step-1 probe and report what it returned: present-and-healthy / present-but-unhealthy / absent. Do not substitute a different detector and do not count some other browser stack as available: `/browse` is the only thing that will actually drive the page, so anything it cannot drive is absent for this profile's purposes. Report only — repair belongs to `/browse` and `/doctor`.
 3. **Session class** — MCP-capable (tools/connectors beyond Notion present) vs app-only. Infer from which tool families actually exist this session; don't overclaim.
 4. **Patch Feed / call-home** — is the Nexus Patch Feed reachable? Two ways in, **neither of which needs a browser**: the feed lives in **Notion**, so the connector reaches it directly; and the public `feed.json` mirror is a plain HTTPS GET of a static file —
 
