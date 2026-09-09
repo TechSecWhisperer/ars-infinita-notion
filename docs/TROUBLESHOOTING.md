@@ -36,7 +36,7 @@ It means the Seed. The link is in the README, in your setup path's step 2 — yo
 
 ### `/awaken` finished but nothing works in my next session
 
-Two causes, both about where the context file landed.
+Two causes, both about where the context files landed.
 
 **On the Claude desktop app:** the app has *no access to your files at all* until a folder is connected to the session — not restricted access, none. `/awaken` will build your entire Notion workspace happily and then fail at the last step, because it has nowhere to write. If you saw *"No folders are connected to this device for the current session"*, that was this. Connect a folder and run `/awaken` again — it is safe to re-run and will not rebuild anything already in Notion.
 

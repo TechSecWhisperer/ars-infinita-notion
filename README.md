@@ -51,7 +51,7 @@ Now [run `/awaken`](#then-run-awaken).
 
 ### Claude desktop app
 
-1. **Connect a folder to your session first.** Create a folder on your computer for The System, then — in the prompt area, before you send anything — use the **Project folder** dropdown to pick it. The desktop app has *no* file access until you do, and `/awaken` writes a file at the end. Without it, setup finishes looking successful and every later session starts cold.
+1. **Connect a folder to your session first.** Create a folder on your computer for The System, then — in the prompt area, before you send anything — use the **Project folder** dropdown to pick it. The desktop app has *no* file access until you do, and `/awaken` writes `AGENTS.md` and `CLAUDE.md` there at the end. Without it, setup finishes looking successful and every later session starts cold.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** In the **Code** tab, click the **+** next to the prompt box → **Connectors** → **Notion**, and follow the sign-in flow. Grant access to the workspace holding your Seed copy. (Settings → Connectors is where you *manage* one later, not where you add it.)
 4. **Install the commands.** In the **Code** tab, click the **+** next to the prompt box → **Plugins**, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it. (You can also type the two slash commands from the [Claude Code](#claude-code) path straight into the prompt box.)
