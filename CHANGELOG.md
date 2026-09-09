@@ -6,6 +6,20 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.5 — 2026-09-09
+
+**`/armor` tells you when it can't build a .docx, instead of handing you a broken one.** Reported by a player.
+
+The export step told the agent, flatly, to build your `.docx` **via the docx skill** and to read that skill's instructions first. The System ships no skill by that name, and many sessions do not have one. The instruction left no room for that, so agents reached for whatever document library was to hand.
+
+One player's result was a `.docx` **Microsoft Word refused to open** — *"you don't have permission to open this file"*, its wording for a corrupt document. They inspected the file, identified three faults in the generated OOXML, and repaired it themselves.
+
+`/armor` now checks before it claims. With a builder present it uses it; without one it says so — *"no .docx builder is available in this session; here is the HTML, which opens in Word and can be saved as .docx from there"* — and delivers the HTML. It will not substitute an untested library to fill the gap.
+
+Your CV master in Notion and the HTML export were correct throughout; only the `.docx` hand-off was at fault.
+
+**Note on numbering:** mechanics version moves to 2.0.5 in lockstep. No XP value, level threshold, badge criterion or unlock rule changed.
+
 ## v2.0.4 — 2026-09-09
 
 **Housekeeping. Nothing changes in play.**
