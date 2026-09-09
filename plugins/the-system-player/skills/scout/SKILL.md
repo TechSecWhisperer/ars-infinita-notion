@@ -8,6 +8,8 @@ Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` fi
 ## What /scout does
 Real web research on a company → 5 key insights written to its Gate Intel record, plus a Hunter Network stub for any publicly-known relevant stakeholder found (never scraped private data).
 
+**Live pages: invoke `/browse` with the URL and what you need extracted** (company page, press item, review page). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, say which it was and work from whatever the player can paste — never report research you did not perform.
+
 ## Steps
 
 1. **Identify the company.** From the Gate Intel database (data source `KERNEL:Gate Intel`) if it already has a stub (created by /quest), or create one if the player named a company with no quest yet.
