@@ -114,6 +114,8 @@ Every real action earns XP. XP earns levels. Levels and streaks give you the one
 
 ## ⚠️ Status
 
+> 🔧 **In maintenance from 2026-09-09.** Work is under way and you may hit rough edges — a command that behaves oddly, an export that isn't right. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. Please report anything that looks wrong with `/petition` or an Issue. We will say here when it lifts.
+
 **Beta.** Open beyond the first small circle and no longer changing shape underneath you. Expect rough edges; report them and they get fixed. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
 
 **Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
