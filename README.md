@@ -30,7 +30,7 @@ Every path is four steps and ends the same way: you run `/awaken` and the agent 
 
 **First, install Claude Code itself** if you haven't — `curl -fsSL https://claude.ai/install.sh | bash` on macOS, Linux or WSL; `irm https://claude.ai/install.ps1 | iex` in Windows PowerShell. `claude --version` should print a version. Other install routes and system requirements: [Claude Code setup](https://code.claude.com/docs/en/setup).
 
-1. **Make a folder and work from it.** `/awaken` writes a `CLAUDE.md` there so later sessions pick up where you left off.
+1. **Make a folder and work from it.** `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off. Keep both — see [why two files](docs/TROUBLESHOOTING.md#awaken-finished-but-nothing-works-in-my-next-session).
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
@@ -51,7 +51,7 @@ Now [run `/awaken`](#then-run-awaken).
 
 ### Claude desktop app
 
-1. **Connect a folder to your session first.** Create a folder on your computer for The System, then — in the prompt area, before you send anything — use the **Project folder** dropdown to pick it. The desktop app has *no* file access until you do, and `/awaken` writes a file at the end. Without it, setup finishes looking successful and every later session starts cold.
+1. **Connect a folder to your session first.** Create a folder on your computer for The System, then — in the prompt area, before you send anything — use the **Project folder** dropdown to pick it. The desktop app has *no* file access until you do, and `/awaken` writes `AGENTS.md` and `CLAUDE.md` there at the end. Without it, setup finishes looking successful and every later session starts cold.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** In the **Code** tab, click the **+** next to the prompt box → **Connectors** → **Notion**, and follow the sign-in flow. Grant access to the workspace holding your Seed copy. (Settings → Connectors is where you *manage* one later, not where you add it.)
 4. **Install the commands.** In the **Code** tab, click the **+** next to the prompt box → **Plugins**, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it. (You can also type the two slash commands from the [Claude Code](#claude-code) path straight into the prompt box.)
@@ -60,11 +60,11 @@ Now [run `/awaken`](#then-run-awaken).
 
 ### Codex, Antigravity & other CLIs
 
-1. **Make a folder and work from it.** `/awaken` writes an `AGENTS.md` there so later sessions pick up where you left off.
+1. **Make a folder and work from it.** `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off.
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
-   The build rewrites it for your CLI, so on Codex and Antigravity the file is `AGENTS.md` — do not go looking for a `CLAUDE.md`.
+   Your CLI reads `AGENTS.md`, which holds the content. `CLAUDE.md` is a one-line import of it, written so that opening this same folder in Claude Code later still works — keep both.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` to your CLI's MCP config and complete the OAuth flow, granting access to your Seed copy. Codex: `~/.codex/config.toml`, under `[mcp_servers.notion]`. Antigravity: `~/.gemini/config/`, or `agy mcp add` if your build has it. Your CLI's own docs win over this line.
 4. **Install the commands.** No clone needed; Node 18+, no dependencies:
