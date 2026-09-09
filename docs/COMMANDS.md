@@ -1,5 +1,7 @@
 # Command reference
 
+**[← README](../README.md)** · **[Player's Guide](PLAYERS-GUIDE.md)** · **[Troubleshooting](TROUBLESHOOTING.md)**
+
 All 26 commands, in the plugin's own words. Type the slash command, or just say what you want in plain language — the System understands both.
 
 ## Setting up and keeping it healthy
@@ -50,8 +52,8 @@ All 26 commands, in the plugin's own words. Type the slash command, or just say 
 |---|---|
 | `/status` | Your current player state — level, XP, streak, active debuffs, recent unlocks. Read-only. |
 | `/levelup` | Your weekly review ritual: pipeline check, archive stats, a lint pass over the wiki for contradictions, and logged enhancement suggestions. |
-| `/browse` | Drives a live web page — the **only** command that opens one. Everything needing a page hands it here, so there is a single place that probes for a browser and a single place that tells you honestly when it cannot reach something. |
-| `/petition` | Sends a question, enhancement idea, bug report or appeal to the Game Admin. Files a public GitHub Issue after showing you the exact text. |
+| `/browse` | Drives a live web page. Everything that needs a page hands it here, so one command probes for a browser and one command tells you honestly when it cannot reach something. |
+| `/petition` | Sends a question, enhancement idea, bug report or appeal to the Game Admin. With an authenticated `gh` CLI it files a public GitHub Issue after showing you the exact text; without one it hands you the text and the link to post yourself. It never fakes a submission. |
 
 ---
 
