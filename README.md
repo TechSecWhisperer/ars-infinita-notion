@@ -1,10 +1,17 @@
 # 🌌 Ars Infinita Notion — *A.I.N*
+### *"Ai-yn"* · Craft Without Limits.
 
 ![Mechanics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FTechSecWhisperer%2Fars-infinita-notion%2Fmain%2Ffeed.json&query=%24.mechanics_version&label=mechanics&prefix=v&color=8A2BE2)
 ![Commands](https://img.shields.io/badge/commands-26-2F9E44)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 
+> Part of **Ars Infinita** — a personal brand for building worlds without limits. **A.I.N** is its Notion-native chapter. *(And yes — the **AI** is right there in the name.)*
+
 **Your job hunt as an RPG, inside your own Notion workspace.** You bring a job link; an AI agent tracks it, scores your fit, researches the company, drafts your materials in your voice, and turns real progress into XP and levels.
+
+The job market is a void of spreadsheets and silence. A.I.N imposes order on it — and makes the grind *feel* like progress, because it is.
+
+> **You are the Player. Notion is the world. The agent is the System. What you build is yours.**
 
 **[Full guide →](docs/PLAYERS-GUIDE.md)** · **[Commands →](docs/COMMANDS.md)** · **[Troubleshooting →](docs/TROUBLESHOOTING.md)**
 
@@ -97,7 +104,9 @@ Stuck? **[Troubleshooting →](docs/TROUBLESHOOTING.md)**
 - **Run the pipeline** — applications, follow-ups and interview stages tracked, with a nudge before something goes stale.
 - **Work your network** — log who you meet, get reminded who's due, prep for events.
 
-Every real action earns XP. XP earns levels. **[All 26 commands →](docs/COMMANDS.md)**
+Every real action earns XP. XP earns levels. Levels and streaks give you the one thing a job hunt almost never does: the sense that you're getting somewhere.
+
+**[All 26 commands →](docs/COMMANDS.md)**
 
 ## Questions, bugs, ideas
 
@@ -112,3 +121,10 @@ Every real action earns XP. XP earns levels. **[All 26 commands →](docs/COMMAN
 ## License
 
 [MIT](LICENSE) — © 2026 William Moses. The game's sealed mechanics live only in the author's admin workspace; nothing here is withheld from you by licence.
+
+---
+
+*Built with Notion, an AI agent, a headless browser, and pure determination.*
+***Ars Infinita Notion (A.I.N)** — an **Ars Infinita** project.*
+
+*P.S. — this world wasn't so much engineered as **vibe coded into existence**: one human with a vision, one AI with infinite patience, and a long night of "okay but what if it also—". No regrets. The System approves. ;)*
