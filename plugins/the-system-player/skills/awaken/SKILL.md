@@ -5,7 +5,7 @@ description: Initialises, repairs, or migrates the player's instance of The Syst
 
 # /awaken — the Awakening
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` for universal rules and `references/template-schemas.md` for the canonical database schemas. This command is the ONE exception to "the Kernel already exists" — /awaken is what writes it.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` for universal rules and `references/template-schemas.md` for the canonical database schemas. This command is the ONE exception to "the Kernel already exists" — /awaken is what writes it. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 The player starts at **Level 0** (a level that exists only during awakening). Every build milestone is a quest that awards XP. By completion the player has legitimately earned **exactly 500 XP → Level 4**, one level below the L5 Job Change Trial.
 

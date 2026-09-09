@@ -3,7 +3,7 @@ name: gather
 description: Logs a networking event the player's attending (a conference, meetup, industry dinner) to Raids & Gatherings and preps attendee intel + talking points ahead of time. Use when the player says "I'm going to X event", "help me prep for this meetup", "log this conference", or "/gather [event]".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /gather does
 Logs the event, preps whatever attendee intel and talking points are feasible ahead of time.

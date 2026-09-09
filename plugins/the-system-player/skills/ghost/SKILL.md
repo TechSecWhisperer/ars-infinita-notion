@@ -3,7 +3,7 @@ name: ghost
 description: Rewrites AI-sounding text (a draft email, cover letter, LinkedIn message, CV bullet) into the player's real voice, stripping the tells that make it read as Claude-written. Use when the player says "de-AI this", "make this sound like me", "this reads too robotic/generic", "ghost this", or pastes a draft and says "/ghost".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for hard rules (draft-only — this produces a rewritten draft, still never sends anything).
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for hard rules (draft-only — this produces a rewritten draft, still never sends anything). **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /ghost does
 Takes AI-flavored text and rewrites it so it reads like the player actually wrote it — no send action, just a better draft.

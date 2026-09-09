@@ -3,7 +3,7 @@ name: status
 description: Reports the player's current player state in "The System" — level, XP, streak, active debuffs, and recent unlocks. Read-only. Use when the player says "show my status", "what level am I", "how much XP do I have", "what's my streak", or "/status".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs. Read-only command — no writes.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs. Read-only command — no writes. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /status does
 Reads the Player Card + XP Ledger + Achievements and reports back cleanly.

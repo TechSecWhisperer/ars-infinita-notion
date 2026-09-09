@@ -3,7 +3,7 @@ name: report
 description: Logs an inbound reply on a tracked job application — updates the Quest Board stage and activity clock, archives the message, and sets the next action. Use when the player says "they replied", "I heard back from X", "got an email about the Y role", "moved to next round", or "/report".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /report does
 Logs the message to the Battle Log, updates `Last Activity`, moves `Stage` if the reply implies a stage change, and sets `Next Action`. No fixed XP line in the Game Rules table for this one — don't invent XP for it (boot card rule 5); the XP comes from later, more specific commands (/engage, or a stage-completion action).

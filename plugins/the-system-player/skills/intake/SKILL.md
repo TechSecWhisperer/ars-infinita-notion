@@ -3,7 +3,7 @@ name: intake
 description: Runs (or updates) the player's intake interview to build the Status Window — their single source of truth profile (positioning, experience, metrics, target roles) that every tailored CV/talking point/fit score is generated from. Use when the player says "run my intake", "let's update my profile", "I have new info about my experience", or "/intake". Also the right tool for a focused follow-up interview on one section (e.g. banking a new metric) rather than a full rebuild.
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules — the Interrogation Protocol below is one of them, follow it exactly.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules — the Interrogation Protocol below is one of them, follow it exactly. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /intake does
 An interview-style session that builds or updates the Status Window (page `KERNEL:Status Window`). **+100 XP on first-time completion** (a full section rebuild); smaller banked-answer updates don't re-earn the full 100 — see step 5.

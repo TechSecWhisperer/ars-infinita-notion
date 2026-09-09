@@ -3,7 +3,7 @@ name: recruit
 description: Logs new people the player met (usually at an event) into Hunter Network, researches each from public sources, and drafts personalised follow-ups on a schedule. Use when the player says "at [event] I met...", "I connected with these people", "add these contacts", or "/recruit [names + notes]".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /recruit does
 Creates Hunter Network entries → light public-source research on each → drafts personalised follow-ups → schedules the follow-up ladder. **+25 XP per new contact, +75 XP if tied to a logged event** (check the event XP hasn't already been awarded if multiple people are recruited from the same event across separate messages — idempotency, boot card rule 2).

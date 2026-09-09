@@ -3,7 +3,7 @@ name: respawn
 description: Attempts to revive a job application the player's Quest Board marked "Closed – No Response" with a fresh angle. Use when the player says "let's try X again", "revive that application", "respawn X", or "/respawn [role]".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /respawn does
 A revival attempt on a `Closed – No Response` quest — a genuinely fresh angle, not just a repeat of the original outreach. Success (getting a real response that reopens the process) unlocks "The Necromancer" achievement (+100 XP), logged when it actually happens (via /report), not at attempt time.

@@ -3,7 +3,7 @@ name: vitals
 description: Probes what this session can actually do — Notion connector reachability, agent-browser presence and health, MCP-capable vs app-only, Patch Feed reachability — and reports a capability profile that drives command gating. Read-only, no writes. Use when the player says "/vitals", "what works here", "check my setup", "am I on desktop or mobile", "why can't I run /scout", or as the cheap probe the boot ritual and browser-required commands call to decide what can run.
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first (see "Capability tiers & graceful degradation" and "/vitals and /doctor"). Read-only — `/vitals` never writes to Notion or disk.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first (see "Capability tiers & graceful degradation" and "/vitals and /doctor"). Read-only — `/vitals` never writes to Notion or disk. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /vitals does
 A fast environment probe answering one question — "what can I do in THIS session?" — returning a capability profile. It does not diagnose game state or repair anything (that's `/doctor`). It's cheap enough to auto-run at boot so capability-gating messages reflect the real session, not a guess.

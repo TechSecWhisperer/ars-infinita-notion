@@ -3,7 +3,7 @@ name: theme
 description: Re-skins The System's titles/labels between the hidden Solo Leveling game theme and a plain Professional theme (or another registered theme), per the Theme Registry — cosmetic only, structure and IDs untouched. Use when the player says "switch theme to X", "turn off the game stuff", "make this look professional", "I want plain language", or "/theme [name]".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /theme does
 Re-skins titles per the Theme Registry mapping. **This touches nearly every database and page title in the workspace — it's the highest blast-radius command in the whole system.** Treat it accordingly.

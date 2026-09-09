@@ -3,7 +3,7 @@ name: raid
 description: Builds a full assault playbook on a high-priority tracked job — referral routing, a hiring-manager note draft, and a value-memo plan. Use when the player says "let's go all in on X", "raid this role", "what's my full play for X", or "/raid [role]". This is for a quest the player has decided is worth the extra effort, not routine tracking.
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules — draft-only applies here more than anywhere: this command produces plans and drafts, it never contacts anyone.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs and hard rules — draft-only applies here more than anywhere: this command produces plans and drafts, it never contacts anyone. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /raid does
 A full edge-playbook for one priority quest: referral routing, a hiring-manager note draft, and a value-memo plan.

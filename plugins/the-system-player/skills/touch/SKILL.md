@@ -3,7 +3,7 @@ name: touch
 description: Scans Hunter Network for networking contacts overdue for a follow-up touch and suggests a reason to reach out for each. Read-only. Use when the player says "who's due for a networking touch", "who should I reach out to", "check my network", or "/touch".
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs. Read-only — no writes, this is a scan like /grind but for people instead of quests.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs. Read-only — no writes, this is a scan like /grind but for people instead of quests. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
 
 ## What /touch does
 Scans Hunter Network for 🔔 Due contacts, each with a suggested reason to reach out.
