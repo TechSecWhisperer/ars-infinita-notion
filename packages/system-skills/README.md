@@ -129,16 +129,20 @@ npm test        # check, then node test/smoke.mjs
 ### `test/checks.mjs` — the structural gate
 
 Zero dependencies, no network, no CLIs; it runs anywhere and is expected to actually run
-(unlike the smoke test, which skips when a CLI is missing). Six named checks:
+(unlike the smoke test, which skips when a CLI is missing). Ten named checks:
 
 | Check | Catches |
 | --- | --- |
 | `shared-reference-build-check` | A second authored boot card appearing anywhere in the plugin tree; a skill that stopped referencing the shared one, or whose reference no longer resolves; any build-stamped copy drifting from the source; a built `SKILL.md` still carrying the Claude-only plugin-root path. |
 | `release-metadata-check` | `marketplace.json` not regenerated, or growing a duplicate `version`/`description`/`author`/`license` that `plugin.json` already owns; `CHANGELOG.md`'s newest entry disagreeing with `plugin.json` (hard fail); `feed.json` disagreeing (**WARN** only — the feed legitimately leads mid-release-train); `feed_version` coming back. |
 | `command-catalog-check` | A skill with broken or mismatched frontmatter; `feed.json`'s command list drifting from the actual `skills/` directories; the hidden `/handover` route leaking into the published list. |
+| `kernel-reference-check` | A skill writing to a Kernel entity that `/awaken`'s `template-schemas.md` never builds — an instruction that reads correctly and points at nothing. |
 | `single-surface-lint` | The duplicate write-paths cut in v1.3.1 creeping back: a Calendar `Follow-up Due` mirror, a Notion "Petition form" route, browser-gating language on the `feed.json` mirror. |
 | `resume-library-check` | `/armor`'s `RESUME-LIBRARY.md` drifting from `resume-library.json`, which generates it — so "generated" stays a property rather than a claim in a header. Delegates to the generator's own `check` rather than re-implementing the render, which would itself be a second source of truth. |
 | `codex-install-guard` | `install-codex` regaining the ability to destroy a directory it did not install — the v1.3.5 data-loss defect. **Behavioural, not structural:** it runs the real installer against a sandboxed `CODEX_HOME`. It lives here rather than in `smoke.mjs` so `prepublishOnly` runs it and no workflow edit can skip it. |
+| `rewrite-collision-check` | The per-target rewrite colliding with the words around it and producing text no author wrote. It shipped `the the assistant desktop app` into both builds — the source said `the Claude desktop app` and the rule fired inside it. Reads the built tree, because the defect exists only after the rewrite. |
+| `context-file-check` | `/awaken` Step 7.5 dropping back to writing one context file, or duplicating the body into both instead of importing. `AGENTS.md` carries the content and `CLAUDE.md` imports it; one file alone means a folder opened in the other agent starts cold. |
+| `checks-doc-check` | This very table drifting from the suite it documents — a check added or renamed without the README following. It has gone stale twice: documented as four when six ran, then as six when nine did. |
 
 ### `test/smoke.mjs` — the real CLIs
 

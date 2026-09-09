@@ -6,6 +6,18 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.4 — 2026-09-09
+
+**Housekeeping. Nothing changes in play.**
+
+The npm package ships a README documenting the structural checks that run before any release. That table had gone stale twice — it described four checks while six ran, was corrected to six, and nine were running. Three were undocumented: `kernel-reference-check`, `rewrite-collision-check` and `context-file-check`.
+
+All are listed now, and `checks-doc-check` holds the table to the suite in both directions: a check with no row fails, a row naming no check fails, and the prose count is asserted separately because it is a second statement of the same fact.
+
+This file's own header comment repeated the same list a third time and had drifted identically. That copy is deleted rather than corrected — a second list is a second thing to be wrong, in the file whose job is refusing second copies.
+
+**Note on numbering:** mechanics version moves to 2.0.4 in lockstep. No XP value, level threshold, badge criterion or unlock rule changed.
+
 ## v2.0.3 — 2026-09-09
 
 **Your setup notes now work in whichever agent you open next.** At the end of setup, `/awaken` writes a small file into your project folder so a fresh session picks The System back up without you explaining it again.
