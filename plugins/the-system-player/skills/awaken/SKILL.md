@@ -145,12 +145,22 @@ So: **attempt each write, then check it landed.** Resolve the project directory,
 
 1. **Both wrote.** Note both full paths in the close so the player knows where they are.
 2. **Neither could be written.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If it names a missing folder or workspace, the remedy is to attach one and run `/awaken` again — it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
-3. **One wrote and the other did not.** This is **outcome 2, not outcome 1** — treat it as a failure of the step and say so. Name the file that is missing and the refusal for it verbatim, and say which agent that leaves without context: no `AGENTS.md` means Codex and the Antigravity CLI start cold here, no `CLAUDE.md` means Claude Code does. Re-running `/awaken` retries the missing one. **Never report the half that succeeded as the step being done** — a folder with one of the two files is the silent cold start this step exists to prevent, and it is the outcome most likely to be mistaken for success.
+3. **One wrote and the other did not.** **Report this as a failure of the step, never as a success.** Name the file that is missing and the refusal for it verbatim, and say which agent that leaves without context: no `AGENTS.md` means Codex and the Antigravity CLI start cold here, no `CLAUDE.md` means Claude Code does. Re-running `/awaken` retries the missing one. **Never report the half that succeeded as the step being done** — a folder with one of the two files is the silent cold start this step exists to prevent, and it is the outcome most likely to be mistaken for success.
 4. **App-only session, no local filesystem at all.** Skip, and note in the close that a desktop session is what seats the project context.
 
 The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
 
-**If a file already exists, read it before replacing it.** A Claude Code player may already have a `CLAUDE.md` of their own. Do not clobber hand-written content: if the existing file is not one The System wrote, add the import line and this project's lines to what is there and keep the rest. Replace outright only a file whose content is The System's own.
+**If a file already exists, read it before writing.** A player may already have a `CLAUDE.md` or `AGENTS.md` of their own — from another tool, or hand-written. Decide by a marker, not by judgement. Both templates below begin with the line:
+
+```
+<!-- ars-infinita:the-system -->
+```
+
+- **Marker present** → the file is one The System wrote. Replace it outright.
+- **Marker absent, file non-empty** → the file is the player's. **Do not replace it.** Append The System's block, marker line included, and leave everything already there untouched. Say in the close that you appended rather than replaced, and name the file.
+- **No file** → write the template as given.
+
+The marker is what makes this idempotent: on a re-run, an appended block is found by its marker and replaced in place, so a second `/awaken` never appends a second copy. Never treat a heading alone as proof of authorship — a player who wrote notes under The System's own heading would be clobbered by exactly the rule meant to protect them.
 
 **Write both files, on every harness.** A player's folder may be opened by more than one agent — they may start in one CLI and later open the same folder in another — and the agents do not agree on a filename. Writing only the one this harness happens to read is what leaves the next agent starting cold. The two names are not alternatives to choose between; they are one instruction reachable by two conventions:
 
@@ -164,6 +174,7 @@ The content is a thin **bootstrap pointer, not a second source of truth** — th
 `AGENTS.md`:
 
 ```
+<!-- ars-infinita:the-system -->
 # The System — project context
 
 This project runs "The System" — a gamified job-search tracker living in Notion.
@@ -179,6 +190,7 @@ Never cache IDs in this file; always resolve them from the Kernel. If the Kernel
 `CLAUDE.md`:
 
 ```
+<!-- ars-infinita:the-system -->
 @AGENTS.md
 
 # The System — bootstrap

@@ -785,13 +785,27 @@ check('context-file-check', () => {
   //
   //   1. The step drops back to writing one file, and whichever agent reads the
   //      other name starts cold -- the exact failure v2.0.0 was cut to end.
-  //   2. The per-target rewrite renames CLAUDE.md to AGENTS.md inside the two
-  //      sentences that describe Claude Code's own behaviour, turning a true
-  //      statement into a false one on the codex and agy builds.
+  //   2. The per-target rewrite falsifies the two sentences that describe Claude
+  //      Code's own behaviour. They are pinned in PROTECTED; if that pin is
+  //      dropped, a codex or agy player reads a false claim about their own CLI.
   const awakenPath = path.join(SOURCE_SKILLS_DIR, 'awaken', 'SKILL.md');
   ok(fs.existsSync(awakenPath), 'awaken/SKILL.md is missing');
   if (!fs.existsSync(awakenPath)) return;
-  const authored = fs.readFileSync(awakenPath, 'utf8');
+  const authoredFull = fs.readFileSync(awakenPath, 'utf8');
+
+  // Scope every prose assertion to Step 7.5's own section. A review defeated the
+  // whole-file version by leaving the pinned literal untouched and undoing it a
+  // paragraph later ("skip writing CLAUDE.md there unless the player tells you
+  // they use Claude Code as well") -- every "is present" assertion still held,
+  // and the shipped instruction contradicted itself. Presence is not meaning.
+  const stepStart = authoredFull.indexOf('## Step 7.5');
+  ok(stepStart !== -1, 'awaken/SKILL.md no longer has a "## Step 7.5" heading');
+  if (stepStart === -1) return;
+  const nextHeading = authoredFull.indexOf('\n## ', stepStart + 1);
+  const authored = authoredFull.slice(
+    stepStart,
+    nextHeading === -1 ? authoredFull.length : nextHeading,
+  );
 
   // 1. The authored step names both files and states the import relationship.
   ok(
@@ -815,10 +829,18 @@ check('context-file-check', () => {
     authored.includes('**Write both files, on every harness.**'),
     'Step 7.5 no longer states that both files are written on every harness - if the second file has become conditional, the folder is cold for whichever agent reads the missing name',
   );
+  // Both the "make it conditional" and the "undo it later" families. The second
+  // set exists because an assertion that a sentence is PRESENT says nothing
+  // about a later sentence that takes it back.
   for (const conditional of [
     /also write [`*]*CLAUDE\.md/i,
     /if (?:this|the) session is Claude Code/i,
     /\(Claude Code only\)/i,
+    /skip (?:writing |the )?[`*]*(?:CLAUDE|AGENTS)\.md/i,
+    /unless the player (?:tells|says|asks)/i,
+    /redundant[^.]*\b(?:CLAUDE|AGENTS)\.md/i,
+    /[`*]*(?:CLAUDE|AGENTS)\.md[^.]*\bis redundant/i,
+    /only (?:write|needed) (?:on|for) (?:Claude|Codex|Antigravity)/i,
   ]) {
     ok(
       !conditional.test(authored),
@@ -839,6 +861,44 @@ check('context-file-check', () => {
       `"${bodyMarker}" appears ${bodyCount}x in awaken/SKILL.md - the context body must live in AGENTS.md only, with CLAUDE.md importing it`,
     );
   }
+
+  // 2b. Both fenced templates must actually exist. Without this, deleting the
+  //     CLAUDE.md block and leaving prose that merely mentions `@AGENTS.md`
+  //     passes -- the agent is told to write a file and given no content for it.
+  for (const label of ['`AGENTS.md`:', '`CLAUDE.md`:']) {
+    ok(
+      authored.includes(label),
+      `Step 7.5 no longer shows the ${label} template block - the agent is told to write a file with no content given for it`,
+    );
+  }
+  // The authorship marker is what makes the merge-don't-clobber rule executable
+  // and idempotent. Both templates carry it; without it the rule has no test.
+  // Assert the marker actually heads BOTH templates, rather than counting
+  // occurrences -- the prose that declares the marker quotes it too, so a raw
+  // count is brittle and says nothing about where the marker sits.
+  const MARKER = '<!-- ars-infinita:the-system -->';
+  ok(authored.includes(MARKER), 'Step 7.5 no longer declares the authorship marker');
+  for (const [file, firstLine] of [
+    ['AGENTS.md', '# The System \u2014 project context'],
+    ['CLAUDE.md', '@AGENTS.md'],
+  ]) {
+    const at = authored.indexOf(`${MARKER}\n${firstLine}`);
+    ok(
+      at !== -1,
+      `the ${file} template does not begin with the authorship marker - without it, "is this a file The System wrote" has no answer and the merge rule cannot avoid clobbering the player's own file`,
+    );
+  }
+
+  // 2c. The outcome list must still cover the half-write. Reverting to three
+  //     outcomes passed every other assertion here.
+  ok(
+    authored.includes('One of four outcomes'),
+    'Step 7.5 no longer states four outcomes - the half-write case (one file written, one not) is the one most easily mistaken for success',
+  );
+  ok(
+    /One wrote and the other did not/.test(authored),
+    'Step 7.5 no longer names the half-write outcome',
+  );
 
   // 3. The two statements about Claude Code's file behaviour survive the
   //    rewrite verbatim in every built copy. They are true on every target.
