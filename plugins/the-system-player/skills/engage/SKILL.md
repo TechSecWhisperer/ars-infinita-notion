@@ -3,7 +3,7 @@ name: engage
 description: Marks a tracked job on the player's Quest Board as applied — moves its stage, sets dates, logs the application to the Battle Log, and awards XP. Use when the player says "I applied to X", "just submitted my application for X", "engage on X", or "/engage [role]" — this is for reporting a completed submission, not for tracking a new posting (/quest) or scoring fit before deciding to apply (/appraise).
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules.
 
 ## What /engage does
 Stage → `Applied`, sets `Applied On` + `Last Activity`, logs the application to the Battle Log. **+50 XP** ("Application submitted").

@@ -3,7 +3,7 @@ name: appraise
 description: Runs a fit-score and gap analysis for a job on the player's Quest Board against their Status Window/Stat Sheet, pulls talking points, and triggers a company /scout. Use when the player says "appraise this", "I want to apply for this", "how good a fit is this role", "score this against my profile", or asks whether a tracked quest is worth pursuing. This is analysis-heavy work — take your time and reason carefully rather than rushing to a number. If the role isn't tracked yet, run /quest first; if the player's already submitted the application, that's /engage, not this.
 ---
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules. This command wants careful reasoning (boot card rule 7) — don't rush a shallow score. **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first for IDs, query mechanics, and hard rules. This command wants careful reasoning (boot card rule 7) — don't rush a shallow score.
 
 ## What /appraise does
 Fit score (1–10) + honest gap analysis, written to the Stat Sheet and a new 🗒 Agent Notes entry — plus talking points and triggering /scout if the company hasn't been researched yet.

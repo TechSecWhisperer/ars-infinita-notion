@@ -5,7 +5,7 @@ description: Requests a shared Party Board in the Guild Hall for the player and 
 
 # /party — the Guild Hall
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first — **the Party Wall section is a hard rule and governs everything here.** **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first — **the Party Wall section is a hard rule and governs everything here.**
 
 ## Requesting a party
 

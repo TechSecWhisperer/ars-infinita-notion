@@ -5,7 +5,7 @@ description: Sends a question, enhancement idea, bug report, or mercy appeal fro
 
 # /petition — ask the Game Admin
 
-Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first (lite boot: Kernel → this duty). **If that path does not resolve** — some surfaces mount skills flat, and the shared file is then unreachable — read the Boot Card from Notion instead (`KERNEL:Agent Boot Card`). Until you have read it from one source or the other, treat every capability as unproven: probe before using a browser, shell or scheduler, and say plainly that you could not rather than assuming it works.
+Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` first (lite boot: Kernel → this duty).
 
 The petition write-path is a **GitHub Issue on `TechSecWhisperer/ars-infinita-notion`** — the same public repo the plugin installs from. No browser and no form: `gh issue create` is a plain shell call, so this command runs on any surface that has a shell, and the fallback below covers the ones that don't.
 
