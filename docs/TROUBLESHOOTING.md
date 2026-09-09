@@ -40,7 +40,9 @@ Two causes, both about where the context file landed.
 
 **On the Claude desktop app:** the app has *no access to your files at all* until a folder is connected to the session — not restricted access, none. `/awaken` will build your entire Notion workspace happily and then fail at the last step, because it has nowhere to write. If you saw *"No folders are connected to this device for the current session"*, that was this. Connect a folder and run `/awaken` again — it is safe to re-run and will not rebuild anything already in Notion.
 
-**Anywhere else:** you ran `/awaken` from an arbitrary folder, so the file landed in an arbitrary folder. Find it and move it to the folder you actually work in, or just re-run `/awaken` from there. The file is `CLAUDE.md` on Claude, and **`AGENTS.md`** on Codex and Antigravity — the build rewrites it per CLI, so a Codex player searching for `CLAUDE.md` will never find one.
+**Anywhere else:** you ran `/awaken` from an arbitrary folder, so the files landed in an arbitrary folder. Move them to the folder you actually work in, or just re-run `/awaken` from there.
+
+There are **two** of them, and you want both: **`AGENTS.md`** holds the content, and **`CLAUDE.md`** is a one-line import of it. That is not redundancy — Claude Code reads only `CLAUDE.md` and does not read a bare `AGENTS.md`, while Codex and the Antigravity CLI read `AGENTS.md`. Keeping both is what lets you open the same folder in a different agent later and have it pick The System back up. Move one without the other and whichever agent reads the missing name starts cold.
 
 ## After setup
 
