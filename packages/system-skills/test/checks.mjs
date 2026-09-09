@@ -548,13 +548,28 @@ check('single-surface-lint', () => {
     petition.includes('TechSecWhisperer/ars-infinita-notion'),
     '/petition does not name the repo it files against',
   );
-  const hasManualIssueUrl = Array.from(petition.matchAll(/https?:\/\/[^\s)'"`]+/g)).some((m) => {
+  // Structured parse rather than includes(), so a URL that merely CONTAINS the
+  // repo path — https://evil.example/github.com/TechSecWhisperer/... — cannot
+  // satisfy it. That was code-scanning alert 4, and the parse is the fix.
+  //
+  // Both landing pages are accepted, and that is the point rather than laxity.
+  // GitHub serves /issues/new/choose when a repo has issue templates and
+  // /issues/new when it does not; this repo has templates today, so the skill
+  // carries /choose. Pinning one exact pathname is what made the first attempt
+  // at this check fail: it asserted /issues/new against a file that says
+  // /issues/new/choose, so the check went red while the skill was perfectly
+  // correct. Adding or removing an issue template must not turn this red.
+  const MANUAL_ISSUE_PATHS = new Set([
+    '/TechSecWhisperer/ars-infinita-notion/issues/new',
+    '/TechSecWhisperer/ars-infinita-notion/issues/new/choose',
+  ]);
+  const hasManualIssueUrl = Array.from(petition.matchAll(/https?:\/\/[^\s)'"`*]+/g)).some((m) => {
     try {
       const u = new URL(m[0]);
       return (
         u.protocol === 'https:' &&
         u.hostname === 'github.com' &&
-        u.pathname === '/TechSecWhisperer/ars-infinita-notion/issues/new'
+        MANUAL_ISSUE_PATHS.has(u.pathname)
       );
     } catch {
       return false;
