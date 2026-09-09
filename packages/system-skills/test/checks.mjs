@@ -11,28 +11,20 @@
 // something catches its return. When one of these fires, it is naming the
 // second copy that came back.
 //
-//   shared-reference-build-check — one authored boot card; every skill resolves
-//       it; every build-stamped copy is byte-identical to it.
-//   release-metadata-check      — plugin.json is the only hand-set version;
-//       marketplace.json's generated half is generated and its authored half is
-//       pinned; the changelog agrees; every feed comparison is decidable and
-//       hard-fails. This battery emits no advisory-only output: a warning does
-//       not affect the exit code, so a check that only warns is a check that
-//       cannot stop anything, and a check that reports success without running
-//       is worse still — an unbuilt dist/ now fails rather than warns.
-//   command-catalog-check       — the skills/ directories are the catalog and
-//       feed.json's command list is exactly the public subset of them.
-//   single-surface-lint         — the specific duplicated instructions removed
-//       in this release do not creep back into a SKILL.md.
-//   codex-install-guard         — install-codex never destroys a directory it
-//       did not install. Behavioural, not structural: it runs the real
-//       installer against a sandboxed CODEX_HOME. It lives here rather than in
-//       smoke.mjs so `prepublishOnly` runs it and no workflow edit can skip it.
-//   resume-library-check        — /armor's RESUME-LIBRARY.md is generated from
-//       resume-library.json and stays that way. Without this, "generated" is a
-//       comment in a header rather than a property: the markdown could be
-//       hand-edited into a second, disagreeing source and nothing would notice
-//       — which is the defect issue #20 describes on another surface.
+// WHAT EACH CHECK CATCHES IS DOCUMENTED IN ONE PLACE: the table under
+// "### `test/checks.mjs` — the structural gate" in ../README.md.
+//
+// This header used to repeat that list, and the repetition did exactly what
+// this battery exists to prevent. Both copies drifted: the README said "Four
+// named checks" while six ran, was corrected to six while nine ran, and this
+// comment still named the same stale six. A second list is a second thing to
+// be wrong, in the file whose entire job is refusing second copies.
+//
+// So the list lives in the README, where a reader looks for it, and
+// `checks-doc-check` at the bottom of this file holds it to the suite: add or
+// rename a check without updating that table and the battery fails, naming the
+// difference. Each check's own rationale stays in a comment at its definition,
+// where it cannot drift from the code it describes.
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -1224,6 +1216,67 @@ check('context-file-check', () => {
     ok(
       built.includes('<!-- /ars-infinita:the-system -->'),
       `${label}: the closing marker did not survive the rewrite`,
+    );
+  }
+});
+
+// The README documents this suite in a table, and that table has now gone stale
+// twice: it said "Four named checks" while six ran, and was corrected to six
+// while nine ran. Each time the drift was found by a human reading the file, not
+// by anything in the repo -- the same shape as the defect resume-library-check
+// exists to prevent, one surface over.
+//
+// A reader who cannot trust the table has to read checks.mjs instead, which is
+// what the table is for. So the suite now documents itself: add or rename a
+// check without touching the README and this fails, naming the difference.
+//
+// It runs last on purpose. `results` is appended as each check STARTS, so by the
+// time this one runs the array holds every check including itself -- which is
+// exactly the set the README must list.
+check('checks-doc-check', () => {
+  const readmePath = path.join(PKG_ROOT, 'README.md');
+  const readme = fs.readFileSync(readmePath, 'utf8');
+
+  const registered = results.map((r) => r.name);
+
+  // Scope to the checks table's own section before matching rows. Matching row
+  // shape across the whole README is not specific enough: other tables use the
+  // same `| \`kebab-name\` |` shape -- the browser-routing table's
+  // `claude-in-chrome` row matched on the first run of this check and was
+  // reported as a check that does not run. Slice the section, then match.
+  const SECTION = '### `test/checks.mjs` — the structural gate';
+  const start = readme.indexOf(SECTION);
+  ok(start !== -1, `README no longer has the "${SECTION}" section this table lives in`);
+  const rest = readme.slice(start + SECTION.length);
+  const end = rest.indexOf('\n### ');
+  const section = end === -1 ? rest : rest.slice(0, end);
+
+  const documented = Array.from(section.matchAll(/^\| `([a-z][a-z-]*)` \|/gm)).map((m) => m[1]);
+
+  const missing = registered.filter((n) => !documented.includes(n));
+  const extra = documented.filter((n) => !registered.includes(n));
+
+  ok(
+    missing.length === 0,
+    `README documents no row for: ${missing.join(', ')} — add each to the table in "test/checks.mjs — the structural gate"`,
+  );
+  ok(
+    extra.length === 0,
+    `README documents a check that does not run: ${extra.join(', ')} — it was renamed or removed`,
+  );
+
+  // The prose count is a second, independent statement of the same fact, so it
+  // can disagree on its own. "Six named checks" with six correct rows listed is
+  // still a lie once a seventh runs.
+  const WORDS = ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven',
+    'eight', 'nine', 'ten', 'eleven', 'twelve', 'thirteen', 'fourteen', 'fifteen'];
+  const stated = section.match(/(\w+) named checks:/i) || readme.match(/(\w+) named checks:/i);
+  ok(Boolean(stated), 'README no longer says "<N> named checks:" above the table');
+  if (stated) {
+    const expected = WORDS[registered.length] ?? String(registered.length);
+    ok(
+      stated[1].toLowerCase() === expected,
+      `README says "${stated[1]} named checks" but ${registered.length} run — expected "${expected}"`,
     );
   }
 });
