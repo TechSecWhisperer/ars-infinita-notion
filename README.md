@@ -101,7 +101,9 @@ mkdir ~/ars-infinita
 cd ~/ars-infinita
 ```
 
-The name is yours; the habit is what matters. Using the **desktop app**? Open that same folder as your project folder before you start.
+The name is yours; the habit is what matters.
+
+> **Using the desktop app: connect that folder to your session before you start.** The desktop app has *no access to your files at all* until a folder is connected — not restricted access, none. `/awaken` will build your whole Notion workspace happily and then fail at the last step, because it has nowhere to write. If you see *"No folders are connected to this device for the current session"*, that is this: connect the folder and run `/awaken` again.
 
 **Why this comes first:** `/awaken` writes a small `CLAUDE.md` into this folder at the end of setup. That file is what lets a fresh session pick The System back up without you explaining it again. Start somewhere arbitrary and the file lands somewhere arbitrary — setup still finishes, but every session after it begins cold.
 
