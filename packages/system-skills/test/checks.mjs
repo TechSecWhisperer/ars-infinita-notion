@@ -480,6 +480,16 @@ check('kernel-reference-check', () => {
 
 // ---------------------------------------------------------------------------
 
+// Every `agent-browser <sub>` invocation in a file, counting only what appears
+// inside a backticked code span. Prose that happens to put a word after the
+// tool's name ("agent-browser required", "agent-browser probe") is English, not
+// an invocation, and matching it produced false failures.
+function browserSubcommands(text) {
+  return [...text.matchAll(/`([^`\n]+)`/g)]
+    .flatMap((span) => [...span[1].matchAll(/\bagent-browser\s+([a-z][a-z-]*)/g)])
+    .map((m) => m[1]);
+}
+
 check('single-surface-lint', () => {
   // Regression guards for the duplicate write-paths cut in this release. Each
   // one is a literal that only ever appeared in the instruction being removed.
@@ -496,8 +506,40 @@ check('single-surface-lint', () => {
     if (/Petition form/i.test(text)) {
       offenders.push(`${name}: still routes to the Notion Petition form — /petition files a GitHub Issue`);
     }
+    // /browse is the sole browser router (public #21). Naming the *name* is
+    // fine — every caller has to say what it delegates to. Naming a
+    // subcommand is a second implementation of the interface.
+    if (name !== 'browse') {
+      const subcommands = browserSubcommands(text);
+      if (subcommands.length) {
+        offenders.push(
+          `${name}: runs \`agent-browser ${subcommands[0]}\` itself — /browse is the sole browser ` +
+            'router, so hand it the URL and what you need extracted instead of re-implementing the interface',
+        );
+      }
+    }
   }
   for (const o of offenders) fail(o);
+
+  // The shared boot card must point at /browse, not carry a second copy of the
+  // interface — it is read by all 27 skills, so a subcommand here is the
+  // widest duplication of the lot.
+  {
+    const card = fs.readFileSync(
+      path.join(SOURCE_SKILLS_DIR, '..', 'references', 'boot-card.md'),
+      'utf8',
+    );
+    const cardSubcommands = browserSubcommands(card);
+    ok(
+      cardSubcommands.length === 0,
+      `boot-card.md restates the agent-browser interface (\`agent-browser ${cardSubcommands[0]}\`) — ` +
+        'that interface belongs to /browse alone; the card should point at it',
+    );
+    ok(
+      /sole route to a live web page/.test(card),
+      'boot-card.md no longer names /browse as the sole route to a live web page',
+    );
+  }
 
   // /petition must actually carry the route it claims.
   const petition = fs.readFileSync(path.join(SOURCE_SKILLS_DIR, 'petition', 'SKILL.md'), 'utf8');

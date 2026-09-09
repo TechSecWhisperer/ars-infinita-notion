@@ -14,7 +14,7 @@ Creates Hunter Network entries → light public-source research on each → draf
 
 2. **Light public-source research** on each (same public-only rule as /scout) to round out `Role / Title`/`Company` if the player's notes were partial, and set `Research Brief` accordingly (`Researched — see page` or `Not Findable Online`).
 
-**Anything that needs a live web page goes through `/browse`.** It probes for a browser and degrades honestly when there is none. Do not assume a browser here, and do not re-implement the probe — one router, so there is one place that can be wrong. If `/browse` reports it cannot reach a page, say so plainly and work from whatever the player can paste instead; never report research you did not actually perform.
+**Live pages: invoke `/browse` with the URL and what you need extracted** (public profile, company page). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, set `Research Brief: Not Findable Online` and say which it was — never report research you did not perform.
 
 3. **Draft a personalised follow-up** per person, grounded in the actual conversation notes — a generic "great meeting you" message defeats the point of banking what they talked about. Draft only; never send.
 
