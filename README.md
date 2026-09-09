@@ -75,7 +75,7 @@ Type a slash command, or just say what you want in plain language — the System
 
 ## 🚀 Getting Started
 
-This one repo is everything you need. No other links to chase — install the plugin, duplicate the template, connect Notion, and play.
+**The System is an agent that builds and runs your workspace for you.** Setup reflects that: a short bootstrap you do by hand, then you hand over and the agent does the rest.
 
 ### Prerequisites
 
@@ -83,7 +83,16 @@ This one repo is everything you need. No other links to chase — install the pl
 - **A paid AI agent subscription.** The System is an agent doing real work for you every day, so it needs a plan that allows that. **This is the one thing you have to pay for.** For Claude that means **Pro or Max**, using either **Claude Code** (terminal) or the **Claude desktop app** (Cowork) — either works, and the steps below note where they differ. Other agents are supported (see *Playing on another agent*); whatever you use, expect to need a plan that permits sustained daily agent work, which for most agents means a paid tier.
 - **Confirm your agent can run routines** — scheduled, recurring, unattended tasks. This is what delivers your morning briefing without you asking for it. **A paid plan does not guarantee this capability**, so check it explicitly before you install rather than discovering it later. If your agent can't run them, The System still works — you drive it yourself, saying *"run my daily briefing"* each weekday morning instead of it arriving on its own.
 
-### Step 1 — Duplicate the Seed into your own Notion workspace
+
+---
+
+## Part 1 — Bootstrap
+
+*About five minutes, and you do this part yourself.*
+
+**Why you and not the agent:** until these three things exist, the agent has no workspace to reach and no commands to run — it cannot bootstrap itself into being. This is the only part that is manual, and it is manual for that reason rather than by choice. Everything after it, the agent does.
+
+### Bootstrap 1 — Duplicate the Seed into your own Notion workspace
 
 The "Seed" is the empty A.I.N template: the databases and pages the System reads and writes, with nothing built out yet.
 
@@ -93,26 +102,28 @@ The "Seed" is the empty A.I.N template: the databases and pages the System reads
 
 That copy is entirely yours — nothing you do in it phones anyone else.
 
+> Keep that Seed link. If `/awaken` later says it cannot find your template, this is the link it means — you already have it and do not need to ask anyone for it.
+
 > If the link 404s or asks for access you don't have, don't try to work around it — see **Troubleshooting** below and let the admin know.
 
-### Step 2 — Connect Claude to Notion
+### Bootstrap 2 — Connect your agent to Notion
 
-The System reads and writes your Notion pages through Notion's own connector (an MCP integration), so Claude needs permission to reach your new workspace.
+The System reads and writes your Notion pages through Notion's own connector (an MCP integration), so your agent needs permission to reach your new workspace.
 
 **Using claude.ai or the Claude desktop app (Cowork):**
 1. Go to **Settings → Connectors** (sometimes labeled **Connected apps**).
 2. Find **Notion** and click **Connect** — this opens Notion's own authorization flow in your browser.
-3. When Notion asks which pages or workspace to share, grant access to the workspace (or at least the page) where you duplicated the Seed in Step 1.
+3. When Notion asks which pages or workspace to share, grant access to the workspace (or at least the page) where you duplicated the Seed.
 
 **Using Claude Code (terminal):**
 1. Add the Notion MCP server if it isn't already connected — Claude Code will walk you through the same Notion OAuth flow in your browser.
-2. Confirm the connection covers the page from Step 1.
+2. Confirm the connection covers the page you just duplicated.
 
 **Not using Claude?** The System runs on any agent that can reach Notion. See **[Playing on another agent](#playing-on-another-agent-codex-antigravity-)** below.
 
-You can sanity-check the connection later with `/vitals` (Step 5).
+You can sanity-check the connection later with `/vitals`.
 
-### Step 3 — Add the marketplace and install the plugin
+### Bootstrap 3 — Add the marketplace and install the plugin
 
 In Claude Code, or the desktop app's plugin panel, run:
 
@@ -130,23 +141,29 @@ If a plugin-details/confirm view opens, accept it, then run `/reload-plugins` (o
 
 > **Syntax note:** the `owner/repo` marketplace-add shorthand and the `<plugin-name>@<marketplace-name>` install syntax above are the exact forms in Claude Code's own docs for [discovering and installing plugins](https://code.claude.com/docs/en/discover-plugins). If a future Claude Code version changes this syntax, trust its own `/plugin` help output over this README.
 
-### Step 4 — Run `/awaken`
+**Bootstrap is done.** You now have a workspace, a connection, and a command set. Hand over.
+
+---
+
+## Part 2 — Hand over to the agent
+
+### Run `/awaken`
 
 ```
 /awaken
 ```
 
-`/awaken` is the Level-0 tutorial questline — the tutorial *is* the setup. It's idempotent and resumable: if it stalls partway (a missing permission, a dropped connection), just run it again. It never double-builds or double-awards; it picks up exactly where it stopped.
+**This is the System.** `/awaken` is the Level-0 tutorial questline — the tutorial *is* the setup. It's idempotent and resumable: if it stalls partway (a missing permission, a dropped connection), just run it again. It never double-builds or double-awards; it picks up exactly where it stopped.
 
 What to expect:
-- It checks your Notion connection and confirms it can see the workspace/page from Step 1.
-- It builds anything missing and writes your **Kernel** — the config that lets every other command find your pages reliably.
+- It checks your Notion connection and confirms it can see the workspace you duplicated.
+- It builds everything else that's missing and writes your **Kernel** — the config that lets every other command find your pages reliably.
 - It teaches the core loop hands-on (tracking a quest, appraising it, and so on) rather than lecturing at you.
 - By the time it finishes, you'll be at **Level 4**, holding real XP for the real setup work you just did.
 
-If `/awaken` can't see your Notion workspace, re-check Step 2 before re-running it.
+If `/awaken` can't see your Notion workspace, re-check **Bootstrap 2** before re-running it. If it says it can't find your template, re-check **Bootstrap 1** — the Seed link is in this README.
 
-### Step 5 (recommended, desktop) — The browser layer
+### The browser layer (recommended, desktop)
 
 For company research, reading job postings that need a real browser to render, and the fullest experience, the System drives a headless browser (`agent-browser`) on your machine. `/awaken` checks for it and helps set it up if you're on desktop.
 
@@ -155,11 +172,12 @@ For company research, reading job postings that need a real browser to render, a
 
 Run `/vitals` any time to see exactly what your current session can and can't do.
 
+---
 ### Playing on another agent (Codex, Antigravity, …)
 
-Steps 1, 4 and 5 above are the same for everyone — the game lives in Notion, not in Claude. Only Steps 2 and 3 are Claude-shaped, and both have a direct equivalent.
+**Bootstrap 1**, `/awaken` and the browser layer are the same for everyone — the game lives in Notion, not in Claude. Only **Bootstrap 2** and **Bootstrap 3** are Claude-shaped, and both have a direct equivalent.
 
-**Instead of Step 3 (install the plugin)** — install the same commands as skills for your CLI. **No clone needed:**
+**Instead of Bootstrap 3 (install the plugin)** — install the same commands as skills for your CLI. **No clone needed:**
 
 ```sh
 npx @ars-infinita-notion/system-skills install-codex   # OpenAI Codex CLI  -> $CODEX_HOME/skills
@@ -172,7 +190,7 @@ Its version matches the plugin version, so `npx @ars-infinita-notion/system-skil
 
 *From a clone instead? `cd packages/system-skills && npm run install-codex` still works — it builds first, then installs.*
 
-**Instead of Step 2 (connect Notion)** — every command needs Notion reachable, which means adding **Notion's own MCP server** to your CLI's MCP configuration. The server is the same one Claude uses; only the config file differs:
+**Instead of Bootstrap 2 (connect Notion)** — every command needs Notion reachable, which means adding **Notion's own MCP server** to your CLI's MCP configuration. The server is the same one Claude uses; only the config file differs:
 
 | CLI | Where MCP servers are configured |
 |---|---|
@@ -180,9 +198,22 @@ Its version matches the plugin version, so `npx @ars-infinita-notion/system-skil
 | Antigravity (`agy`) | `~/.gemini/config/` — or `agy mcp add`, if your build has it |
 | Anything else | whatever that agent calls its MCP server list |
 
-Point it at Notion's hosted MCP endpoint (`https://mcp.notion.com/mcp`) and complete the OAuth flow it opens, granting access to the workspace or page you duplicated the Seed into in Step 1. Your CLI's own docs are authoritative on the exact syntax — trust them over this table if they disagree. Once the server is connected, run `/awaken` (or just say "awaken") exactly as in Step 4.
+Point it at Notion's hosted MCP endpoint (`https://mcp.notion.com/mcp`) and complete the OAuth flow it opens, granting access to the workspace or page you duplicated the Seed into in Bootstrap 1. Your CLI's own docs are authoritative on the exact syntax — trust them over this table if they disagree. Once the server is connected, run `/awaken` (or just say "awaken") exactly as in Part 2.
 
-Two differences worth knowing: your agent needs the `gh` CLI (or you'll paste a link) for `/petition`, and the browser layer in Step 5 is `agent-browser`, which is CLI-agnostic and works the same everywhere.
+Two differences worth knowing: your agent needs the `gh` CLI (or you'll paste a link) for `/petition`, and the browser layer is `agent-browser`, which is CLI-agnostic and works the same everywhere.
+
+
+### Building or repairing by hand
+
+**This is not the setup path.** `/awaken` builds your workspace, and it is the supported way in. This section exists for one situation: something in your workspace got damaged or deleted and you want to understand what should be there.
+
+Run `/awaken` first. It is idempotent and repairs what is missing, which resolves almost every case without anyone reading a schema.
+
+If you still need the underlying shape, the database schemas `/awaken` builds from live in the plugin at [`plugins/the-system-player/skills/awaken/references/template-schemas.md`](plugins/the-system-player/skills/awaken/references/template-schemas.md). That file is maintained for the agent's use, so it is accurate by construction rather than by someone remembering to update prose.
+
+Duplicating the Seed again into a clean workspace is usually faster than hand-repair, and never loses anything — your old copy stays where it is.
+
+---
 
 ### Command reference
 
@@ -242,7 +273,7 @@ If `/doctor` says your Mechanics Version is behind the Patch Feed head, that's t
 ### Troubleshooting
 
 - **Plugin failed to install.** Update Claude Code to the latest version and try again — plugin marketplace support needs a recent release.
-- **`/awaken` can't see my Notion workspace.** Almost always a connector problem: go back to Step 2 and confirm the Notion connection is authorized, and that the *specific page* you duplicated the Seed into is shared with that connection (Notion scopes access per-page/per-workspace, not automatically to everything).
+- **`/awaken` can't see my Notion workspace.** Almost always a connector problem: go back to **Bootstrap 2** and confirm the Notion connection is authorized, and that the *specific page* you duplicated the Seed into is shared with that connection (Notion scopes access per-page/per-workspace, not automatically to everything).
 - **The Seed link asks for access / shows a 404.** The Seed page has to be shared publicly by the admin — this isn't something you can fix on your end. Use `/petition` if you already have the plugin installed, or otherwise tell the admin directly.
 - **Something else feels broken.** Run `/doctor` first — a full diagnostic pass that self-repairs anything local. Run `/vitals` to see exactly what your session can and can't do (useful for browser- or connector-shaped issues). For anything else — a question, a bug, an idea — `/petition`.
 
