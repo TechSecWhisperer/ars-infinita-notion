@@ -5,7 +5,7 @@
 ![Agents](https://img.shields.io/badge/agents-Claude%20%C2%B7%20Codex%20%C2%B7%20Antigravity-0B7285)
 ![Skills](https://img.shields.io/badge/skills-27-2F9E44)
 ![License](https://img.shields.io/badge/license-MIT-blue)
-![Status](https://img.shields.io/badge/status-alpha-orange)
+![Status](https://img.shields.io/badge/status-beta-blue)
 
 > Part of **Ars Infinita** — a personal brand for building worlds without limits. **A.I.N** is its Notion-native chapter. *(And yes — the **AI** is right there in the name.)*
 
@@ -296,7 +296,7 @@ If `/doctor` says your Mechanics Version is behind the Patch Feed head, that's t
 
 ### 🙋 Questions, bugs, ideas
 
-**[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out of them. Or run `/petition`: with an authenticated `gh` CLI your agent files it for you (after showing you the exact text); without one, it hands you the prepared text and the link. GitHub notifies you of replies per your notification settings. Answers are best-effort — this is an alpha run by one Game Admin, whose nightly agent reads the queue. Browse the [open issues](https://github.com/TechSecWhisperer/ars-infinita-notion/issues) to see what's already been reported.
+**[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out of them. Or run `/petition`: with an authenticated `gh` CLI your agent files it for you (after showing you the exact text); without one, it hands you the prepared text and the link. GitHub notifies you of replies per your notification settings. Answers are best-effort — this is a beta run by one Game Admin, whose agent reads the queue twice a day. Browse the [open issues](https://github.com/TechSecWhisperer/ars-infinita-notion/issues) to see what's already been reported.
 
 ---
 
@@ -308,7 +308,7 @@ Ars Infinita improves over time, and your instance keeps itself current. New mec
 
 ## ⚠️ Status
 
-This is an **early alpha**, shared with a small circle while it stabilizes — not an officially released product. Expect rough edges; that's what alpha is for. Your data lives in *your* Notion and never leaves it.
+This is a **beta** — open beyond the first small circle, and no longer changing shape underneath you. Setup is the part that has been hardened most: it is agent-driven end to end, and where the agent cannot do something it now says so rather than finishing quietly and leaving you to find out later. Expect rough edges still; report them and they get fixed. Your data lives in *your* Notion and never leaves it.
 
 ## 📄 License
 
@@ -319,6 +319,6 @@ The game's sealed mechanics are not part of this repository and never have been 
 ---
 
 *Built with Notion, an AI agent, a headless browser, and pure determination.*
-***Ars Infinita Notion (A.I.N)** — an **Ars Infinita** project. Status: Alpha — the System is stabilizing.*
+***Ars Infinita Notion (A.I.N)** — an **Ars Infinita** project. Status: Beta — the System is open.*
 
 *P.S. — this world wasn't so much engineered as **vibe coded into existence**: one human with a vision, one AI with infinite patience, and a long night of "okay but what if it also—". No regrets. The System approves. ;)*
