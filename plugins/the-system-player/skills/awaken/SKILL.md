@@ -137,7 +137,7 @@ No XP — this is plumbing, not a milestone. (The Friday `/levelup` review can b
 
 Close with: total 500 XP banked, Level 4, D-Rank; the L5 Job Change Trial waits at 1,000 XP — their first real quests carry them toward class territory. The System is awake.
 
-## Step 7.5 — seat the local desktop context (CLAUDE.md, if this session can actually write here)
+## Step 7.5 — seat the local project context (AGENTS.md + CLAUDE.md, if this session can actually write here)
 
 **Probe before you claim. Do not infer writability from the kind of session this is.** A session can report as file-capable and still have nowhere to write — some hosts grant *no* filesystem access at all, not restricted access but none, until the player attaches a folder or workspace to the session. Gate on session type alone and setup finishes looking successful with nothing written, and every session afterwards starts cold with nothing explaining why.
 
@@ -145,14 +145,23 @@ So: **attempt the write, then check it landed.** Resolve the project directory, 
 
 1. **It wrote.** Note the full path in the close so the player knows where it is.
 2. **It could not write.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If it names a missing folder or workspace, the remedy is to attach one and run `/awaken` again — it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
-3. **App-only session, no local filesystem at all.** Skip, and note in the close that a desktop session is what seats `CLAUDE.md`.
+3. **App-only session, no local filesystem at all.** Skip, and note in the close that a desktop session is what seats the project context.
 
 The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
 
-The file itself is a thin **bootstrap pointer, not a second source of truth** — the 🧬 Kernel in Notion remains authoritative; `CLAUDE.md` only says how to find and follow it. Keep it short:
+**Write both files, on every harness.** A player's folder may be opened by more than one agent — they may start in one CLI and later open the same folder in another — and the agents do not agree on a filename. Writing only the one this harness happens to read is what leaves the next agent starting cold. The two names are not alternatives to choose between; they are one instruction reachable by two conventions:
+
+- **`AGENTS.md`** carries the content. Codex, the Antigravity CLI and other agents read this name from the project root.
+- **`CLAUDE.md`** imports it. Claude Code reads **only** `CLAUDE.md` and does not read a bare `AGENTS.md`, so without this file a session in that folder starts cold no matter what `AGENTS.md` says.
+
+This is an import, not a copy: the instructions exist once, in `AGENTS.md`. Never write the body into both files — two copies drift, and the moment they disagree neither is trustworthy.
+
+The content is a thin **bootstrap pointer, not a second source of truth** — the 🧬 Kernel in Notion remains authoritative; these files only say how to find and follow it. Keep it short.
+
+`AGENTS.md`:
 
 ```
-# The System — Claude Code context
+# The System — project context
 
 This project runs "The System" — a gamified job-search tracker living in Notion.
 SOURCE OF TRUTH is the 🧬 Kernel page in Notion, never this file. This file only bootstraps a session.
@@ -160,11 +169,26 @@ SOURCE OF TRUTH is the 🧬 Kernel page in Notion, never this file. This file on
 On session start:
 1. Ensure the Notion connector is available (run /vitals).
 2. Read the 🧬 Kernel page (search "Kernel" inside "The System — Job Search HQ") for instance IDs, player facts, versions, and Nexus links; follow the boot ritual.
-3. Run the command asked for — /status, /grind, /quest, /forge, /doctor, … (the installed the-system-player plugin).
+3. Run the command asked for — /status, /grind, /quest, /forge, /doctor, … (the installed the-system-player commands).
 Never cache IDs in this file; always resolve them from the Kernel. If the Kernel is missing or empty, run /awaken.
 ```
 
-Regenerate this file on a **Migration-required** re-run (its contents are version-agnostic, but re-writing keeps it present if the workspace moved) — probing the same way, with the same three outcomes. No XP — this is plumbing, not a milestone.
+`CLAUDE.md`:
+
+```
+@AGENTS.md
+
+# The System — bootstrap
+The line above imports this project's context. If it did not expand, open AGENTS.md in this
+folder and follow it. SOURCE OF TRUTH is the 🧬 Kernel page in Notion, never a local file.
+If the Kernel is missing or empty, run /awaken.
+```
+
+Those three fallback lines are deliberate. `@`-import expansion is documented for Claude Code but not for every surface it runs on, and a `CLAUDE.md` whose single line failed to expand is indistinguishable from no context at all — the exact cold-start this step exists to prevent. A session that cannot expand the import can still read the sentence telling it where to look.
+
+Report **which files were written**, by name, in the close. "Context seated" without naming them is the kind of unverifiable success this step is built to avoid.
+
+Regenerate both on a **Migration-required** re-run (their contents are version-agnostic, but re-writing keeps them present if the workspace moved) — probing the same way, with the same three outcomes. No XP — this is plumbing, not a milestone.
 
 ## Step 7.6 — set up the browser (agent-browser, optional but recommended)
 
@@ -177,6 +201,6 @@ Record the outcome on the Kernel so `/vitals` and capability-gating reflect it. 
 
 ## Migration mode
 
-When a Patch Feed entry marked **Migration-required** directs a re-run: run steps 1–2 only (inventory, schema changes described in the patch applied idempotently, Kernel version bump), then re-run Step 6.5 (daily rhythm probe — idempotent, so it only fills in a missing schedule), Step 7.5 (CLAUDE.md), and Step 7.6 (agent-browser probe) if this session can. Milestones already earned stay earned — the ledger keys see to that. Never re-run intake or re-ask settled questions during a migration.
+When a Patch Feed entry marked **Migration-required** directs a re-run: run steps 1–2 only (inventory, schema changes described in the patch applied idempotently, Kernel version bump), then re-run Step 6.5 (daily rhythm probe — idempotent, so it only fills in a missing schedule), Step 7.5 (project context files), and Step 7.6 (agent-browser probe) if this session can. Milestones already earned stay earned — the ledger keys see to that. Never re-run intake or re-ask settled questions during a migration.
 
 **Step 1's view creation is part of the migration inventory, unconditionally.** "Schema changes described in the patch" does not narrow it away: verify the Quest Board carries the **📆 Next Actions** calendar view (dated on `Next Action Due`) and create it if missing, exactly as Step 1 mandates on the build path. Legacy instances migrated without this check lose the calendar writers and never gain the replacement view (issue #27). And report the inventory honestly — state what was actually verified: entity presence **and** the view check. If views were not checked, write "views not checked"; never an unqualified "nothing was missing".

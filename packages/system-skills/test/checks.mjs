@@ -735,6 +735,76 @@ check('codex-install-guard', () => {
 
 // ---------------------------------------------------------------------------
 
+check('context-file-check', () => {
+  // /awaken Step 7.5 seats the project context. A folder can be opened by more
+  // than one agent, and they disagree on the filename, so the step writes BOTH:
+  // AGENTS.md carries the content and CLAUDE.md imports it. Two things can
+  // silently break that, and this check is here for both.
+  //
+  //   1. The step drops back to writing one file, and whichever agent reads the
+  //      other name starts cold -- the exact failure v2.0.0 was cut to end.
+  //   2. The per-target rewrite renames CLAUDE.md to AGENTS.md inside the two
+  //      sentences that describe Claude Code's own behaviour, turning a true
+  //      statement into a false one on the codex and agy builds.
+  const awakenPath = path.join(SOURCE_SKILLS_DIR, 'awaken', 'SKILL.md');
+  ok(fs.existsSync(awakenPath), 'awaken/SKILL.md is missing');
+  if (!fs.existsSync(awakenPath)) return;
+  const authored = fs.readFileSync(awakenPath, 'utf8');
+
+  // 1. The authored step names both files and states the import relationship.
+  ok(
+    /Step 7\.5[^\n]*AGENTS\.md[^\n]*CLAUDE\.md/.test(authored),
+    'Step 7.5 no longer names both AGENTS.md and CLAUDE.md in its heading',
+  );
+  ok(
+    authored.includes('@AGENTS.md'),
+    'Step 7.5 no longer shows the @AGENTS.md import line for CLAUDE.md',
+  );
+
+  // 2. It is an import, not a copy. The body lives in AGENTS.md once; if the
+  //    boot ritual line appears twice, someone pasted the content into both.
+  const bodyMarker = 'On session start:';
+  const bodyCount = authored.split(bodyMarker).length - 1;
+  ok(
+    bodyCount === 1,
+    `the context body appears ${bodyCount}x in awaken/SKILL.md - it must live in AGENTS.md only, with CLAUDE.md importing it`,
+  );
+
+  // 3. The two statements about Claude Code's file behaviour survive the
+  //    rewrite verbatim in every built copy. They are true on every target.
+  if (!distBuilt) {
+    fail('dist/ is not built - run `node builder.mjs`. This check cannot verify the built copies without it.');
+    return;
+  }
+  const PINNED = [
+    'Claude Code reads **only** `CLAUDE.md`',
+    'documented for Claude Code',
+  ];
+  const builtAwakens = [
+    ['codex', path.join(DIST_CODEX, 'awaken', 'SKILL.md')],
+    ['agy', path.join(DIST_AGY, PLUGIN_SLUG, 'skills', 'awaken', 'SKILL.md')],
+  ];
+  for (const [label, p] of builtAwakens) {
+    if (!fs.existsSync(p)) {
+      fail(`${label}: built awaken/SKILL.md is missing at ${rel(p)}`);
+      continue;
+    }
+    const built = fs.readFileSync(p, 'utf8');
+    for (const phrase of PINNED) {
+      ok(
+        built.includes(phrase),
+        `${label}: "${phrase}" did not survive the rewrite - the per-target rename has made a false claim about which file that CLI reads`,
+      );
+    }
+    ok(
+      built.includes('@AGENTS.md'),
+      `${label}: the @AGENTS.md import line was lost in the rewrite`,
+    );
+  }
+});
+
+// ---------------------------------------------------------------------------
+
 const failed = results.filter((r) => r.fails.length);
 const warned = results.filter((r) => !r.fails.length && r.warns.length);
 console.log(
