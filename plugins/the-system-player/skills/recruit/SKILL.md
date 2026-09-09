@@ -14,6 +14,8 @@ Creates Hunter Network entries → light public-source research on each → draf
 
 2. **Light public-source research** on each (same public-only rule as /scout) to round out `Role / Title`/`Company` if the player's notes were partial, and set `Research Brief` accordingly (`Researched — see page` or `Not Findable Online`).
 
+**Live pages: invoke `/browse` with the URL and what you need extracted** (public profile, company page). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, set `Research Brief: Not Findable Online` and say which it was — never report research you did not perform.
+
 3. **Draft a personalised follow-up** per person, grounded in the actual conversation notes — a generic "great meeting you" message defeats the point of banking what they talked about. Draft only; never send.
 
 4. **Set the follow-up ladder**: `Follow-up Ladder: T+2d Thank You` to start, with `date:Next Follow-up:start` set accordingly. Stop there — `Next Follow-up` lives on Hunter Network and nowhere else, surfaced dated through that database's own calendar/"🔔 Follow-ups Due" views. Never copy it into 📅 System Calendar: a mirrored row goes stale the moment the player moves the date at source.
