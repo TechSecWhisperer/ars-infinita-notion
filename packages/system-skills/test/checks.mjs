@@ -790,7 +790,15 @@ check('rewrite-collision-check', () => {
     fail('dist/ is not built - run `node builder.mjs`.');
     return;
   }
-  const DOUBLED = /\b(the the|a a|an an|a an|an a|of of|to to|is is|and and)\b/i;
+  // Doubled function words AND article mismatches: 'a Claude session' ships as
+  // 'a the assistant session' -- same family, no doubled word in it.
+  const DOUBLED = /\b(the the|a a|an an|a an|an a|a the|an the|the a|the an|of of|to to|is is|and and)\b/i;
+  // The lowercase replacements read as a dropped capital at a sentence start.
+  // Allow markdown emphasis and closing punctuation between the full stop and
+  // the word: the first cut required a bare space and missed 'harness.** the
+  // assistant writes...', which is exactly the shape this file is written in.
+  const SENTENCE_START_LOWER =
+    /(?:^|[.!?][*_`)\]\s]*\s)(the assistant|an AI assistant|the model provider)\b/;
   let scanned = 0;
   for (const dir of [DIST_CODEX, DIST_AGY]) {
     for (const file of walk(dir)) {
@@ -802,10 +810,20 @@ check('rewrite-collision-check', () => {
         if (m) {
           fail(`${rel(file)}:${i + 1}: the rewrite produced "${m[0]}" - a substitution collided with the surrounding words`);
         }
+        const sl = line.match(SENTENCE_START_LOWER);
+        if (sl) {
+          fail(`${rel(file)}:${i + 1}: the rewrite left "${sl[1]}" opening a sentence in lower case`);
+        }
       }
     }
   }
-  ok(scanned > 40, `only ${scanned} built markdown files scanned - the walk found far fewer than the 27 skills x 2 targets expected, so this check may be passing vacuously`);
+  // Floor derived from the corpus rather than guessed: the previous 40 tolerated
+  // losing most of it.
+  const expected = names.length * 2;
+  ok(
+    scanned >= expected,
+    `only ${scanned} built markdown files scanned, expected at least ${expected} (${names.length} skills x 2 targets) - the walk is missing files and this check may be passing vacuously`,
+  );
 });
 
 check('context-file-check', () => {
@@ -953,6 +971,20 @@ check('context-file-check', () => {
   const END_MARKER = '<!-- /ars-infinita:the-system -->';
   ok(authored.includes(MARKER), 'Step 7.5 no longer declares the authorship marker');
 
+  // Every marker the prose quotes must be one the templates actually write.
+  // Renaming only the prose passes every other assertion while telling the agent
+  // to count a marker no written file contains: counts are then always 0/0, the
+  // append branch runs on every re-run, and idempotence is gone with nothing
+  // failing.
+  const quotedMarkers = new Set(authored.match(/<!--\s*\/?\s*ars-infinita[^>]*-->/g) || []);
+  ok(quotedMarkers.size > 0, 'Step 7.5 quotes no ars-infinita marker at all');
+  for (const quoted of quotedMarkers) {
+    ok(
+      quoted === MARKER || quoted === END_MARKER,
+      `Step 7.5 mentions the marker "${quoted}", which is neither the opening nor closing marker the templates write - the agent would count a marker no file it writes ever contains, so every run takes the append branch`,
+    );
+  }
+
   const fenceFor = (label) => {
     const at = authored.indexOf(`\`${label}\`:`);
     if (at === -1) return null;
@@ -1032,10 +1064,25 @@ check('context-file-check', () => {
   // A hand-deleted closing marker leaves two openings and one closing, and a
   // rule that does not say so lets the outermost reading swallow the player's
   // writing on the run after the "safe" duplicate.
+  // Whitelist the branch outcomes rather than blocklisting phrasings. A review
+  // added a plausible third branch -- "an opening marker with no closing marker
+  // -> replace from the opening marker to the end of the file" -- the exact
+  // swallow-the-player pairing the paragraph below warns against, and it passed
+  // every other assertion. Two branches exist; a third outcome is the defect.
+  const branchLines = authored
+    .split('\n')
+    .filter((l) => l.trimStart().startsWith('- ') && l.includes('\u2192'));
   ok(
-    /[Aa]nything else/.test(authored) && /append/i.test(authored),
-    'Step 7.5 no longer routes the non-matching marker counts to the append branch',
+    branchLines.length === 2,
+    `the merge rule has ${branchLines.length} branches - exactly two must exist: replace between the markers, or append`,
   );
+  for (const line of branchLines) {
+    const after = line.slice(line.indexOf('\u2192'));
+    ok(
+      /replace \*\*only the text between them\*\*/.test(after) || /\*\*append\*\*/.test(after),
+      `a merge branch resolves to something other than a scoped replace or an append: "${line.trim().slice(0, 110)}"`,
+    );
+  }
 
   // 2c. The outcome list must still cover the half-write. Reverting to three
   //     outcomes passed every other assertion here.
