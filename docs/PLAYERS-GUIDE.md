@@ -1,6 +1,6 @@
 # Player's Guide
 
-A longer walkthrough for once you're installed and connected. If you haven't done that yet, start with the [Getting Started](../README.md#-getting-started) section of the README — this doc picks up right after `/awaken` finishes.
+A longer walkthrough for once you're installed and connected. If you haven't done that yet, start with the [Quick start](../README.md#quick-start) section of the README — this doc picks up right after `/awaken` finishes.
 
 ---
 
@@ -121,4 +121,53 @@ Some content in The System does stay sealed and is discovered by playing rather 
 - `/vitals` — see exactly what your current session can do (Notion connectivity, browser layer, mobile vs. desktop capability).
 - `/petition` — anything else: bug, question, idea, or appeal.
 
-See the README's [Troubleshooting](../README.md#troubleshooting) section for the most common setup snags.
+See [Troubleshooting](TROUBLESHOOTING.md) for the most common setup snags.
+
+---
+
+## Your world
+
+Your workspace is a set of linked Notion databases the System reads and writes for you:
+
+- **Quest Board** — every role you're chasing, its stage, and the next move.
+- **Status Window & Stat Sheet** — your positioning, and a living map of your competencies with evidence strength.
+- **Story Bank** — your best STAR stories, built once and reused for every application and interview.
+- **Hunter Network** — your contacts, with follow-up timing handled for you.
+- **Gate Intel** — reusable company research.
+- **Battle Log · XP Ledger · Achievements · Daily Log** — the record of everything you've done and earned.
+- **📅 System Calendar** — your briefings, weekly reviews and reminders, as dated rows you can see in your own Notion calendar view. It is a delivery channel, not a source of truth: the Daily Log stays authoritative. Your due follow-ups are *not* copied here — they live on the Quest Board and surface through that board's own **📆 Next Actions** view, so you are always looking at the real row.
+
+---
+
+## The browser layer
+
+For company research and job postings that need real rendering, the System drives a headless browser (`agent-browser`) on your machine. `/awaken` offers to set it up, and **`/browse` is the only command that drives it** — everything else hands it the page. That is deliberate: one probe, one place that can be wrong.
+
+Without a browser — mobile-only, or a session that cannot run one — the System says so and offers to work from text you paste, rather than reporting research it never did. Tracking, appraising, forging and the whole XP loop keep working fully.
+
+Run `/vitals` any time to see what your current session can do.
+
+---
+
+## Updating
+
+New mechanics arrive two ways:
+
+- A **Patch Feed** entry appears in your Notion workspace describing what changed and why. The same feed is published as a plain file at [`feed.json`](../feed.json), which any agent can read over HTTPS without a browser.
+- You pull the update: `/plugin update` in Claude Code, or re-run the installer on another CLI.
+
+The promise that makes this safe to keep running: **new mechanics never rewrite your history, and your XP is never re-scored.** What you have already earned, you keep. Updates add to the game going forward.
+
+### Which version number is which
+
+| Number | Where you see it | What it versions |
+|---|---|---|
+| **Plugin / mechanics version** | `/status`, `/doctor`, the Patch Feed, [`CHANGELOG.md`](../CHANGELOG.md), your Kernel | The game itself — rules, XP, commands. The one that matters to you, and the one `/plugin update` moves. |
+| **Seed version** (e.g. `1.0.0`) | Your Kernel's Versions section | The *shape* of your Notion template — which pages and databases exist. Changes rarely; a mismatch with the mechanics version is normal. |
+| **`@ars-infinita-notion/system-skills`** | npm | The skills as a Codex or Antigravity user receives them. Tracks the plugin version exactly — a build check fails if they ever disagree. |
+
+Since `1.3.8` the plugin version and the mechanics version are **one number**, so every release moves the Patch Feed head your agent checks against.
+
+**What each digit means.** The **major** is a release line — Alpha was `1.x`, **Beta is `2.x`** — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a warning that something broke.
+
+If `/doctor` says your Mechanics Version is behind the Patch Feed head, that is the one worth acting on.
