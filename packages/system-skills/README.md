@@ -35,6 +35,16 @@ Versions **up to and including 1.3.5 did not do this** — they replaced same-na
 
 **The version tracks the plugin version**, because this package carries a real copy of the skills rather than just the tooling that builds them: `@ars-infinita-notion/system-skills@1.3.2` contains the v1.3.2 skills. `release-metadata-check` fails the build if the two numbers ever diverge, so the npm channel cannot silently ship different content from the marketplace channel.
 
+**What the three digits mean here**, because npm cannot infer a project's convention and ours is not quite the usual one:
+
+| | Meaning |
+| --- | --- |
+| **major** | A **release line**, not necessarily a breaking change. Alpha was `1.x`; Beta is `2.x`. It also moves when an existing install has to be re-run to keep working. |
+| **minor** | A change to the game's rules — XP values, level thresholds, badge criteria, unlocks, new commands. |
+| **patch** | Everything else that reaches you: fixes, copy, delivery. |
+
+So `1.x → 2.0.0` is worth reading the notes for, but it is a phase marker first. Nothing about your installed skills stops working because the major moved.
+
 **Claude Code is deliberately not a target.** It installs from the marketplace, and adding an npm path would mean two ways to get the same skills onto one machine, free to disagree. `cli.mjs` prints the marketplace command instead.
 
 ## What the build does
@@ -111,7 +121,7 @@ npm test        # check, then node test/smoke.mjs
 ### `test/checks.mjs` — the structural gate
 
 Zero dependencies, no network, no CLIs; it runs anywhere and is expected to actually run
-(unlike the smoke test, which skips when a CLI is missing). Four named checks:
+(unlike the smoke test, which skips when a CLI is missing). Six named checks:
 
 | Check | Catches |
 | --- | --- |
@@ -119,6 +129,8 @@ Zero dependencies, no network, no CLIs; it runs anywhere and is expected to actu
 | `release-metadata-check` | `marketplace.json` not regenerated, or growing a duplicate `version`/`description`/`author`/`license` that `plugin.json` already owns; `CHANGELOG.md`'s newest entry disagreeing with `plugin.json` (hard fail); `feed.json` disagreeing (**WARN** only — the feed legitimately leads mid-release-train); `feed_version` coming back. |
 | `command-catalog-check` | A skill with broken or mismatched frontmatter; `feed.json`'s command list drifting from the actual `skills/` directories; the hidden `/handover` route leaking into the published list. |
 | `single-surface-lint` | The duplicate write-paths cut in v1.3.1 creeping back: a Calendar `Follow-up Due` mirror, a Notion "Petition form" route, browser-gating language on the `feed.json` mirror. |
+| `resume-library-check` | `/armor`'s `RESUME-LIBRARY.md` drifting from `resume-library.json`, which generates it — so "generated" stays a property rather than a claim in a header. Delegates to the generator's own `check` rather than re-implementing the render, which would itself be a second source of truth. |
+| `codex-install-guard` | `install-codex` regaining the ability to destroy a directory it did not install — the v1.3.5 data-loss defect. **Behavioural, not structural:** it runs the real installer against a sandboxed `CODEX_HOME`. It lives here rather than in `smoke.mjs` so `prepublishOnly` runs it and no workflow edit can skip it. |
 
 ### `test/smoke.mjs` — the real CLIs
 
