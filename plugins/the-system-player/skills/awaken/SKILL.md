@@ -141,13 +141,16 @@ Close with: total 500 XP banked, Level 4, D-Rank; the L5 Job Change Trial waits 
 
 **Probe before you claim. Do not infer writability from the kind of session this is.** A session can report as file-capable and still have nowhere to write — some hosts grant *no* filesystem access at all, not restricted access but none, until the player attaches a folder or workspace to the session. Gate on session type alone and setup finishes looking successful with nothing written, and every session afterwards starts cold with nothing explaining why.
 
-So: **attempt the write, then check it landed.** Resolve the project directory, write the file, read it back. One of three outcomes, and say which:
+So: **attempt each write, then check it landed.** Resolve the project directory, write **both** files (below), and read **each** back. One of four outcomes, and say which:
 
-1. **It wrote.** Note the full path in the close so the player knows where it is.
-2. **It could not write.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If it names a missing folder or workspace, the remedy is to attach one and run `/awaken` again — it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
-3. **App-only session, no local filesystem at all.** Skip, and note in the close that a desktop session is what seats the project context.
+1. **Both wrote.** Note both full paths in the close so the player knows where they are.
+2. **Neither could be written.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If it names a missing folder or workspace, the remedy is to attach one and run `/awaken` again — it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
+3. **One wrote and the other did not.** This is **outcome 2, not outcome 1** — treat it as a failure of the step and say so. Name the file that is missing and the refusal for it verbatim, and say which agent that leaves without context: no `AGENTS.md` means Codex and the Antigravity CLI start cold here, no `CLAUDE.md` means Claude Code does. Re-running `/awaken` retries the missing one. **Never report the half that succeeded as the step being done** — a folder with one of the two files is the silent cold start this step exists to prevent, and it is the outcome most likely to be mistaken for success.
+4. **App-only session, no local filesystem at all.** Skip, and note in the close that a desktop session is what seats the project context.
 
 The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
+
+**If a file already exists, read it before replacing it.** A Claude Code player may already have a `CLAUDE.md` of their own. Do not clobber hand-written content: if the existing file is not one The System wrote, add the import line and this project's lines to what is there and keep the rest. Replace outright only a file whose content is The System's own.
 
 **Write both files, on every harness.** A player's folder may be opened by more than one agent — they may start in one CLI and later open the same folder in another — and the agents do not agree on a filename. Writing only the one this harness happens to read is what leaves the next agent starting cold. The two names are not alternatives to choose between; they are one instruction reachable by two conventions:
 
@@ -188,7 +191,7 @@ Those three fallback lines are deliberate. `@`-import expansion is documented fo
 
 Report **which files were written**, by name, in the close. "Context seated" without naming them is the kind of unverifiable success this step is built to avoid.
 
-Regenerate both on a **Migration-required** re-run (their contents are version-agnostic, but re-writing keeps them present if the workspace moved) — probing the same way, with the same three outcomes. No XP — this is plumbing, not a milestone.
+Regenerate both on a **Migration-required** re-run (their contents are version-agnostic, but re-writing keeps them present if the workspace moved) — probing the same way, with the same four outcomes. No XP — this is plumbing, not a milestone.
 
 ## Step 7.6 — set up the browser (agent-browser, optional but recommended)
 
