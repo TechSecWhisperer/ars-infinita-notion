@@ -130,7 +130,7 @@ No XP — this is plumbing, not a milestone. (The Friday `/levelup` review can b
 ## Step 7 — register the Hunter (Milestone 7)
 
 1. Ask the player to choose a **handle** (self-chosen alias; real name optional and off by default).
-2. Submit it via `/petition` (which files a GitHub Issue on the plugin repo): title "HANDLE REGISTRATION: <handle>", Category: Other, with Seed version and current level. `/petition` carries its own fallback if `gh` isn't available, and its public-issue warning applies here too — a handle is a self-chosen alias, so say so before filing if the player picked something identifying. Handles are admin-registered (no duplicates) — tell the player the Game Admin may come back with a conflict, and the registration stands once confirmed.
+2. Submit it via `/petition` (which files a GitHub Issue on the plugin repo), choosing the **"Register your Hunter handle"** issue template: title "HANDLE REGISTRATION: <handle>", with your current level (and Seed version). If `gh` isn't available, `/petition`'s fallback path is the plain petition form with Category: Other — the title prefix "HANDLE REGISTRATION: <handle>" is what the admin tools match on, so keep it exact either way. `/petition` carries its own public-issue warning here too — a handle is a self-chosen alias, so say so before filing if the player picked something identifying. Handles are admin-registered (no duplicates) — tell the player the Game Admin may come back with a conflict, and the registration stands once confirmed.
 3. Record handle + registration date in the Kernel.
 
 **Milestone 7 — ledger key "Awakening: Hunter registered" · +75 XP · ⚔️ LEVEL 4 ceremony — the Awakening is complete.**
