@@ -4,6 +4,21 @@
 ![Mechanics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FTechSecWhisperer%2Fars-infinita-notion%2Fmain%2Ffeed.json&query=%24.mechanics_version&label=mechanics&prefix=v&color=8A2BE2)
 ![Commands](https://img.shields.io/badge/commands-26-2F9E44)
 ![License](https://img.shields.io/badge/license-MIT-blue)
+![Status](https://img.shields.io/badge/status-BETA%20ACTIVE-8A2BE2)
+
+## 🧪 Beta is live
+
+**The System is in open beta.** Players can install, awaken, and play today — and the
+petition channel is staffed: file an issue and you will get an acknowledgement and a
+reply. What beta means in practice:
+
+- **Working end to end** — install through the Seed, run `/awaken`, hunt, earn XP, level up.
+- **The rules you see are the rules that run** — the Patch Feed, Rule Manifest and this
+  repo's `feed.json` are checked against each other automatically; a release that breaks
+  lockstep does not ship.
+- **Petitions get answers** — validated replies only; nothing quotes the game's internals.
+- **Bumps may be bumpy** — the version is 2.x, the game is young. Report what breaks;
+  petitions have driven every fix so far.
 
 > Part of **Ars Infinita** — a personal brand for building worlds without limits. **A.I.N** is its Notion-native chapter. *(And yes — the **AI** is right there in the name.)*
 
@@ -114,9 +129,7 @@ Every real action earns XP. XP earns levels. Levels and streaks give you the one
 
 ## ⚠️ Status
 
-> 🔧 **In maintenance from 2026-09-09.** Work is under way and you may hit rough edges — a command that behaves oddly, an export that isn't right. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. Please report anything that looks wrong with `/petition` or an Issue. We will say here when it lifts.
-
-**Beta.** Open beyond the first small circle and no longer changing shape underneath you. Expect rough edges; report them and they get fixed. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
+> 🧪 **Beta — open and active.** Maintenance lifted 2026-09-14. Expect rough edges; report them and they get fixed. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
 
 **Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
 
