@@ -6,6 +6,10 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.7 — 2026-09-15
+
+**Registering your handle gets its own form.** Handle registration rode the plain petition form's Other category, which asked for a description field a registration does not need and said nothing about alias safety at the point of choosing. There is now a dedicated **"Register your Hunter handle"** issue form that asks for exactly what registration needs — your handle, your current level, and the two version fields — and tells you before you type anything that a handle is a self-chosen alias that must not identify you, that handles are admin-registered with no duplicates, and that a conflict means the Game Admin comes back to you. The petition form's preamble now points handle claims at that form and scopes Other to what it is for, and `/awaken` step 7 files through the new template. The `HANDLE REGISTRATION:` title prefix is unchanged, so older filed registrations match the same admin tooling. No rule changed — this is a form and copy fix, which is why it ships as a Patch.
+
 ## v2.0.6 — 2026-09-09
 
 **🔧 The System is in maintenance. Keep playing — expect rough edges.**
