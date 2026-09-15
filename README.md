@@ -4,6 +4,21 @@
 ![Mechanics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FTechSecWhisperer%2Fars-infinita-notion%2Fmain%2Ffeed.json&query=%24.mechanics_version&label=mechanics&prefix=v&color=8A2BE2)
 ![Commands](https://img.shields.io/badge/commands-26-2F9E44)
 ![License](https://img.shields.io/badge/license-MIT-blue)
+![Status](https://img.shields.io/badge/status-BETA%20ACTIVE-8A2BE2)
+
+## 🧪 Beta is live
+
+**The System is in open beta.** Players can install, awaken, and play today — and the
+petition channel is staffed: file an issue and you will get an acknowledgement and a
+reply. What beta means in practice:
+
+- **Working end to end** — install through the Seed, run `/awaken`, hunt, earn XP, level up.
+- **The rules you see are the rules that run** — the Patch Feed, Rule Manifest and this
+  repo's `feed.json` are checked against each other automatically; a release that breaks
+  lockstep does not ship.
+- **Petitions get answers** — validated replies only; nothing quotes the game's internals.
+- **Bumps may be bumpy** — the version is 2.x, the game is young. Report what breaks;
+  petitions have driven every fix so far.
 
 > Part of **Ars Infinita** — a personal brand for building worlds without limits. **A.I.N** is its Notion-native chapter. *(And yes — the **AI** is right there in the name.)*
 
