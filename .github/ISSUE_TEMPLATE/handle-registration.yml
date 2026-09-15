@@ -1,0 +1,63 @@
+name: Register your Hunter handle
+description: Claim the in-game alias you play The System under. One per player, admin-registered, no duplicates.
+labels: ["petition"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Start your title with** `HANDLE REGISTRATION: <your handle>` — the admin tools
+        match on that prefix, so keep it exact. Handles are **admin-registered (no
+        duplicates)**: if someone already plays under the name you choose, the Game Admin
+        will come back with a conflict, and your registration stands once confirmed.
+
+        **A handle is a self-chosen alias.** Don't pick anything that identifies you —
+        no real names, no employer, no gamertag you use elsewhere. This issue is public
+        and stays readable after it closes.
+
+        Answers are best-effort. This is a game run by one person, not a support desk.
+
+  - type: input
+    id: handle
+    attributes:
+      label: Handle
+      description: The alias you want to play under. One word or a short phrase; no real names.
+      placeholder: e.g. Ravenwright
+    validations:
+      required: true
+
+  - type: input
+    id: level
+    attributes:
+      label: Current level
+      description: Your level from your Status Window at the time of filing.
+      placeholder: e.g. 3 (D-Rank)
+    validations:
+      required: true
+
+  - type: input
+    id: seed_version
+    attributes:
+      label: Seed version
+      description: The Seed template version from your Kernel's Versions section.
+      placeholder: e.g. Seed v1.0.1
+    validations:
+      required: false
+
+  - type: input
+    id: mechanics_version
+    attributes:
+      label: Mechanics version
+      description: Also in your Kernel — a different number from the Seed version.
+      placeholder: e.g. 2.0.6
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: acknowledgements
+    attributes:
+      label: Before you file
+      options:
+        - label: I understand this issue is public and my handle is a self-chosen alias that does not identify me.
+          required: true
+        - label: I understand handles are admin-registered with no duplicates, and a conflict means the Game Admin comes back to me.
+          required: true
