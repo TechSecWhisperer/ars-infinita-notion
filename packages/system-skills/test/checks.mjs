@@ -30,7 +30,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createHash } from 'node:crypto';
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 
 import { renderMarketplace } from '../builder.mjs';
 import { AGENT_PROFILES, parseFrontmatter, stripClaudeIdioms } from '../lib/transform.mjs';
@@ -422,6 +422,22 @@ check('command-catalog-check', () => {
       `/${hidden} is a hidden route but is published in feed.json`,
     );
   }
+
+  // The command reference (docs/COMMANDS.md) is GENERATED — command-catalog-check
+  // does not re-parse its tables, it regenerates both artifacts from frontmatter
+  // and fails on any diff. A stale table (a skill renamed, added, or deleted
+  // without a re-run) fails here instead of shipping wrong docs. This closes
+  // #19's "what would catch its return" without a second hand-maintained parse.
+  const gen = spawnSync(
+    process.execPath,
+    [path.join(REPO_ROOT, 'tools', 'generate_catalog.mjs'), '--check'],
+    { encoding: 'utf8', timeout: 30000 },
+  );
+  ok(
+    gen.status === 0,
+    `generated catalog is stale (run: node tools/generate_catalog.mjs --write)\n` +
+      (gen.stdout || '').trim() + (gen.stderr ? `\n${gen.stderr.trim()}` : ''),
+  );
 });
 
 // ---------------------------------------------------------------------------
