@@ -295,6 +295,7 @@ PATTERNS = [
     ),
     (
         "admin-agent-name",
+        # Guardian was added 2026-09-16, the day that agent was named.
         # Herald was added 2026-09-09, the day that agent was named. Until then
         # this pattern named only two of the three, and the gap was found the
         # way gaps like this always are: a public PR description carried both
@@ -311,7 +312,7 @@ PATTERNS = [
         # README, CHANGELOG, docs/, the whole plugin tree, the npm README and
         # feed.json. If one is ever wanted in player-facing copy, narrow this
         # to the capitalised form rather than dropping it.
-        re.compile(r"\bwarden\b|\bcardinal\b|\bherald\b", re.IGNORECASE),
+        re.compile(r"\bwarden\b|\bcardinal\b|\bherald\b|\bguardian\b", re.IGNORECASE),
     ),
     (
         "feature-flag-registry",
