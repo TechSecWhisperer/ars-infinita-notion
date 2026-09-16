@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>The System — Architecture Deep Dives</title>
+<style>
+  :root { --ink:#1a1a2e; --sys:#4f46e5; --bg:#f6f7fb; --card:#fff; --line:#d8dae6; }
+  * { box-sizing: border-box; }
+  body { font: 15px/1.55 -apple-system, "Segoe UI", sans-serif; color: var(--ink); background: var(--bg); margin: 0; padding: 2rem; max-width: 1200px; margin-inline: auto; }
+  h1 { border-bottom: 3px solid var(--sys); padding-bottom: .3rem; }
+  h2 { color: var(--sys); margin-top: 2.5rem; }
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: 10px; padding: 1.2rem 1.5rem; margin: 1rem 0; box-shadow: 0 1px 3px rgba(0,0,0,.06); }
+  table { border-collapse: collapse; width: 100%; margin: .8rem 0; }
+  th, td { border: 1px solid var(--line); padding: .45rem .7rem; text-align: left; vertical-align: top; }
+  th { background: #eef0fa; }
+  code { background: #eceefc; padding: .1rem .35rem; border-radius: 4px; font-size: .92em; }
+  .lane { display: flex; gap: 1rem; flex-wrap: wrap; align-items: stretch; }
+  .box { border: 2px solid var(--sys); border-radius: 8px; padding: .6rem .9rem; min-width: 180px; flex: 1; background: #fff; }
+  .box.db { border-style: dashed; border-color: #7c7f96; }
+  .box h4 { margin: 0 0 .3rem; font-size: .95rem; }
+  .box p { margin: 0; font-size: .82rem; color: #555; }
+  .arrow { align-self: center; font-size: 1.4rem; color: var(--sys); font-weight: 700; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  @media (max-width: 800px) { .grid2 { grid-template-columns: 1fr; } }
+  .tag { display: inline-block; background: var(--sys); color: #fff; border-radius: 4px; padding: .05rem .5rem; font-size: .75rem; font-weight: 600; }
+  footer { color: #666; font-size: .85rem; margin-top: 3rem; border-top: 1px solid var(--line); padding-top: 1rem; }
+</style>
+</head>
+<body>
+
+<h1>The System — Architecture Deep Dives</h1>
+<p>Standalone renderings of the views that don't fit a single Mermaid block. Companions to
+<a href="README.md">README</a> · <a href="status-window.md">status-window.md</a> · <a href="job-application-flow.md">job-application-flow.md</a>.</p>
+
+<h2>1. Status window — the freshness gate as a decision table</h2>
+<div class="card">
+<table>
+  <tr><th>Session state</th><th>Time since last player message</th><th>Fresh handover row (≤24h TTL)?</th><th>Render</th></tr>
+  <tr><td>New chat</td><td>n/a</td><td>yes</td><td><strong>Rich window</strong> + surface handover pointers</td></tr>
+  <tr><td>New chat</td><td>n/a</td><td>no</td><td><strong>Rich window</strong></td></tr>
+  <tr><td>Ongoing chat</td><td>≤ 1 day</td><td>—</td><td>no re-render; inline <code>[SYSTEM]</code> lines only</td></tr>
+  <tr><td>Ongoing chat</td><td>&gt; 1 day (stale)</td><td>—</td><td><strong>Rich window</strong>, then answer the question</td></tr>
+  <tr><td>Any</td><td>Kernel unreadable</td><td>—</td><td>offer <code>/awaken</code>; no window</td></tr>
+</table>
+<p style="margin:.4rem 0 0">Rationale: quest timers and debuff clocks are date-grained, so anything older than a day is re-read rather than trusted. Within a day, re-reading on every message is noise.</p>
+</div>
+
+<h2>2. Status window — dual-skin render pipeline</h2>
+<div class="card">
+  <div class="lane">
+    <div class="box"><h4>State collector</h4><p>4 narrow reads: Player Card · Quest Board (active, top-N by Next Action Due) · Achievements · ≤5 ledger rows</p></div>
+    <span class="arrow">→</span>
+    <div class="box"><h4>Derivation layer</h4><p>Debuff flags from stage + business-day math (player TZ) · XP-to-next from level curve · next-action suggestion</p></div>
+    <span class="arrow">→</span>
+    <div class="box"><h4>Reconciler</h4><p>Card stats vs ledger sum; mismatch → ledger wins, visible correction</p></div>
+    <span class="arrow">→</span>
+    <div class="box"><h4>Renderer (two skins)</h4><p><strong>TTY:</strong> ANSI table — bold header, colour on debuffs only (emoji carries meaning)<br><strong>Desktop:</strong> markdown table — identical content</p></div>
+  </div>
+</div>
+
+<h2>3. Job application flow — full command &amp; artefact map</h2>
+<div class="card">
+  <div class="lane">
+    <div class="box"><h4><span class="tag">/quest</span> track</h4><p>Quest Board row (Stage: <em>Saved</em>) + Gate Intel company row · +10 XP · SLA clock on</p></div>
+    <span class="arrow">→</span>
+    <div class="box db"><h4><span class="tag">/appraise</span> gate</h4><p>Fit score + gaps vs Status Window / Stat Sheet · Agent Notes (Appraisal) · triggers /scout</p></div>
+  </div>
+  <div class="lane" style="margin-top:1rem">
+    <div class="box db"><h4><span class="tag">/scout</span> research</h4><p>Gate Intel deep research · browser-gated via /browse · fallback: paste page text</p></div>
+    <span class="arrow">⇢</span>
+    <div class="box"><h4><span class="tag">/armor</span> defensive half</h4><p>CV master in Agent Notes · <em>embedded /ghost pass</em> · HTML + .docx exports · +20 XP once per version</p></div>
+    <span class="arrow">+</span>
+    <div class="box"><h4><span class="tag">/forge</span> offensive half</h4><p>Cover Letter note (Current) · <em>embedded /ghost pass</em> · Forge Roulette +15 on first forge only (≤2 drops/7d)</p></div>
+    <span class="arrow">→</span>
+    <div class="box"><h4><span class="tag">/engage</span> submit</h4><p>Stage → <em>Applied</em> · Battle Log trace · +50 XP (+10 armed bonus with a Current letter)</p></div>
+  </div>
+  <p style="margin-top:.8rem;font-size:.85rem;color:#555"><strong>Correction to the naive reading:</strong> <code>/ghost</code> is not a stage — it is a mandatory embedded pass inside both <code>/armor</code> and <code>/forge</code>. <code>/appraise</code> is the real gate before building. The chain is <em>track → appraise → build → submit → respond</em>.</p>
+</div>
+
+<h2>4. Suggest vs auto-execute — rule card</h2>
+<div class="card">
+<div class="grid2">
+  <div>
+    <h4 style="color:var(--sys)">Auto-execute only when…</h4>
+    <ul style="margin:.3rem 0;padding-left:1.2rem;font-size:.9rem">
+      <li>The player asked for the full sequence <em>in the same message</em> ("track and appraise this")</li>
+      <li>The next stage is named, and each stage still reports its own result</li>
+    </ul>
+  </div>
+  <div>
+    <h4 style="color:#a03232">Never auto-execute…</h4>
+    <ul style="margin:.3rem 0;padding-left:1.2rem;font-size:.9rem">
+      <li>Employer-facing document <em>finalisation</em> — drafts are always shown for approval first</li>
+      <li>Browser-gated stages when no browser is probed — offer the fallback instead</li>
+      <li>Anything not suggested as a one-line offer — "say /forge", never an order</li>
+    </ul>
+  </div>
+</div>
+</div>
+
+<h2>5. Stage → next-suggestion table (used by the window &amp; every report-back)</h2>
+<div class="card">
+<table>
+  <tr><th>Stage / condition</th><th>Suggested next</th></tr>
+  <tr><td>Saved, no Fit Score</td><td><code>/appraise</code></td></tr>
+  <tr><td>Appraised, no Current CV note</td><td><code>/armor</code></td></tr>
+  <tr><td>Appraised, no Current Cover Letter</td><td><code>/forge</code></td></tr>
+  <tr><td>Applied, 2+ business days quiet</td><td>optional nudge (<code>/log</code>) — phrased as an option, never an overdue item</td></tr>
+  <tr><td>Recruiter Screen+ , no Raid Prep</td><td><code>/raid</code> playbook</td></tr>
+  <tr><td>Closed – No Response</td><td><code>/respawn</code> available</td></tr>
+  <tr><td>14+ days silent</td><td>archive flag; effort-banked +25, lesson +25</td></tr>
+</table>
+</div>
+
+<footer>Part of the architecture docs on branch <code>hermes/status-and-flows</code>. Read-only reference — The System itself never sends anything, never deletes anything.</footer>
+</body>
+</html>

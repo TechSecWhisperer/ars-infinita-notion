@@ -6,6 +6,10 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.10 — 2026-09-16
+
+**The game checks itself every boot.** New at startup: your agent fetches the public rule feed and verifies your instance's version and rule values against the published authority. On a mismatch it runs `/doctor`, and if real drift is confirmed it files a report automatically — XP-earning play pauses until your copy is repaired. An out-of-date instance can no longer silently play by different rules.
+
 ## v2.0.9 — 2026-09-16
 
 **The call-home check.** Every boot, after reading the Kernel, your agent now fetches the public feed mirror over plain HTTPS and verifies the local `mechanics_version` and every rule value it is about to use against the published authority. On any disagreement it fails closed: `/doctor` decides drift vs stale cache first (the raw `/main/` mirror is known to serve stale cache), confirmed drift files a mechanical `/petition` (category Bug, no sealed values), and XP-earning play holds until it resolves. Reading, drafting and research continue throughout.
