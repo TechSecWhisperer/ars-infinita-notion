@@ -2,7 +2,7 @@
 
 **[← README](../README.md)** · **[Player's Guide](PLAYERS-GUIDE.md)** · **[Troubleshooting](TROUBLESHOOTING.md)**
 
-All 26 commands, in the plugin's own words. Type the slash command, or just say what you want in plain language — the System understands both.
+All 27 commands, in the plugin's own words. Type the slash command, or just say what you want in plain language — the System understands both.
 
 ## Setting up and keeping it healthy
 
@@ -45,6 +45,12 @@ All 26 commands, in the plugin's own words. Type the slash command, or just say 
 | `/recruit` | Logs new people you met into Hunter Network, researches each from public sources, and drafts personalised follow-ups on a schedule. |
 | `/touch` | Scans Hunter Network for contacts overdue for a follow-up and suggests a reason to reach out. Read-only. |
 | `/party` | Requests a shared Party Board for friends also running The System — game stats only (level, XP, streak, badges). Never shares job-search content. |
+
+## When it's too much
+
+| Command | What it does |
+|---|---|
+| `/mercy` | Cancels one active bonus-quest obligation, penalty-free and instantly. Wellbeing outranks everything — no debate, no cost, no "are you sure". |
 
 ## Progress, and reaching the admin
 
