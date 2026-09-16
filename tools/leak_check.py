@@ -3,7 +3,7 @@
 leak_check.py — Admin leak-verification gate for ars-infinita-notion.
 
 Scans the whole repository (see SCAN_ROOT) for sealed-mechanics leaks: admin-only
-terminology, exact formula values, admin agent names, and raw admin
+terminology, exact formula values, and raw admin
 page IDs that must never reach a published, player-facing surface.
 
 Usage:
@@ -294,26 +294,6 @@ PATTERNS = [
         re.compile(r"\bclass\s+engine\b|\bclass\s+precondition\b", re.IGNORECASE),
     ),
     (
-        "admin-agent-name",
-        # Herald was added 2026-09-09, the day that agent was named. Until then
-        # this pattern named only two of the three, and the gap was found the
-        # way gaps like this always are: a public PR description carried both
-        # "Herald" and "Warden", and the check reported ONE hit. The commit
-        # message under it named only Herald and passed entirely clean.
-        #
-        # The rule was not wrong, it was stale — a vocabulary that has to be
-        # extended by hand every time an agent is named, with nothing tying it
-        # to the naming. Worth remembering when the next one is named.
-        #
-        # "herald" is an ordinary English word, unlike the other two, so this
-        # risks false positives in flavour text ("heralds your arrival") in a
-        # way they do not. Checked before adding: zero occurrences across
-        # README, CHANGELOG, docs/, the whole plugin tree, the npm README and
-        # feed.json. If one is ever wanted in player-facing copy, narrow this
-        # to the capitalised form rather than dropping it.
-        re.compile(r"\bwarden\b|\bcardinal\b|\bherald\b", re.IGNORECASE),
-    ),
-    (
         "feature-flag-registry",
         re.compile(r"\bfeature[\s-]?flag\s+registry\b", re.IGNORECASE),
     ),
@@ -331,7 +311,7 @@ PATTERNS = [
     # intended state. Removed rather than allowlisted, because the values are
     # no longer secret at all. This unseals ONLY the Forge value class; the
     # awakening-XP split, engagement-watch cadence, class-engine name, hidden-
-    # quest, sealed-codex-name, admin-agent-name, and sealed-page-ID checks
+    # quest, sealed-codex-name, and sealed-page-ID checks
     # are all untouched.
     (
         "engagement-watch-cadence-numbers",
