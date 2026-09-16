@@ -6,6 +6,14 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.9 — 2026-09-16
+
+**The call-home check.** Every boot, after reading the Kernel, your agent now fetches the public feed mirror over plain HTTPS and verifies the local `mechanics_version` and every rule value it is about to use against the published authority. On any disagreement it fails closed: `/doctor` decides drift vs stale cache first (the raw `/main/` mirror is known to serve stale cache), confirmed drift files a mechanical `/petition` (category Bug, no sealed values), and XP-earning play holds until it resolves. Reading, drafting and research continue throughout.
+
+The check exists because rules used to be trusted to match wherever they were read from. Skills now READ the rules at boot from one authored file — nothing is inlined into skill files at build time, so there is no second copy to drift. A confirmed drift produces a small automated Bug petition; that early-warning signal is the design, not noise to suppress.
+
+**Note on numbering:** mechanics version moves to 2.0.9 in lockstep. The check changes how rule values are verified at boot but changes no XP value, level threshold, badge criterion or unlock rule — Patch.
+
 ## v2.0.8 — 2026-09-16
 
 **`/mercy` exists.** The boot card has promised it since rule 10 was written — "Wellbeing > engagement > XP... /mercy and /patch are honoured instantly" — but no skill answered the command. The rules pointed somewhere players could not go. It now exists: `/mercy` cancels **one active bonus-quest obligation**, penalty-free, the moment you ask. No "are you sure", no cost warning, no streak guilt, no counter-offer. Asking a second time would turn a relief valve into a negotiation, so the valve only opens one way.
