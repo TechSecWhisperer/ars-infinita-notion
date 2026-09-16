@@ -2,7 +2,7 @@
 ### *"Ai-yn"* · Craft Without Limits.
 
 ![Mechanics](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2FTechSecWhisperer%2Fars-infinita-notion%2Fmain%2Ffeed.json&query=%24.mechanics_version&label=mechanics&prefix=v&color=8A2BE2)
-![Commands](https://img.shields.io/badge/commands-26-2F9E44)
+![Commands](https://img.shields.io/badge/commands-27-2F9E44)
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Status](https://img.shields.io/badge/status-BETA%20ACTIVE-8A2BE2)
 

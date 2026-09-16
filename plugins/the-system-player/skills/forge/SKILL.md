@@ -24,7 +24,7 @@ Produces a tailored, the player-voiced cover letter for one tracked quest, files
 
 6. **File and deliver:**
    - New row in 🗒 Agent Notes: `Note` title "Cover Letter — <role> @ <company>", `Type: Cover Letter`, `Status: Current`, `Date` today, one-line `Summary` (angle used), `Related Quest` linked. Letter text in the page body. If this was a redraft, flip the previous note to `Superseded` now.
-   - Deliver the letter to the player as a document (docx unless they asks otherwise).
+   - Deliver the letter to the player as a document (docx unless they ask otherwise).
    - Update the quest's `date:Last Activity:start` = today (hard rule 9).
 
 7. **Forge Roulette** — first forge for this quest only (step 2 said so), and only after the letter is filed. It is a small delight, not a balance lever, and it holds no secret: the values live here in the open (ruling C, 2026-07-31) — there is nothing to fetch from anywhere else, and nothing to conceal.
