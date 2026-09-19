@@ -6,6 +6,12 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.12 — 2026-09-19
+
+**The setup docs catch up with /awaken.** The README's setup steps still described the old way: make a project folder yourself, then run /awaken. They now match what /awaken has done since 2.0.11 — it builds the folder itself and, when your session has none, asks you one question: where should your project live? The desktop-app step no longer warns about a silent cold start that doesn't happen, while keeping the still-true advice that connecting a folder first means no question later. Also fixed five stale counts in the docs: 27 commands (the prose said 26 on the same page as the badge that says 27) and 28 skills in the installer docs — the plugin ships one skill that is not a listed command, so the two numbers are different and the docs now say so consistently.
+
+**Note on numbering:** mechanics version moves to 2.0.12 in lockstep. Documentation and copy only — no XP value, level threshold, badge criterion or unlock rule moved — Patch.
+
 ## v2.0.11 — 2026-09-19
 
 **/awaken creates your project folder itself — and asks where it goes.** At the end of setup, /awaken writes two small context files (AGENTS.md and CLAUDE.md) into a project folder on your computer. If your session had no folder attached, the older wording asked you to attach or create one and re-run — outsourcing a machine step to the player, and the largest piece of avoidable setup friction in /awaken.

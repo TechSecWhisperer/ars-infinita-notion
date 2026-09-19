@@ -52,7 +52,7 @@ Every path is four steps and ends the same way: you run `/awaken` and the agent 
 
 **First, install Claude Code itself** if you haven't — `curl -fsSL https://claude.ai/install.sh | bash` on macOS, Linux or WSL; `irm https://claude.ai/install.ps1 | iex` in Windows PowerShell. `claude --version` should print a version. Other install routes and system requirements: [Claude Code setup](https://code.claude.com/docs/en/setup).
 
-1. **Make a folder and work from it.** `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off. Keep both — see [why two files](docs/TROUBLESHOOTING.md#awaken-finished-but-nothing-works-in-my-next-session).
+1. **Pick where your project lives — or let `/awaken` ask.** You never have to create the folder by hand: if you start Claude Code in a folder you're happy with, `/awaken` uses it; if not, it asks you for a full path (for example `~/the-system`) and builds the folder itself. Making one first, as below, just means no question later. `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off. Keep both — see [why two files](docs/TROUBLESHOOTING.md#awaken-finished-but-nothing-works-in-my-next-session).
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
@@ -73,7 +73,7 @@ Now [run `/awaken`](#-then-run-awaken).
 
 ### Claude desktop app
 
-1. **Connect a folder to your session first.** Create a folder on your computer for The System, then — in the prompt area, before you send anything — use the **Project folder** dropdown to pick it. The desktop app has *no* file access until you do, and `/awaken` writes `AGENTS.md` and `CLAUDE.md` there at the end. Without it, setup finishes looking successful and every later session starts cold.
+1. **Connect a folder to your session, or let `/awaken` ask.** You never have to create the folder by hand: `/awaken` builds it and asks you where it should live if your session has none. Connecting one first — create a folder for The System on your computer, then in the prompt area, before you send anything, pick it in the **Project folder** dropdown — just means `/awaken` uses it without asking. If you skip this and your session ends up with no file access at all, `/awaken` still finishes setup in Notion, but it can't write `AGENTS.md` and `CLAUDE.md`, so a later session on this machine starts cold.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** In the **Code** tab, click the **+** next to the prompt box → **Connectors** → **Notion**, and follow the sign-in flow. Grant access to the workspace holding your Seed copy. (Settings → Connectors is where you *manage* one later, not where you add it.)
 4. **Install the commands.** In the **Code** tab, click the **+** next to the prompt box → **Plugins**, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it. (You can also type the two slash commands from the [Claude Code](#claude-code) path straight into the prompt box.)
@@ -82,7 +82,7 @@ Now [run `/awaken`](#-then-run-awaken).
 
 ### Codex, Antigravity & other CLIs
 
-1. **Make a folder and work from it.** `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off.
+1. **Pick where your project lives — or let `/awaken` ask.** You never have to create the folder by hand: start your CLI in a folder you're happy with and `/awaken` uses it; otherwise it asks you for a full path (for example `~/the-system`) and builds the folder itself. `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off.
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
@@ -106,7 +106,7 @@ Now [run `/awaken`](#-then-run-awaken).
 /awaken
 ```
 
-`/awaken` is the Level-0 tutorial questline — the tutorial *is* the setup. It builds your workspace, writes your Kernel, teaches the loop hands-on, and leaves you at **Level 4** with real XP for the real work. It is idempotent and resumable: if it stalls, run it again. It never double-builds or double-awards.
+`/awaken` is the Level-0 tutorial questline — the tutorial *is* the setup. It builds your workspace, writes your Kernel, teaches the loop hands-on, and leaves you at **Level 4** with real XP for the real work. If your session has no project folder yet, it asks you one question — where your project should live — and builds the folder itself; you never have to create one by hand. It is idempotent and resumable: if it stalls, run it again. It never double-builds or double-awards.
 
 Stuck? **[Troubleshooting →](docs/TROUBLESHOOTING.md)**
 
@@ -121,7 +121,7 @@ Stuck? **[Troubleshooting →](docs/TROUBLESHOOTING.md)**
 
 Every real action earns XP. XP earns levels. Levels and streaks give you the one thing a job hunt almost never does: the sense that you're getting somewhere.
 
-**[All 26 commands →](docs/COMMANDS.md)**
+**[All 27 commands →](docs/COMMANDS.md)**
 
 ## 🙋 Questions, bugs, ideas
 
