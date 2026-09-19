@@ -1,6 +1,6 @@
 # The System — Player Edition (the-system-player)
 
-Gate Protocol Seed component. **27 skills** — 26 public commands plus the hidden `/handover` route — one directory each under `skills/`.
+Gate Protocol Seed component. **28 skills** — 27 public commands plus the hidden `/handover` route — one directory each under `skills/`.
 
 ## Versions (what each number versions)
 
