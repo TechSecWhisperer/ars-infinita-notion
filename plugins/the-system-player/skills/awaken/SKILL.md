@@ -139,14 +139,51 @@ Close with: total 500 XP banked, Level 4, D-Rank; the L5 Job Change Trial waits 
 
 ## Step 7.5 — seat the local project context (AGENTS.md + CLAUDE.md, if this session can actually write here)
 
+### Resolve the project directory first — do not hand the player a folder to create
+
+**The player should never have to create a project folder by hand — but they do decide
+where it lives.** The folder is plumbing for the context files below, so building it is a
+machine's job; the *location* is theirs, because it is their machine and their filesystem.
+The older version of this step said "attach a folder and re-run" whenever the session had
+none attached — that outsourced a machine step to the player, and it was the single largest
+piece of avoidable setup friction in /awaken.
+
+So, before any write is attempted, resolve a project directory, in this order:
+
+1. **Already attached.** If the session has a working directory, project folder, or
+   workspace attached (a filesystem tool reports one, `pwd` resolves, a workspace root is
+   exposed), use it. Say which path you resolved and move on — no question asked.
+2. **No folder attached, but the session can write files.** Ask **one** question and
+   offer **no default** — do not suggest a location, do not pre-fill one, and do not treat
+   a blank answer as consent to choose for them: *"Where should your System project live?
+   Give me the full path, for example `/home/you/the-system` or `~/the-system`."* When they
+   give a path, create it with a plain `mkdir -p` and proceed. If they decline entirely
+   (they want no folder on this machine), record that and go straight to the outcome-4 skip
+   below — never create a folder they refused, and never create one they did not name.
+3. **No folder attached and the session cannot write files at all.** Skip to outcome 4.
+   There is nothing to resolve, and asking the player to go create a folder somewhere this
+   session cannot even reach is the friction this section exists to remove.
+
+Resolution is **idempotent**: on a re-run or repair, the folder already exists — `mkdir
+-p` on an existing directory is a no-op, so resolve-then-proceed never rebuilds or
+duplicates anything. If a previous run recorded a path on the Kernel, reuse it instead of
+asking again.
+
+Creating a folder is the one thing this step does **without further permission** once the
+player has named the path: it is empty, it is
+reversible (`rmdir` undoes it, and the close tells the player that), and refusing to create
+it silently would leave setup looking done with nothing seated. Writing the two context
+files inside it stays governed by the marker rules below. Nothing else on the player's
+machine is touched.
+
 **Probe before you claim. Do not infer writability from the kind of session this is.** A session can report as file-capable and still have nowhere to write — some hosts grant *no* filesystem access at all, not restricted access but none, until the player attaches a folder or workspace to the session. Gate on session type alone and setup finishes looking successful with nothing written, and every session afterwards starts cold with nothing explaining why.
 
 So: **attempt each write, then check it landed.** Resolve the project directory, write **both** files (below), and read **each** back. One of four outcomes, and say which:
 
 1. **Both wrote.** Note both full paths in the close so the player knows where they are.
-2. **Neither could be written.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If it names a missing folder or workspace, the remedy is to attach one and run `/awaken` again — it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
+2. **Neither could be written.** Say so plainly and name the cause — do not report Step 7.5 as done. **Quote the host's own refusal back to the player word for word rather than paraphrasing it.** That exact string is what lets them match the symptom to the remedy, and it differs by host, so inventing a likely-sounding one is worse than useless. If the refusal names a missing folder or workspace, resolve the directory per the section above (ask where it should live, then create it there — never hand them the mkdir), then re-run `/awaken`; it is idempotent and picks up here. Everything already built in Notion is safe and is not rebuilt.
 3. **One wrote and the other did not.** **Report this as a failure of the step, never as a success.** Name the file that is missing and the refusal for it verbatim, and say which agent that leaves without context: no `AGENTS.md` means Codex and the Antigravity CLI start cold here, no `CLAUDE.md` means Claude Code does. Re-running `/awaken` retries the missing one. **Never report the half that succeeded as the step being done** — a folder with one of the two files is the silent cold start this step exists to prevent, and it is the outcome most likely to be mistaken for success.
-4. **No filesystem at all.** Only when this session has **no file-writing tool whatsoever** — not a tool that exists and refuses. Skip, and note in the close that a desktop session is what seats the project context. **If a write tool exists and the write was refused, that is outcome 2, not this** — a desktop chat app with no connected folder is the common case, and it belongs in outcome 2, where the remedy is to connect a folder and re-run.
+4. **No filesystem at all.** Only when this session has **no file-writing tool whatsoever** — not a tool that exists and refuses. Skip, and note in the close that a desktop session is what seats the project context. **If a write tool exists and the write was refused, that is outcome 2, not this** — a desktop chat app with no connected folder is the common case, and it belongs in outcome 2, where the remedy is the directory-resolution section above (ask where it should live and create it there), then a re-run.
 
 The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
 
