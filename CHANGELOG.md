@@ -6,21 +6,11 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
-## v2.0.12 — 2026-09-19
+## v2.0.11 — 2026-09-19
 
-**/awaken no longer suggests where your project folder goes — it asks.** v2.0.11 changed setup so the folder is created for you, but it proposed `~/the-system` as a press-Enter default. That default was wrong: accepting it with one unread keypress wrote a directory into your home folder, on your machine, that you never chose — and it is the folder the whole game then lives in. The machine still builds the folder; **where it lives is your call and only yours.**
+**/awaken creates your project folder itself — and asks where it goes.** At the end of setup, /awaken writes two small context files (AGENTS.md and CLAUDE.md) into a project folder on your computer. If your session had no folder attached, the older wording asked you to attach or create one and re-run — outsourcing a machine step to the player, and the largest piece of avoidable setup friction in /awaken.
 
-Now, when a session has no folder attached, /awaken asks one question — *where should your System project live?* — with no suggestion, no pre-filled path, and no blank-answer fallback. You give the full path; it creates exactly that. Declining is still respected: no folder is ever created that you did not name. If a later write is refused for a missing folder, the remedy is the same question, not a default.
-
-Nothing else changes: no XP value, level threshold, badge criterion or unlock rule moved, and re-running /awaken stays idempotent — an existing folder is reused, never rebuilt or duplicated.
-
-**Note on numbering:** mechanics version moves to 2.0.12 in lockstep. Copy/delivery change only — Patch. (v2.0.11 was never published to any channel; if your instance reports 2.0.11, that wording never reached you.)
-
-## v2.0.11 — 2026-09-18
-
-**/awaken creates your project folder itself.** At the end of setup, /awaken writes two small context files (AGENTS.md and CLAUDE.md) into a project folder on your computer. If your session had no folder attached, the older wording asked you to attach or create one and re-run — outsourcing a machine step to the player, and the largest piece of avoidable setup friction in /awaken.
-
-Now /awaken resolves the folder itself, in order: it uses the folder your session already has attached; if there is none but the session can write files, it proposes `~/the-system` and creates it after a single yes-or-enter from you (a named path is used as-is, and a decline is respected — no folder is ever created that you refused); only a session with no file access at all skips, with the desktop-session note. Setup no longer hands you a folder to create.
+Now /awaken resolves the folder itself, in order: it uses the folder your session already has attached; if there is none but the session can write files, it asks one question — *where should your System project live?* — with no suggestion, no pre-filled path, and no blank-answer fallback. You give the full path; it creates exactly that. Declining is still respected: no folder is ever created that you did not name. Only a session with no file access at all skips, with the desktop-session note; if a later write is refused for a missing folder, the remedy is the same question, not a default. Setup no longer hands you a folder to create.
 
 Nothing else changes: no XP value, level threshold, badge criterion or unlock rule moved, and re-running /awaken stays idempotent — an existing folder is reused, never rebuilt or duplicated.
 
