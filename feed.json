@@ -204,6 +204,7 @@
       "player_facing_summary": "During setup, /awaken used to ask you to attach or create a project folder by hand whenever your session had none — the single largest piece of avoidable setup friction. It now resolves the folder itself: it uses the folder already attached to your session, or asks one question — where should your System project live? — with no suggestion, no pre-filled path, and no blank-answer fallback. You give the full path; it creates exactly that. Declining is still respected: no folder is ever created that you did not name. Setup no longer hands you a machine's job. Nothing about rules, XP or your data changes; re-running /awaken stays safe and never rebuilds or duplicates anything."
     }
   ],
+  "commands_count": 27,
   "commands": [
     "/awaken",
     "/intake",
