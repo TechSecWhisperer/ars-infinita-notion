@@ -20,7 +20,7 @@ Update Claude Code to the latest version and try again — plugin marketplace su
 
 ### The Codex installer stopped without installing anything
 
-Expected, and deliberate. `install-codex` puts 27 skill directories into your shared `$CODEX_HOME/skills/` folder (26 are the commands you can call; the 27th is an internal one) under ordinary names — `status`, `log`, `report`, `browse`, `doctor`, `patch` and so on. If any of those names is already taken by a directory the installer did not create, it **stops before writing anything** and prints the clashing paths, rather than silently replacing work you wrote yourself.
+Expected, and deliberate. `install-codex` puts 28 skill directories into your shared `$CODEX_HOME/skills/` folder (27 are the commands you can call; the 28th is the hidden `/handover` route) under ordinary names — `status`, `log`, `report`, `browse`, `doctor`, `patch` and so on. If any of those names is already taken by a directory the installer did not create, it **stops before writing anything** and prints the clashing paths, rather than silently replacing work you wrote yourself.
 
 Re-run with `--force`. That **moves your directories aside** — renamed into `$CODEX_HOME/.ars-infinita-backup/<timestamp>/`, outside the folder Codex scans — and tells you where they went. Nothing is ever deleted.
 
