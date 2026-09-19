@@ -222,6 +222,7 @@
       "player_facing_summary": "The README's setup steps still described the old way: make a project folder yourself before running /awaken. They now match what /awaken has done since 2.0.11 — it builds the folder itself and, when your session has none, asks you one question: where should your project live? The desktop-app step no longer warns about a silent cold start that doesn't happen, while keeping the still-true advice that connecting a folder first means no question later. Also fixed five stale counts in the docs: 27 commands (the prose said 26 on the same page as the badge that says 27) and 28 skills in the installer docs — the plugin ships one skill that is not a listed command, so the two numbers are different and the docs now say so consistently. Nothing about rules, XP or your data changes."
     }
   ],
+  "commands_count": 27,
   "commands": [
     "/awaken",
     "/intake",

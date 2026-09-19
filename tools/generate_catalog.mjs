@@ -104,15 +104,18 @@ function publicCommands(skills) {
 }
 
 // feed.json is regenerated on every patch by /broadcast and the nightly sync;
-// this only rewrites the commands array, byte-preserving the rest of the file
-// (a full JSON round-trip would reorder escapes in the long _comment string).
+// this only rewrites the commands_count field and the commands array,
+// byte-preserving the rest of the file (a full JSON round-trip would reorder
+// escapes in the long _comment string). commands_count exists so the README
+// badge can be derived from this file instead of hand-edited.
 function renderFeedCommands(skills) {
   const order = publicCommands(skills);
-  return `  "commands": [\n${order.map((n) => `    "/${n}"`).join(',\n')}\n  ]`;
+  const count = `  "commands_count": ${order.length},`;
+  return `${count}\n  "commands": [\n${order.map((n) => `    "/${n}"`).join(',\n')}\n  ]`;
 }
 
 function rewriteFeedCommands(feedText, block) {
-  const re = /  "commands": \[\n(?:.*\n)*?  \]/;
+  const re = /  "commands_count": \d+,\n  "commands": \[\n(?:.*\n)*?  \]|  "commands": \[\n(?:.*\n)*?  \]/;
   if (!re.test(feedText)) throw new Error('feed.json: could not locate the commands array');
   return feedText.replace(re, block);
 }
