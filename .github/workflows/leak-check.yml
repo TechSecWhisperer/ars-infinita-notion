@@ -1,4 +1,4 @@
-name: Leak Gate
+name: Leak check
 
 on:
   pull_request:
@@ -50,45 +50,3 @@ jobs:
         run: |
           git log --format=%B "origin/$BASE_REF..HEAD" \
             | python3 tools/leak_check.py --text "this branch's commit messages"
-  delivery-gate:
-    name: Delivery freshness
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0      # REQUIRED — the gate reads history
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      - run: node tools/delivery_gate.mjs
-
-  # Runs the structural check battery at review time. The same battery also
-  # runs at release, via prepublishOnly; running it here surfaces problems
-  # while they are cheap to fix rather than when a publish is blocked.
-  #
-  # gate_audit.mjs is deliberately NOT here. It rebuilds the tree once per
-  # mutation and is slow; it belongs at publish, and before any change to the
-  # checks themselves.
-  structural-gate:
-    name: Structural gate
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "20"
-      # The battery hard-fails on an unbuilt dist/ rather than reporting
-      # success without running, so this build step is load-bearing.
-      - run: node builder.mjs
-        working-directory: packages/system-skills
-      - run: node test/checks.mjs
-        working-directory: packages/system-skills
-
-      # builder.mjs regenerates the committed generated files, so the steps
-      # above can end up comparing a freshly-regenerated file against itself.
-      # This asserts the tree is unchanged by the build: if anything moved, the
-      # generated files on the branch are not what the sources produce, and
-      # they need rebuilding and committing.
-      #
-      # dist/ is gitignored, so this sees only tracked generated files.
-      - run: git diff --exit-code

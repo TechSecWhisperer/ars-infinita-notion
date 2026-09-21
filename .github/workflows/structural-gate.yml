@@ -1,0 +1,35 @@
+name: Structural gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  structural-gate:
+    name: Structural gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      # The battery hard-fails on an unbuilt dist/ rather than reporting
+      # success without running, so this build step is load-bearing.
+      - run: node builder.mjs
+        working-directory: packages/system-skills
+      - run: node test/checks.mjs
+        working-directory: packages/system-skills
+
+      # builder.mjs regenerates the committed generated files, so the steps
+      # above can end up comparing a freshly-regenerated file against itself.
+      # This asserts the tree is unchanged by the build: if anything moved, the
+      # generated files on the branch are not what the sources produce, and
+      # they need rebuilding and committing.
+      #
+      # dist/ is gitignored, so this sees only tracked generated files.
+      - run: git diff --exit-code
