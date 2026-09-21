@@ -133,6 +133,16 @@ Every real action earns XP. XP earns levels. Levels and streaks give you the one
 
 **Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
 
+## 🛠️ For contributors and build agents
+
+If you commit to this repository, opt in to the pre-push guard once per clone:
+
+```bash
+git config core.hooksPath .github/hooks
+```
+
+This runs `.github/hooks/pre-push-version-bump` on every push: if the push changes any shipped file (`plugins/the-system-player`, `packages/system-skills`), the plugin version in `plugins/the-system-player/.claude-plugin/plugin.json` must be bumped too, so players actually receive the update. Skip a single push with `git push --no-verify` — the CI gates still run.
+
 ## 📄 License
 
 [MIT](LICENSE) — © 2026 William Moses. The game's sealed mechanics live only in the author's admin workspace; nothing here is withheld from you by licence.
