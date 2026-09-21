@@ -1,0 +1,93 @@
+#!/usr/bin/env bash
+# pre-push guard: if this push changes any shipped file, the plugin version
+# must have moved too. Mirrors the delivery-freshness CI gate locally so the
+# failure is caught at commit-push time, not after a red run.
+#
+# Opt in: git config core.hooksPath .github/hooks
+# Safe to skip: git push --no-verify (the CI gate still runs).
+
+set -euo pipefail
+
+PLUGIN_JSON="plugins/the-system-player/.claude-plugin/plugin.json"
+SHIPPED_DIRS="plugins/the-system-player packages/system-skills"
+
+remote="$1"
+url="$2"
+
+# Nothing to compare before the first commit.
+if ! git rev-parse --verify HEAD >/dev/null 2>&1; then
+  exit 0
+fi
+
+# The version ON THE PUSHED COMMIT, not the working tree — the tree can hold
+# changes that will not be part of this push. (The ref loop below rebinds
+# local_sha per pushed ref; this default covers the common single-ref push.)
+local_sha=$(git rev-parse HEAD)
+
+# Read the remote's current version, if the remote ref exists locally.
+remote_version=""
+if git ls-remote --exit-code "$remote" refs/heads/main >/dev/null 2>&1; then
+  remote_sha=$(git ls-remote "$remote" refs/heads/main | cut -f1)
+  if git cat-file -e "$remote_sha:$PLUGIN_JSON" 2>/dev/null; then
+    remote_version=$(git show "$remote_sha:$PLUGIN_JSON" | node -e '
+      let d=""; process.stdin.on("data",c=>d+=c).on("end",()=>{
+        console.log(JSON.parse(d).version||"");});')
+  fi
+fi
+
+local_version=$(git show "$local_sha:$PLUGIN_JSON" 2>/dev/null | node -e '
+  let d=""; process.stdin.on("data",c=>d+=c).on("end",()=>{
+    console.log(JSON.parse(d).version||"");});' || true)
+
+# Which files does this push actually deliver? For every ref being pushed,
+# diff the remote's current tip against the local tip and list changed paths.
+changed=$( {
+  while read -r local_ref local_sha remote_ref remote_sha; do
+    [ "$remote_sha" = "0000000000000000000000000000000000000000" ] && remote_sha=""
+    if [ -z "$remote_sha" ]; then
+      # New remote ref: judge only what this branch ADDS relative to the
+      # default branch. Listing the whole tip would false-fail every
+      # feature-branch push that ships no new edits.
+      base=$(git merge-base "origin/${remote_ref#refs/heads/}" "$local_sha" 2>/dev/null || git merge-base origin/main "$local_sha" 2>/dev/null || true)
+      if [ -n "$base" ]; then
+        git diff --name-only "$base..$local_sha" || true
+      else
+        git ls-tree -r --name-only "$local_sha" || true
+      fi
+    elif git cat-file -e "$remote_sha" 2>/dev/null; then
+      git diff --name-only "$remote_sha..$local_sha" || true
+    else
+      # Remote sha not present locally (stale fetch) — cannot judge; pass.
+      :
+    fi
+  done
+} <<EOF
+$(cat)
+EOF
+)
+
+# Filter to shipped paths. NOTE: SHIPPED_DIRS is display-only; the regex needs
+# explicit | alternation — an in-pattern $SHIPPED_DIRS expands with spaces, not
+# pipes, and would match nothing.
+shipped_changed=$(printf '%s\n' "$changed" | grep -E '^(plugins/the-system-player|packages/system-skills)/' | sort -u || true)
+
+if [ -z "$shipped_changed" ]; then
+  exit 0
+fi
+
+# Shipped files moved but the version on the pushed commit is unchanged from
+# what the remote already has — a player's client would see no update. This is
+# the repeat-offender condition (retry without bump). Fail.
+if [ "$local_version" = "$remote_version" ]; then
+  echo "pre-push: shipped files changed without a version bump." >&2
+  echo "  changed: $(echo "$shipped_changed" | head -5 | tr '\n' ' ')..." >&2
+  echo "  plugin.json version: local=$local_version remote=${remote_version:-<none>}" >&2
+  echo "" >&2
+  echo "  Editing shipped files (plugins/the-system-player, packages/system-skills)" >&2
+  echo "  requires bumping $PLUGIN_JSON's version so a player's client sees the update." >&2
+  echo "  Bump the version (patch increment) and re-run the release ritual," >&2
+  echo "  or push with --no-verify if this push does not ship to players." >&2
+  exit 1
+fi
+
+exit 0
