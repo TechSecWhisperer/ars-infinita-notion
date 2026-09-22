@@ -6,6 +6,15 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.14 — 2026-09-23
+
+**/armor grows a consistent look and a guaranteed voice pass.** Two community-requested improvements ship together, and they answer the same underlying complaint from opposite ends: a CV that changes its appearance every export, and a CV that reads like it was written by an assistant.
+
+- **The canonical export template.** Every /armor export — the styled HTML copy and the editable .docx — now renders from one default template: a single type family at readable sizes, a fixed rhythm of spacing between sections and entries, conventional section headings, right-aligned consistent dates, and monochrome colour with a single optional accent. Two exports built months apart now look like they came from the same person. It is the default, not a cage: choosing a layout preset reorders the sections as before, and any direct request ("sans-serif", "bigger name", "no rules under headings") overrides the template line by line — your override is recorded on the master note so the next export reproduces it.
+- **The automatic /ghost pass.** Before any export or attachment is produced, the finished draft now runs through /ghost — the same de-AI voice pass /forge has always applied to cover letters. AI tells (em-dash chains, "I am excited to", tricolon padding, mirrored-JD phrasing) are stripped and the wording rebuilt in your voice. It is a voice pass, not a fact rewrite: every claim, number and achievement stays exactly as you wrote it. A reorder of existing sections never triggers a second pass; the pass runs when export-bound text is (re)drafted.
+
+**Note on numbering:** mechanics version moves to 2.0.14 in lockstep. Copy and delivery behaviour only — no XP value, level threshold, badge criterion or unlock rule moved — Patch.
+
 ## v2.0.13 — 2026-09-21
 
 **The View Window: see your game in your own workspace.** Until now your game was legible only by asking — /status narrated your Player Card while the databases behind it sat unopened, because a raw Notion database is a spreadsheet, not a game. /awaken's setup already created one native view (the 📆 Next Actions calendar on the Quest Board); it now builds the game's whole window:
