@@ -1,9 +1,9 @@
 {
-  "_comment": "Generated release artifact of The System — public read-only Patch Feed mirror. Do not hand-edit. It is a plain HTTPS read path for a player's agent; no browser or connector is required. 'mechanics_version' is the current game-rules version and 'head' is the newest patch below; both names are used by the boot card and /doctor, which is why both fields exist even when they hold the same value.",
-  "mechanics_version": "2.0.15",
-  "head": "2.0.15",
+  "_comment": "Public read-only rules feed for The System. Read it at https://raw.githubusercontent.com/TechSecWhisperer/ars-infinita-notion/main/feed.json.",
+  "mechanics_version": "2.0.16",
+  "head": "2.0.16",
   "generated": "2026-09-28",
-  "source": "The System — Nexus Patch Feed",
+  "source": "The System — Public Patch Feed",
   "patches": [
     {
       "version": "1.0.0",
@@ -102,7 +102,7 @@
       "applies_to": "Available-from-now",
       "min_level": 0,
       "title": "v2.0.0 — Beta. Setup tells you when it couldn't finish.",
-      "player_facing_summary": "The System is in Beta. Nothing about how you play changes, nothing you have earned is re-scored, and there is nothing to do on your side.\n\nWhat is actually different is setup, which is the part that was quietly failing. At the end of /awaken it writes a small file to your computer so your next session picks The System back up without you explaining it again. On the desktop app that write can fail for one specific reason: the app has no access to your files at all until you connect a folder to the session. Setup used to finish looking successful anyway, and every session afterwards started cold with nothing saying why.\n\nNow /awaken tries the write and checks it landed. If it worked, it tells you where the file is. If it could not, it says so plainly and tells you what to do — connect a folder, then run /awaken again, which is safe to re-run and will not rebuild anything already in your Notion. Everything built in Notion is finished either way; only that last local step is affected.\n\nAlso fixed: if /awaken cannot find your duplicated template it used to tell you to ask the Game Admin for the Seed link — a link the setup instructions had already given you. It now points you back to those instructions instead.\n\nOn the version jumping to 2.0.0: the first number is a release line, not a warning. Alpha was 1.x, Beta is 2.x. Nothing you have installed stops working because it moved."
+      "player_facing_summary": "The System is in Beta. Nothing about how you play changes, nothing you have earned is re-scored, and there is nothing to do on your side.\n\nWhat is actually different is setup, which is the part that was quietly failing. At the end of /awaken it writes a small file to your computer so your next session picks The System back up without you explaining it again. On the desktop app that write can fail for one specific reason: the app has no access to your files at all until you connect a folder to the session. Setup used to finish looking successful anyway, and every session afterwards started cold with nothing saying why.\n\nNow /awaken tries the write and checks it landed. If it worked, it tells you where the file is. If it could not, it says so plainly and tells you what to do — connect a folder, then run /awaken again, which is safe to re-run and will not rebuild anything already in your Notion. Everything built in Notion is finished either way; only that last local step is affected.\n\nAlso fixed: if /awaken cannot find your duplicated template it used to point you to the wrong place for the Seed link — a link the setup instructions had already given you. It now points you back to those instructions instead.\n\nOn the version jumping to 2.0.0: the first number is a release line, not a warning. Alpha was 1.x, Beta is 2.x. Nothing you have installed stops working because it moved."
     },
     {
       "version": "2.0.1",
@@ -165,7 +165,7 @@
       "applies_to": "Available-from-now",
       "min_level": 0,
       "title": "v2.0.7 — A dedicated handle-registration form (and Other is for Other again)",
-      "player_facing_summary": "Registering your handle rode the plain petition form's Other category, which asked for a description field a registration does not need and said nothing about alias safety at the point of choosing. There is now a dedicated \"Register your Hunter handle\" issue form that asks for exactly what registration needs — handle, current level, the two version fields — and states before you type anything that a handle is a self-chosen alias that must not identify you, that handles are admin-registered with no duplicates, and that a conflict means the Game Admin comes back to you. The petition form's preamble now points handle claims at that form, and /awaken step 7 files through it. No rule changed: this is a form and copy fix, filed as a Patch so the delivery gate stays honest about what a player's client receives."
+      "player_facing_summary": "Registering your handle rode the plain petition form's Other category, which asked for a description field a registration does not need and said nothing about alias safety at the point of choosing. There is now a dedicated \"Register your Hunter handle\" issue form that asks for exactly what registration needs — handle, current level, the two version fields — and states before you type anything that a handle is a self-chosen alias that must not identify you, that handles are registered with no duplicates, and that a conflict means you are asked to choose another. The petition form's preamble now points handle claims at that form, and /awaken step 7 files through it. No rule changed: this is a form and copy fix, filed as a Patch so the delivery gate stays honest about what a player's client receives."
     },
     {
       "version": "2.0.8",
@@ -238,6 +238,15 @@
       "min_level": 0,
       "title": "v2.0.14 — /armor: a consistent look and a guaranteed voice pass",
       "player_facing_summary": "Both community-requested improvements to /armor are in. Your CV exports (the HTML copy and the .docx) now share a canonical default template — one typography, one spacing rhythm, one section treatment — so every CV you export looks like it came from the same person; choose a layout preset or say the word and any part of it is yours to override. And before any export is produced, the draft automatically gets a /ghost voice pass — the same de-AI rewrite /forge already applies — so what leaves your workspace reads like you wrote it, not your agent. No XP values, level thresholds or badge criteria moved."
+    },
+    {
+      "version": "2.0.16",
+      "date": "2026-09-28",
+      "type": "Patch",
+      "applies_to": "Available-from-now",
+      "min_level": 0,
+      "title": "v2.0.16 — The home-check command is runnable from the package",
+      "player_facing_summary": "The home-check reference now uses the published package's npx entry point, so the documented command resolves on a fresh install. No rules, XP, levels or badge criteria changed."
     },
     {
       "version": "2.0.15",
