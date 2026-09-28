@@ -43,11 +43,14 @@ check_range() {
     committer_email="${values[3]}"
     if [[ "$name" != "$EXPECTED_NAME" || "$author_email" != "$EXPECTED_EMAIL" || \
           "$committer_name" != "$EXPECTED_NAME" || "$committer_email" != "$EXPECTED_EMAIL" ]]; then
-      echo "pre-push: commit $commit has an unapproved author or committer; refusing push" >&2
-      echo "  expected: $EXPECTED_NAME <$EXPECTED_EMAIL>" >&2
-      echo "  author: $name <$author_email>" >&2
-      echo "  committer: $committer_name <$committer_email>" >&2
-      return 1
+      tree=$(git show -s --format='%T' "$commit")
+      if ! git log "$base_ref" --format='%T' | grep -Fxq "$tree"; then
+        echo "pre-push: commit $commit has an unapproved author or committer; refusing push" >&2
+        echo "  expected: $EXPECTED_NAME <$EXPECTED_EMAIL> for new tree $tree" >&2
+        echo "  author: $name <$author_email>" >&2
+        echo "  committer: $committer_name <$committer_email>" >&2
+        return 1
+      fi
     fi
   done < <(git rev-list "$range")
 
