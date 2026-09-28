@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+set -euo pipefail
+hooks_dir="$(git rev-parse --git-path hooks)"
+push_lines=$(mktemp)
+trap 'rm -f "$push_lines"' EXIT
+cat >"$push_lines"
+
+"$hooks_dir/pre-push-identity" "$@" <"$push_lines"
+"$hooks_dir/pre-push-version-bump" "$@" <"$push_lines"

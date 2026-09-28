@@ -1,0 +1,79 @@
+#!/usr/bin/env bash
+# Public-repository pre-push identity gate.
+# Every commit introduced by a push must use the repository's publishing identity.
+# The check is deliberately exact and fails closed when the range cannot be read.
+
+set -euo pipefail
+
+EXPECTED_NAME="A.I.N. Public Maintainer"
+EXPECTED_EMAIL="public-maintainer@ars-infinita.invalid"
+
+remote_name="${1:-}"
+remote_url="${2:-}"
+if [[ -z "$remote_name" || -z "$remote_url" ]]; then
+  echo "pre-push: remote name and URL are required" >&2
+  exit 1
+fi
+
+push_lines=$(mktemp)
+trap 'rm -f "$push_lines"' EXIT
+cat >"$push_lines"
+
+check_range() {
+  local range="$1"
+  local commit
+  local seen=0
+
+  while IFS= read -r commit; do
+    [[ -n "$commit" ]] || continue
+    seen=1
+    local fields name author_email committer_name committer_email
+    fields=$(git show -s --format='%an%x09%ae%x09%cn%x09%ce' "$commit") || {
+      echo "pre-push: cannot inspect commit $commit; refusing push" >&2
+      return 1
+    }
+    IFS=$'\t' read -r -a values <<<"$fields"
+    if (( ${#values[@]} != 4 )); then
+      echo "pre-push: malformed identity metadata in commit $commit; refusing push" >&2
+      return 1
+    fi
+    name="${values[0]}"
+    author_email="${values[1]}"
+    committer_name="${values[2]}"
+    committer_email="${values[3]}"
+    if [[ "$name" != "$EXPECTED_NAME" || "$author_email" != "$EXPECTED_EMAIL" || \
+          "$committer_name" != "$EXPECTED_NAME" || "$committer_email" != "$EXPECTED_EMAIL" ]]; then
+      echo "pre-push: commit $commit has an unapproved author or committer; refusing push" >&2
+      echo "  expected: $EXPECTED_NAME <$EXPECTED_EMAIL>" >&2
+      echo "  author: $name <$author_email>" >&2
+      echo "  committer: $committer_name <$committer_email>" >&2
+      return 1
+    fi
+  done < <(git rev-list "$range")
+
+  if (( seen == 0 )); then
+    echo "pre-push: identity range '$range' is empty or unavailable; refusing push" >&2
+    return 1
+  fi
+}
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ -n "${local_ref:-}" ]] || continue
+  if [[ "$local_sha" == "0000000000000000000000000000000000000000" ]]; then
+    continue
+  fi
+
+  base_ref="origin/main"
+  if [[ "$remote_ref" == "refs/heads/main" ]]; then
+    base_ref="$remote_sha"
+  elif [[ "$remote_sha" != "0000000000000000000000000000000000000000" ]]; then
+    base_ref="$remote_sha"
+  fi
+
+  git rev-parse --verify "$base_ref^{commit}" >/dev/null 2>&1 || {
+    echo "pre-push: cannot resolve comparison base $base_ref; refusing push" >&2
+    exit 1
+  }
+  check_range "$base_ref..$local_sha" || exit 1
+
+done <"$push_lines"
