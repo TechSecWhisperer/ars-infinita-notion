@@ -6,6 +6,10 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.16 — 2026-09-28
+
+**The home-check command is runnable from the published package.** The setup reference now uses the package's `npx` entry point, so the documented command resolves on a fresh install. No rules, XP, levels, or badge criteria changed — Patch.
+
 ## v2.0.15 — 2026-09-28
 
 **The boot check tells you when it cannot know.** The player's read-only home check now has a deterministic result contract: `PASS` means Notion, the Kernel, and the published rule surfaces answered healthy; `FAIL` means one answered unhealthy; and `UNKNOWN` means required evidence was unavailable. Unknown exits non-zero, so a missing connection or incomplete Kernel can no longer look like a healthy setup. The check is separate from workspace maintenance and does not repair or write anything.
