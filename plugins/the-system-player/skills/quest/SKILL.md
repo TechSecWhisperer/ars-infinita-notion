@@ -22,7 +22,7 @@ If you get **one clear match** → Continue mode, regardless of which trigger ph
 ## Mode: New
 Fetch the job posting → create a Quest Board entry (role, company, location, salary, source, full JD in the page body) → create or link a Gate Intel company record → set Stage, start the SLA clock → log +10 XP (`Quest tracked`).
 
-**Live pages: invoke `/browse` with the URL and what you need extracted.** It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, say which it was and ask the player to paste the posting text. A pasted URL plus posting text is valid input for the same flow: label the source as player-provided and continue with the Notion work; never fabricate posting detail or call it live research.
+**Live pages: invoke `/browse` with the URL and what you need extracted.** It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, say which it was and ask the player to paste the posting text. A pasted URL plus posting text is valid input for the same flow: label the source as player-provided, report **prepared**, and continue with the Notion work; never fabricate posting detail or call it live research.
 
 1. **Duplicate check** (see "Two modes" above — you should have already done this before choosing New mode; if you somehow haven't, do it now and switch to Continue mode if it turns out to exist).
 
