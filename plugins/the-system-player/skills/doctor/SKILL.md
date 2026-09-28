@@ -11,6 +11,13 @@ Start with the `/vitals` capability probe. Its profile tells you which later che
 ## Step 2 — the check battery
 Run each; report PASS / WARN / FAIL with a one-line specific:
 
+For the boot-time home check, preserve the deterministic aggregate contract:
+`PASS` means every required probe is healthy, `FAIL` means at least one probe
+is unhealthy, and `UNKNOWN` means required evidence was unavailable. Unknown
+has a non-zero result and must not be reported as healthy. This on-player
+check is read-only and side-effect-free; it is separate from any workspace
+reconciliation or maintenance run.
+
 1. **Notion access** — the /vitals connector result. FAIL stops the run (nothing else is checkable).
 2. **Kernel integrity** — does the 🧬 Kernel page exist with a complete Instance ID table + Player + Versions + Nexus links? Missing/empty → not initialised. Partial → note which sections are missing.
 3. **Rule-surface / Sigil Check** — compare local rule surfaces against the Nexus 📜 Rule Manifest (needs feed reachability). Drift → WARN, name the surface. Restore is always FROM the Manifest.

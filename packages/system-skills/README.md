@@ -27,6 +27,17 @@ npx @ars-infinita-notion/system-skills install-codex   # -> $CODEX_HOME/skills
 npx @ars-infinita-notion/system-skills install-agy     # -> ~/.gemini/config/plugins
 ```
 
+The package also ships the read-only boot verifier. Give it the evidence your
+agent collected from the player's Notion workspace:
+
+```sh
+ars-infinita-home-check evidence.json
+```
+
+It reports `PASS`, `FAIL`, or `UNKNOWN` and exits 0, 1, or 2 respectively.
+Unavailable evidence is `UNKNOWN`, never healthy. This checks the player's
+live home; it is not a workspace maintenance reconciliation.
+
 **The published package ships `dist/` prebuilt**, so there is no clone and no build step — that is the whole install. Both commands accept `--dry-run`, which prints every path they would touch and writes nothing.
 
 **`install-codex` will not overwrite skills you wrote yourself.** It installs 28 skills into the shared `$CODEX_HOME/skills/` folder under ordinary names (`status`, `log`, `report`, `browse`, `doctor`, `patch`, …). If any of those names is already taken by a directory this installer did not create, it **stops before writing anything** and prints the paths. Re-run with `--force` to proceed: that **moves your directories aside** — renamed into `$CODEX_HOME/.ars-infinita-backup/<timestamp>/`, outside the folder Codex scans — and tells you where they went. Nothing is ever deleted. The install is recorded in `$CODEX_HOME/.ars-infinita-install.json`, which is how a later run knows which directories are its own.
@@ -122,7 +133,7 @@ After installing, start a fresh session:
 
 ```sh
 npm run build   # node builder.mjs
-npm run check   # node test/checks.mjs — structural, no network, always runs
+npm run check   # structural gate plus the player home-check fixtures
 npm test        # check, then node test/smoke.mjs
 ```
 

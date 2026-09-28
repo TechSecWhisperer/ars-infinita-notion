@@ -1,0 +1,18 @@
+{
+  "notion": { "status": "reachable" },
+  "kernel": {
+    "status": "present",
+    "surfaces": {
+      "instanceIds": "present",
+      "player": "present",
+      "versions": "unknown",
+      "links": "present"
+    }
+  },
+  "rules": {
+    "status": "unknown",
+    "manifest": "unknown",
+    "feed": "unknown",
+    "versionMatches": null
+  }
+}
