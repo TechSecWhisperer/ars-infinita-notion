@@ -21,6 +21,7 @@ for (const [fixtureName, documentPath] of cases) {
   const evidence = fixture(fixtureName);
   const document = read(documentPath);
   assert.equal(typeof evidence.expected, 'string');
+  assert.ok(document.toLowerCase().includes(evidence.expected), `${fixtureName}: expected outcome ${evidence.expected} is not documented`);
   for (const phrase of evidence.required) {
     assert.ok(document.includes(phrase), `${fixtureName}: ${documentPath} is missing ${JSON.stringify(phrase)}`);
   }
