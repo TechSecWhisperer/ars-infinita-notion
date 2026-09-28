@@ -1,7 +1,7 @@
 {
   "_comment": "Public read-only rules feed for The System. Read it at https://raw.githubusercontent.com/TechSecWhisperer/ars-infinita-notion/main/feed.json.",
-  "mechanics_version": "2.0.16",
-  "head": "2.0.16",
+  "mechanics_version": "2.0.17",
+  "head": "2.0.17",
   "generated": "2026-09-28",
   "source": "The System — Public Patch Feed",
   "patches": [
@@ -240,6 +240,15 @@
       "player_facing_summary": "Both community-requested improvements to /armor are in. Your CV exports (the HTML copy and the .docx) now share a canonical default template — one typography, one spacing rhythm, one section treatment — so every CV you export looks like it came from the same person; choose a layout preset or say the word and any part of it is yours to override. And before any export is produced, the draft automatically gets a /ghost voice pass — the same de-AI rewrite /forge already applies — so what leaves your workspace reads like you wrote it, not your agent. No XP values, level thresholds or badge criteria moved."
     },
     {
+      "version": "2.0.15",
+      "date": "2026-09-28",
+      "type": "Patch",
+      "applies_to": "Available-from-now",
+      "min_level": 0,
+      "title": "v2.0.15 — The boot check tells you when it cannot know",
+      "player_facing_summary": "The player's read-only home check now has a deterministic result contract: PASS means Notion, the Kernel, and the published rule surfaces answered healthy; FAIL means one answered unhealthy; and UNKNOWN means required evidence was unavailable. Unknown exits non-zero, so a missing connection or incomplete Kernel can no longer look like a healthy setup. The check is separate from workspace maintenance and does not repair or write anything. No XP values, level thresholds or badge criteria moved."
+    },
+    {
       "version": "2.0.16",
       "date": "2026-09-28",
       "type": "Patch",
@@ -249,13 +258,13 @@
       "player_facing_summary": "The home-check reference now uses the published package's npx entry point, so the documented command resolves on a fresh install. No rules, XP, levels or badge criteria changed."
     },
     {
-      "version": "2.0.15",
+      "version": "2.0.17",
       "date": "2026-09-28",
       "type": "Patch",
       "applies_to": "Available-from-now",
       "min_level": 0,
-      "title": "v2.0.15 — The boot check tells you when it cannot know",
-      "player_facing_summary": "The player's read-only home check now has a deterministic result contract: PASS means Notion, the Kernel, and the published rule surfaces answered healthy; FAIL means one answered unhealthy; and UNKNOWN means required evidence was unavailable. Unknown exits non-zero, so a missing connection or incomplete Kernel can no longer look like a healthy setup. The check is separate from workspace maintenance and does not repair or write anything. No XP values, level thresholds or badge criteria moved."
+      "title": "v2.0.17 — The package command accepts its documented subcommand",
+      "player_facing_summary": "Running the home check through the package entry point now reads the evidence file rather than treating the subcommand name as a path. The feed ordering is also kept chronological. No rules, XP, levels or badge criteria changed."
     }
   ],
   "commands_count": 27,
