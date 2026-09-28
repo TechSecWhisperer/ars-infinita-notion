@@ -135,7 +135,7 @@ Every real action earns XP. XP earns levels. Levels and streaks give you the one
 
 ## 📄 License
 
-[MIT](LICENSE) — © 2026 William Moses. The game's sealed mechanics live only in the author's admin workspace; nothing here is withheld from you by licence.
+[MIT](LICENSE) — © 2026 Ars Infinita Contributors. The game's sealed mechanics live only in the author's admin workspace; nothing here is withheld from you by licence.
 
 ---
 

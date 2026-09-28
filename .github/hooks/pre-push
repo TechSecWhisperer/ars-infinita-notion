@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Run every public pre-push gate against the same ref-update input.
+set -euo pipefail
+root=$(cd -- "$(dirname -- "$0")" && pwd)
+input=$(mktemp)
+trap 'rm -f "$input"' EXIT
+cat >"$input"
+"$root/pre-push-identity" "$@" <"$input"
+"$root/pre-push-version-bump" "$@" <"$input"

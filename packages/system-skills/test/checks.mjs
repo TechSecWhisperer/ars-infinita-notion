@@ -251,7 +251,7 @@ check('release-metadata-check', () => {
   // derives it, and inventing a derivation would be the check bending reality
   // to have something to assert. (The first draft of this asserted
   // owner.name === plugin.json author. That failed immediately: the manifests
-  // read "William Moses" and "William Moses (Game Admin)". Making them equal
+  // read "Ars Infinita Contributors" in both metadata fields. Making them equal
   // would have meant editing a public-facing name to satisfy a check written
   // minutes earlier. The divergence is filed for the owner to settle, not
   // normalised here.)
@@ -266,7 +266,7 @@ check('release-metadata-check', () => {
     owner: marketplace.owner,
     description: marketplace.description,
   });
-  const AUTHORED_PIN = '88e6d4a0ddf3797985fd0ed9befcad8c';
+  const AUTHORED_PIN = '41aa85ffb170608387a755cbb65ba5a3';
   const authoredHash = createHash('sha256').update(authored).digest('hex').slice(0, 32);
   ok(
     authoredHash === AUTHORED_PIN,
