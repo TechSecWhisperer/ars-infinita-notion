@@ -5,8 +5,9 @@
 import fs from 'node:fs';
 import { evaluatePlayerHomeCheck } from './lib/player-home-check.mjs';
 
-const source = process.argv[2]
-  ? fs.readFileSync(process.argv[2], 'utf8')
+const argument = process.argv[2] === 'home-check' ? process.argv[3] : process.argv[2];
+const source = argument
+  ? fs.readFileSync(argument, 'utf8')
   : fs.readFileSync(0, 'utf8');
 
 let evidence;
