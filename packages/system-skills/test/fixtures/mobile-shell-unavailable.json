@@ -1,0 +1,6 @@
+{
+  "scenario": "shell submission unavailable",
+  "capability": "shell submission",
+  "expected": "unavailable",
+  "required": ["shell submission was not completed", "preserve the exact prepared title/body"]
+}

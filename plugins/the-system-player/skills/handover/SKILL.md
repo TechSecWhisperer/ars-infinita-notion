@@ -21,5 +21,10 @@ Create or overwrite a single handover entry in `KERNEL:System Log`. Prefer a row
 
 Keep it to a handful of lines. Confirm it back in one line. Overwrite (don't accumulate) — there is at most one live handover note.
 
+The confirmation must name the outcome of the session (`completed`, `prepared`,
+`deferred`, `unavailable`, or `unknown`) and only the next pointer. It is not a
+completion receipt: the next session re-reads the Kernel and verifies every pending
+step before acting.
+
 ## Reading a handover (next session)
 Done at boot per the boot-card "Handover check": if a fresh, unexpired 🔁 Handover note exists, surface its pointers and **confirm before acting** — the player may have moved on. Ignore and clear a note past its 24h TTL. Never trust the note over live Notion data; if they disagree, live data wins and you flag the drift.

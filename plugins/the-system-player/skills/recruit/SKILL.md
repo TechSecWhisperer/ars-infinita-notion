@@ -14,7 +14,7 @@ Creates Hunter Network entries → light public-source research on each → draf
 
 2. **Light public-source research** on each (same public-only rule as /scout) to round out `Role / Title`/`Company` if the player's notes were partial, and set `Research Brief` accordingly (`Researched — see page` or `Not Findable Online`).
 
-**Live pages: invoke `/browse` with the URL and what you need extracted** (public profile, company page). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, set `Research Brief: Not Findable Online` and say which it was — never report research you did not perform.
+**Live pages: invoke `/browse` with the URL and what you need extracted** (public profile, company page). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, accept pasted profile/company text if supplied, label it player-provided, and continue the Notion record. Without either source, set `Research Brief: Not Findable Online` and say which route was unavailable — never report research you did not perform.
 
 3. **Draft a personalised follow-up** per person, grounded in the actual conversation notes — a generic "great meeting you" message defeats the point of banking what they talked about. Draft only; never send.
 
@@ -22,4 +22,4 @@ Creates Hunter Network entries → light public-source research on each → draf
 
 5. **Log XP**: +25 per new contact (`Category: Networking`). If this batch is tied to a `/gather`-logged event and the event-level +75 hasn't been logged yet, add that too (once per event, not once per person).
 
-6. **Report back**: contacts logged, a one-line summary of each research find, and the drafted follow-ups for the player's review before anything goes out.
+6. **Report back**: contacts logged, a one-line summary of each research find with its source, the outcome label, and the drafted follow-ups for the player's review before anything goes out.

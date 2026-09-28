@@ -1,0 +1,6 @@
+{
+  "scenario": "file export deferred",
+  "capability": "file export",
+  "expected": "deferred",
+  "required": ["Notion master is **completed**", "leave `CV Version Sent` untouched"]
+}

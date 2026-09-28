@@ -19,5 +19,11 @@ Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` fi
    - **`unreachable`** — the browser is healthy but the page is not readable: 404 or dead link, a login wall, a bot-detection block, or a checkpoint only the player can clear. Say which of those it was, because the fix differs, and offer the same paste-the-text fallback.
    Never report a browser action as done when it wasn't, and never let a caller infer success from an absent answer.
 
+If the player supplies pasted page text instead, return **prepared**: identify it as
+player-provided material, extract only from that text, and do not call it live research.
+If neither a page nor pasted material is available, return **unavailable** and name the
+missing input. The shared boot card's outcome contract distinguishes completed,
+prepared, deferred, unavailable, and unknown; use those labels in the hand-back.
+
 ## Guardrails
 Reads are free. Before any state-changing action (submitting a form, posting) confirm with the player — hard rule 1 (never act/send on their behalf without their ok; never auto-submit). Never solve a CAPTCHA/checkpoint (hard rule 8) — use the player's own authenticated tab and have them clear it. A login-gated or CAPTCHA-gated form is the player's to complete; you prep it, they submit.

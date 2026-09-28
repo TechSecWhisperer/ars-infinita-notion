@@ -1,0 +1,6 @@
+{
+  "scenario": "pasted input continuation",
+  "capability": "browser",
+  "expected": "prepared",
+  "required": ["player-provided", "continue with the Notion work"]
+}

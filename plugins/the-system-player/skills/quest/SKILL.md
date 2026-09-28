@@ -22,7 +22,7 @@ If you get **one clear match** → Continue mode, regardless of which trigger ph
 ## Mode: New
 Fetch the job posting → create a Quest Board entry (role, company, location, salary, source, full JD in the page body) → create or link a Gate Intel company record → set Stage, start the SLA clock → log +10 XP (`Quest tracked`).
 
-**Live pages: invoke `/browse` with the URL and what you need extracted.** It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, say which it was and ask the player to paste the posting text — never fabricate posting detail.
+**Live pages: invoke `/browse` with the URL and what you need extracted.** It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, say which it was and ask the player to paste the posting text. A pasted URL plus posting text is valid input for the same flow: label the source as player-provided and continue with the Notion work; never fabricate posting detail or call it live research.
 
 1. **Duplicate check** (see "Two modes" above — you should have already done this before choosing New mode; if you somehow haven't, do it now and switch to Continue mode if it turns out to exist).
 
@@ -36,7 +36,7 @@ Fetch the job posting → create a Quest Board entry (role, company, location, s
 
 6. **Log XP.** Create an XP Ledger row (data source `KERNEL:XP Ledger`): `Action` = "Quest tracked: <role> @ <company>", `Category` = `Application`, `date:Date:start` = today, `XP` = 10, `Related Quest` = the new quest page, `Notes` = brief context. Then recompute Total XP on the Status Window Player Card and check for a level-up (see boot card hard rule 5) — announce it if one happens.
 
-7. **Report back** concisely: `[SYSTEM] Quest tracked: <role> — <company> (+10 XP)` [+ level-up line if applicable], a one-line read on the role if obvious, and the Quest Board link. Ask if the player wants /appraise and/or /scout run next — don't run them automatically unless they've already asked for the full sequence in the same message.
+7. **Report back** concisely: `[SYSTEM] Quest tracked: <role> — <company> (+10 XP)` [+ level-up line if applicable], a one-line read on the role if obvious, the source (`live page` or `player-provided text`), and the Quest Board link. Ask if the player wants /appraise and/or /scout run next — don't run them automatically unless they've already asked for the full sequence in the same message. If required posting evidence is still missing, report **deferred** and do not create or award the quest.
 
 ## Mode: Continue
 A fast, read-oriented briefing on one already-tracked quest — no XP, no duplicate-avoidance needed (nothing gets created), the point is to re-orient the player (and yourself) on where this one stands.
