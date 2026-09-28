@@ -1,7 +1,7 @@
 {
   "_comment": "Public read-only rules feed for The System. Read it at https://raw.githubusercontent.com/TechSecWhisperer/ars-infinita-notion/main/feed.json.",
-  "mechanics_version": "2.0.17",
-  "head": "2.0.17",
+  "mechanics_version": "2.0.15",
+  "head": "2.0.15",
   "generated": "2026-09-28",
   "source": "The System — Public Patch Feed",
   "patches": [
@@ -245,26 +245,8 @@
       "type": "Patch",
       "applies_to": "Available-from-now",
       "min_level": 0,
-      "title": "v2.0.15 — The boot check tells you when it cannot know",
-      "player_facing_summary": "The player's read-only home check now has a deterministic result contract: PASS means Notion, the Kernel, and the published rule surfaces answered healthy; FAIL means one answered unhealthy; and UNKNOWN means required evidence was unavailable. Unknown exits non-zero, so a missing connection or incomplete Kernel can no longer look like a healthy setup. The check is separate from workspace maintenance and does not repair or write anything. No XP values, level thresholds or badge criteria moved."
-    },
-    {
-      "version": "2.0.16",
-      "date": "2026-09-28",
-      "type": "Patch",
-      "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.16 — The home-check command is runnable from the package",
-      "player_facing_summary": "The home-check reference now uses the published package's npx entry point, so the documented command resolves on a fresh install. No rules, XP, levels or badge criteria changed."
-    },
-    {
-      "version": "2.0.17",
-      "date": "2026-09-28",
-      "type": "Patch",
-      "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.17 — The package command accepts its documented subcommand",
-      "player_facing_summary": "Running the home check through the package entry point now reads the evidence file rather than treating the subcommand name as a path. The feed ordering is also kept chronological. No rules, XP, levels or badge criteria changed."
+      "title": "v2.0.15 — A home check you can run and trust",
+      "player_facing_summary": "The player's read-only home check now has a deterministic result contract: PASS means Notion, the Kernel, and the published rule surfaces answered healthy; FAIL means one answered unhealthy; and UNKNOWN means required evidence was unavailable. Unknown exits non-zero, so a missing connection or incomplete Kernel can no longer look like a healthy setup. The check is separate from workspace maintenance and does not repair or write anything. The published package now accepts the documented home-check subcommand and the setup reference uses its npx entry point, so the command resolves on a fresh install. No XP values, level thresholds or badge criteria moved."
     }
   ],
   "commands_count": 27,
