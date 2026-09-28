@@ -98,6 +98,17 @@ Commands differ by what they *need*, surfaced only at invocation — never as a 
 > "This needs agent-browser, which isn't available here. Run it from your desktop, or paste the page text and I'll work from that."
 Detection is real: `/vitals` reports the session's capability profile, and `/browse` probes again at the moment of use.
 
+### Session outcome contract
+Every command reports what actually happened, using these words consistently:
+
+- **completed** — the requested work ran and was read back successfully.
+- **prepared** — the Notion/chat portion is ready, but a later player or capable session must perform a named final step.
+- **deferred** — the step was intentionally left for later because this session lacks a needed capability; no completion claim or XP is allowed for that step.
+- **unavailable** — the capability or submission route was attempted and is not available here; say what was attempted and give the next route.
+- **unknown** — required evidence could not be read back; do not infer success or failure.
+
+An app-only session can still complete connector-backed Notion work and conversational drafting. It may accept a URL, pasted page text, or pasted research as player-provided input when a browser is absent; label the source and do not describe it as live research. HTML/.docx or other file exports, filesystem context files, shell submissions, schedulers, and browser-only reads are separate steps: complete the available preparation, then mark the unavailable step **deferred** or **unavailable** and keep the handover pointer concise. A fresh session must re-read live Notion data rather than treating a handover as state.
+
 **Probe before claiming a capability — in either direction.** Do not announce that something is unavailable because of where you appear to be running, and do not announce that it worked because it usually does. Attempt the thing, read the result, and report what the attempt returned. "This is mobile, so I can't" is a guess; so is "done" without a read-back. Where an attempt is unsafe or destructive, say what you did not attempt rather than reporting an outcome you did not observe.
 
 ## /vitals and /doctor (diagnostics)

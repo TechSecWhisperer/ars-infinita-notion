@@ -1,7 +1,7 @@
 {
   "_comment": "Public read-only rules feed for The System. Read it at https://raw.githubusercontent.com/TechSecWhisperer/ars-infinita-notion/main/feed.json.",
-  "mechanics_version": "2.0.15",
-  "head": "2.0.15",
+  "mechanics_version": "2.0.16",
+  "head": "2.0.16",
   "generated": "2026-09-28",
   "source": "The System — Public Patch Feed",
   "patches": [
@@ -247,6 +247,15 @@
       "min_level": 0,
       "title": "v2.0.15 — A home check you can run and trust",
       "player_facing_summary": "The player's read-only home check now has a deterministic result contract: PASS means Notion, the Kernel, and the published rule surfaces answered healthy; FAIL means one answered unhealthy; and UNKNOWN means required evidence was unavailable. Unknown exits non-zero, so a missing connection or incomplete Kernel can no longer look like a healthy setup. The check is separate from workspace maintenance and does not repair or write anything. The published package now accepts the documented home-check subcommand and the setup reference uses its npx entry point, so the command resolves on a fresh install. No XP values, level thresholds or badge criteria moved."
+    },
+    {
+      "version": "2.0.16",
+      "date": "2026-09-28",
+      "type": "Patch",
+      "applies_to": "Available-from-now",
+      "min_level": 0,
+      "title": "v2.0.16 — App-only sessions continue honestly",
+      "player_facing_summary": "App-only and mobile sessions can now continue connector-backed Notion work and conversational preparation without pretending that browser, file, shell, scheduler, or filesystem steps happened. Paste a URL, page text, or research when a browser is unavailable; the source is labelled, missing steps are marked prepared, deferred, unavailable, or unknown, and a concise handover points to the next capable session. No XP values, level thresholds or badge criteria moved."
     }
   ],
   "commands_count": 27,

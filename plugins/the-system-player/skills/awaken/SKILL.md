@@ -108,6 +108,10 @@ Write the player's first Daily Log entry (today, domains touched, mood if offere
 
 **Offer, never impose** — and once it's created, suggest the player turn on notifications for it, so the briefing reaches them instead of sitting unread.
 
+If this session has no scheduler, mark the schedule step **deferred** and keep the
+rest of awakening moving; do not claim that a routine exists. If a scheduler was
+attempted but rejected, mark it **unavailable** and preserve the manual next step.
+
 **Verify it can actually run unattended — and if it can't, say so rather than leaving a routine that looks fine.** On some surfaces a routine *created by an agent* is granted weaker permissions than the same routine created by the player: it runs under a classifier that can pause any tool call mid-run, so the briefing stalls part-written instead of delivering. **No prompt fixes this** — the permission model follows the creation path, and on an agent-created routine the setting is not even exposed. Agent-created routines are a known case on some surfaces; assume any surface may behave this way until shown otherwise. Where it applies, **walk the player through creating the routine themselves**, and give them an acceptance test in two parts:
 
 - **Behavioural, and it applies on every surface:** trigger one run now, or check that the first scheduled briefing actually arrived end to end. The failure being guarded against is a stall part-way through, so only a completed delivery proves anything. Inspecting configuration does not.
@@ -190,7 +194,7 @@ So: **attempt each write, then check it landed.** Resolve the project directory,
 3. **One wrote and the other did not.** **Report this as a failure of the step, never as a success.** Name the file that is missing and the refusal for it verbatim, and say which agent that leaves without context: no `AGENTS.md` means Codex and the Antigravity CLI start cold here, no `CLAUDE.md` means Claude Code does. Re-running `/awaken` retries the missing one. **Never report the half that succeeded as the step being done** — a folder with one of the two files is the silent cold start this step exists to prevent, and it is the outcome most likely to be mistaken for success.
 4. **No filesystem at all.** Only when this session has **no file-writing tool whatsoever** — not a tool that exists and refuses. Skip, and note in the close that a desktop session is what seats the project context. **If a write tool exists and the write was refused, that is outcome 2, not this** — a desktop chat app with no connected folder is the common case, and it belongs in outcome 2, where the remedy is the directory-resolution section above (ask where it should live and create it there), then a re-run.
 
-The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
+**The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve. In a chat-only session with no filesystem, mark Step 7.5 **deferred** and leave a concise handover pointer for a capable session; do not ask the player to claim that context files were written.
 
 **If a file already exists, read it before writing.** A player may already have a `CLAUDE.md` or `AGENTS.md` of their own — from another tool, or hand-written. Decide by a marker, not by judgement. Both templates below begin with the line:
 

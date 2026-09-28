@@ -8,7 +8,7 @@ Read the shared boot card `${CLAUDE_SKILL_DIR}/../../references/boot-card.md` fi
 ## What /scout does
 Real web research on a company → 5 key insights written to its Gate Intel record, plus a Hunter Network stub for any publicly-known relevant stakeholder found (never scraped private data).
 
-**Live pages: invoke `/browse` with the URL and what you need extracted** (company page, press item, review page). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, say which it was and work from whatever the player can paste — never report research you did not perform.
+**Live pages: invoke `/browse` with the URL and what you need extracted** (company page, press item, review page). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, say which it was and work from whatever the player can paste. Label each insight as based on player-provided material when applicable; never report research you did not perform.
 
 ## Steps
 
@@ -20,7 +20,7 @@ Real web research on a company → 5 key insights written to its Gate Intel reco
    - Culture signal — check review sites (Glassdoor/Seek reviews) alongside the company's own claims; if they conflict, report both honestly rather than picking the flattering one.
    - Anything that connects to the player's own story (e.g. a shared technology, a growth narrative their experience speaks to).
 
-3. **Write 5 key insights** to the Gate Intel page body (append, don't overwrite prior scout content unless it's explicitly stale — if re-scouting, mark the old section superseded with a date rather than deleting it, per the never-delete rule). Update `Research Status: Complete`, `date:Last Refreshed:start` = today, and `Glassdoor / Culture Notes`.
+3. **Write 5 key insights** to the Gate Intel page body (append, don't overwrite prior scout content unless it's explicitly stale — if re-scouting, mark the old section superseded with a date rather than deleting it, per the never-delete rule). Update `Research Status: Complete` only when the requested evidence was actually read; otherwise use the schema's prepared/deferred wording if available and report **prepared** rather than claiming live research.
 
 4. **Log any publicly-known relevant contact** to Hunter Network (data source `KERNEL:Hunter Network`) as a stub: `Name`, `Role / Title`, `Companies` = relation to this Gate Intel row, `Roles` = relation to the quest if one exists, `Type: Network`, `Warmth: Cold`, `Research Brief: Researched — see page`, and a `Notes` field that's explicit this is public-profile-only research, not yet contacted — never assert this person is definitely the hiring manager unless a source actually says so.
 

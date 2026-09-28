@@ -1,0 +1,6 @@
+{
+  "scenario": "browser absent",
+  "capability": "browser",
+  "expected": "unavailable",
+  "required": ["pasted page text", "Never report a browser action as done"]
+}
