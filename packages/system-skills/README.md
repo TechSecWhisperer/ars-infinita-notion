@@ -31,7 +31,7 @@ The package also ships the read-only boot verifier. Give it the evidence your
 agent collected from the player's Notion workspace:
 
 ```sh
-ars-infinita-home-check evidence.json
+npx @ars-infinita-notion/system-skills home-check evidence.json
 ```
 
 It reports `PASS`, `FAIL`, or `UNKNOWN` and exits 0, 1, or 2 respectively.

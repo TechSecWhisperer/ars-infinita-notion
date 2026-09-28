@@ -10,7 +10,8 @@ one of three outcomes: `PASS` (every required check answered healthy), `FAIL`
 (a required check answered unhealthy), or `UNKNOWN` (a required check could not
 be answered). `PASS`, `FAIL`, and `UNKNOWN` exit with 0, 1, and 2 respectively.
 Missing or unavailable evidence is never treated as `PASS`. Run it with
-`ars-infinita-home-check evidence.json`, or pipe the JSON evidence on stdin.
+`npx @ars-infinita-notion/system-skills home-check evidence.json`, or pipe the
+JSON evidence on stdin.
 
 This is the standing rule every skill honours at boot, in one place, so no skill carries its own copy of the version or rule
 values — the thing that would drift. The two rulings this implements:
