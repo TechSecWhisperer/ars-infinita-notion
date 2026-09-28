@@ -6,15 +6,13 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
-## v2.0.16 — 2026-09-28
-
-**App-only sessions continue honestly.** Connector-backed Notion work and conversational preparation now continue on mobile or app-only sessions without claiming that a browser, file export, shell submission, scheduler, or filesystem step happened. Players can paste a URL, page text, or research when a browser is unavailable; the source is labelled, and the result distinguishes completed, prepared, deferred, unavailable, and unknown. A concise handover pointer makes the next capable session easy to resume. No XP value, level threshold, badge criterion or unlock rule moved — Patch.
-
 ## v2.0.15 — 2026-09-28
 
 **A home check you can run and trust.** The player's read-only home check now has a deterministic result contract: `PASS` means Notion, the Kernel, and the published rule surfaces answered healthy; `FAIL` means one answered unhealthy; and `UNKNOWN` means required evidence was unavailable. Unknown exits non-zero, so a missing connection or incomplete Kernel can no longer look like a healthy setup. The check is separate from workspace maintenance and does not repair or write anything.
 
 The published package now accepts the documented home-check subcommand, and the setup reference uses its `npx` entry point, so the command resolves on a fresh install. No XP value, level threshold, badge criterion or unlock rule moved — Patch.
+
+**App-only sessions continue honestly.** Connector-backed Notion work and conversational preparation now continue on mobile or app-only sessions without claiming that a browser, file export, shell submission, scheduler, or filesystem step happened. Players can paste a URL, page text, or research when a browser is unavailable; the source is labelled, and the result distinguishes completed, prepared, deferred, unavailable, and unknown. A concise handover pointer makes the next capable session easy to resume. No XP value, level threshold, badge criterion or unlock rule moved — Patch.
 
 ## v2.0.14 — 2026-09-23
 
