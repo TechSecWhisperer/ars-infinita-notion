@@ -6,7 +6,11 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
-## v2.0.14 — 2026-09-23
+## v2.0.15 — 2026-09-28
+
+**Public metadata cleanup.** Personal author metadata is replaced with neutral project contributor metadata across the marketplace, package, plugin, license, and README. No game rules, XP values, thresholds, badges, unlocks, or player data change. Mechanics version moves to 2.0.15 in lockstep — Patch.
+
+
 
 **/armor grows a consistent look and a guaranteed voice pass.** Two community-requested improvements ship together, and they answer the same underlying complaint from opposite ends: a CV that changes its appearance every export, and a CV that reads like it was written by an assistant.
 
