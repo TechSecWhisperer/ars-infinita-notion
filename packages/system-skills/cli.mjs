@@ -22,6 +22,7 @@ const HERE = path.dirname(fileURLToPath(import.meta.url));
 const TARGETS = {
   'install-codex': './install-codex.mjs',
   'install-agy': './install-agy.mjs',
+  'home-check': './home-check.mjs',
 };
 
 function usage(problem) {
@@ -37,6 +38,7 @@ function usage(problem) {
   console.log('Usage:');
   console.log('  npx @ars-infinita-notion/system-skills install-codex [--dry-run] [--force]');
   console.log('  npx @ars-infinita-notion/system-skills install-agy   [--dry-run]\n');
+  console.log('  npx @ars-infinita-notion/system-skills home-check <evidence.json>');
   console.log('install-codex writes into the shared skills folder, so it stops rather');
   console.log('than overwrite a skill you wrote yourself. --force moves yours aside to');
   console.log('$CODEX_HOME/.ars-infinita-backup/<timestamp>/ instead — never deletes.\n');
@@ -59,7 +61,7 @@ if (!(command in TARGETS)) {
 // A published tarball carries a prebuilt dist/. If it is missing, the package
 // was installed from a source tree that has not been built — say which, rather
 // than letting the installer report a bare missing-directory error.
-if (!fs.existsSync(path.join(HERE, 'dist'))) {
+if (command !== 'home-check' && !fs.existsSync(path.join(HERE, 'dist'))) {
   console.error('error: dist/ is missing from this package.');
   console.error('  A published copy ships prebuilt. From a source checkout, run:');
   console.error('    node builder.mjs');

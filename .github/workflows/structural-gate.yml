@@ -24,6 +24,8 @@ jobs:
         working-directory: packages/system-skills
       - run: node test/checks.mjs
         working-directory: packages/system-skills
+      - run: node test/home-check.mjs
+        working-directory: packages/system-skills
 
       # builder.mjs regenerates the committed generated files, so the steps
       # above can end up comparing a freshly-regenerated file against itself.
