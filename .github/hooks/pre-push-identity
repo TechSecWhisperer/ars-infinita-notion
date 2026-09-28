@@ -1,0 +1,102 @@
+#!/usr/bin/env bash
+# Public-repository pre-push identity gate.
+# Deny by default: every new commit must use an exact tuple in
+# approved-identities.json. Adding an identity requires an owner-approved
+# allowlist change; a request document alone is never effective.
+
+set -euo pipefail
+
+remote_name="${1:-}"
+remote_url="${2:-}"
+if [[ -z "$remote_name" || -z "$remote_url" ]]; then
+  echo "pre-push: remote name and URL are required" >&2
+  exit 1
+fi
+
+repo_root=$(git rev-parse --show-toplevel) || {
+  echo "pre-push: cannot resolve repository root; refusing push" >&2
+  exit 1
+}
+allowlist="$repo_root/.github/hooks/approved-identities.json"
+if [[ ! -r "$allowlist" ]]; then
+  echo "pre-push: approved identity allowlist is missing; refusing push" >&2
+  exit 1
+fi
+
+python3 - "$allowlist" <<'PY'
+import json, sys
+from pathlib import Path
+p = Path(sys.argv[1])
+try:
+    data = json.loads(p.read_text())
+    identities = data["identities"]
+    assert data["version"] == 1
+    assert data["owner"] == "TechSecWhisperer"
+    assert isinstance(identities, list) and identities
+    for item in identities:
+        assert set(item) == {"name", "email"}
+        assert item["name"] and item["email"]
+except Exception as exc:
+    print(f"pre-push: malformed approved identity allowlist: {exc}; refusing push", file=sys.stderr)
+    raise SystemExit(1)
+PY
+
+push_lines=$(mktemp)
+trap 'rm -f "$push_lines"' EXIT
+cat >"$push_lines"
+
+is_approved() {
+  local name="$1" email="$2"
+  python3 - "$allowlist" "$name" "$email" <<'PY'
+import json, sys
+items = json.load(open(sys.argv[1]))["identities"]
+target = {"name": sys.argv[2], "email": sys.argv[3]}
+raise SystemExit(0 if target in items else 1)
+PY
+}
+
+check_range() {
+  local range="$1"
+  local commit seen=0
+  while IFS= read -r commit; do
+    [[ -n "$commit" ]] || continue
+    seen=1
+    local fields name author_email committer_name committer_email
+    fields=$(git show -s --format='%an%x09%ae%x09%cn%x09%ce' "$commit") || {
+      echo "pre-push: cannot inspect commit $commit; refusing push" >&2
+      return 1
+    }
+    IFS=$'\t' read -r -a values <<<"$fields"
+    if (( ${#values[@]} != 4 )); then
+      echo "pre-push: malformed identity metadata in commit $commit; refusing push" >&2
+      return 1
+    fi
+    name="${values[0]}"; author_email="${values[1]}"
+    committer_name="${values[2]}"; committer_email="${values[3]}"
+    if ! is_approved "$name" "$author_email" || ! is_approved "$committer_name" "$committer_email"; then
+      echo "pre-push: commit $commit has an identity outside the approved allowlist; refusing push" >&2
+      echo "  author: $name <$author_email>" >&2
+      echo "  committer: $committer_name <$committer_email>" >&2
+      echo "  request owner: TechSecWhisperer" >&2
+      return 1
+    fi
+  done < <(git rev-list "$range")
+  if (( seen == 0 )); then
+    echo "pre-push: identity range '$range' is empty or unavailable; refusing push" >&2
+    return 1
+  fi
+}
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  [[ -n "${local_ref:-}" ]] || continue
+  [[ "$local_sha" == "0000000000000000000000000000000000000000" ]] && continue
+  base_ref="origin/main"
+  if [[ "$remote_sha" != "0000000000000000000000000000000000000000" ]]; then
+    base_ref="$remote_sha"
+  fi
+  git rev-parse --verify "$base_ref^{commit}" >/dev/null 2>&1 || {
+    echo "pre-push: cannot resolve comparison base $base_ref; refusing push" >&2
+    exit 1
+  }
+  check_range "$base_ref..$local_sha" || exit 1
+done <"$push_lines"
