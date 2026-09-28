@@ -1,0 +1,6 @@
+# Identity policy is owner-controlled. Requests may be proposed by anyone, but
+# only TechSecWhisperer can approve changes that make an identity effective.
+/.github/hooks/approved-identities.json @TechSecWhisperer
+/.github/hooks/pre-push-identity @TechSecWhisperer
+/.github/CODEOWNERS @TechSecWhisperer
+/docs/identity-requests.md @TechSecWhisperer
