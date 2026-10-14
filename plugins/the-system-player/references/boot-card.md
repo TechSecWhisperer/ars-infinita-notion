@@ -104,6 +104,40 @@ Commands differ by what they *need*, surfaced only at invocation — never as a 
 > "This needs agent-browser, which isn't available here. Run it from your desktop, or paste the page text and I'll work from that."
 Detection is real: `/vitals` reports the session's capability profile, and `/browse` probes again at the moment of use.
 
+### Command Roster & Capabilities
+Every command in The System, its capability tier, and what it does. Agents should reference this table at boot time without needing to load all 28 individual skill files:
+
+| Command | Tier / Requirement | What it does |
+|---|---|---|
+| `/awaken` | Universal | Initialises, repairs, or migrates the player's instance of The System — Level-0 tutorial questline that builds workspace, writes Kernel, and levels player to 4. |
+| `/intake` | Universal | Runs (or updates) the player's intake interview to build the Status Window single source of truth profile. |
+| `/vitals` | Universal | Fast capability probe checking Notion connector, browser availability, runtime type, and Patch Feed reachability. |
+| `/doctor` | Universal | Full system diagnostics and repair battery checking Notion, Kernel, schedules, stats, and rule surfaces. |
+| `/patch` | Universal | Logs a standing correction or rule update to the System Log for all future sessions to follow. |
+| `/theme` | Universal | Re-skins system titles and labels between Solo Leveling game theme and Professional theme. |
+| `/quest` | Universal (delegates live research to `/browse`) | Tracks a new job posting into the Quest Board, creates company intel record, and starts SLA clock. |
+| `/appraise` | Universal | Evaluates fit score and gap analysis for a tracked job against player's profile and talking points. |
+| `/scout` | Universal (delegates live research to `/browse`) | Conducts deep intelligence research on a target company and logs it to Gate Intel in Notion. |
+| `/raid` | Universal | Assembles an assault playbook for a high-priority job: referral paths, hiring-manager pitch, and value memo. |
+| `/engage` | Universal | Marks a tracked job as applied, moves stage, updates Battle Log, and awards completion XP. |
+| `/report` | Universal | Logs inbound response (interview, rejection, offer) on an application, updating stage and next actions. |
+| `/respawn` | Universal | Revives a stalled application marked "Closed – No Response" with a fresh strategic angle. |
+| `/grind` | Universal | Scans the active Quest Board pipeline for stale applications, overdue follow-ups, and pending actions. |
+| `/forge` | Universal | Drafts a tailored cover letter grounded in the JD and player profile, de-AI'd into their authentic voice. |
+| `/armor` | Universal | Compiles a tailored CV for a specific quest, applying the standard export template and formatting. |
+| `/ghost` | Universal | Rewrites AI-sounding text into the player's authentic human voice, eliminating generic corporate tells. |
+| `/log` | Universal | Archives sent messages to contacts or recruiters into Battle Log with recipient and quest links. |
+| `/gather` | Universal (delegates live research to `/browse`) | Logs upcoming networking event or conference, preparing attendee dossiers and strategic talking points. |
+| `/recruit` | Universal (delegates live research to `/browse`) | Records new contacts met into Hunter Network, extracts dossier intel, and schedules follow-ups. |
+| `/touch` | Universal | Scans Hunter Network for contacts overdue for engagement and suggests context-grounded outreach reasons. |
+| `/party` | Universal (uses `gh` CLI / shell for petition) | Requests a shared Party Board in Guild Hall to track friendly stats and collective milestones. |
+| `/mercy` | Universal | Cancels one active bonus-quest obligation penalty-free once per calendar month. |
+| `/status` | Universal | Queries Notion and reports current game state: level, rank, XP progression, streak, debuffs, and unlocks. |
+| `/levelup` | Universal | Runs weekly review ritual: pipeline audit, response rate analytics, wiki linting, and rank advancement. |
+| `/browse` | agent-browser required | Drives live browser sessions via agent-browser — the sole route to a live web page for navigation, snapshotting, and extraction. |
+| `/petition` | Universal (uses `gh` CLI or paste link fallback) | Submits questions, feature proposals, or bug reports to Game Admin as GitHub issues. |
+| `/handover` | Universal (hidden route) | Bookmarks session state with structured handover entries in the System Log for continuity across sessions. |
+
 ### Session outcome contract
 Every command reports what actually happened, using these words consistently:
 
