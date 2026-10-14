@@ -113,12 +113,28 @@ for (const { name, dest, action } of plan) {
     // force is guaranteed here: the non-force path exited above.
     const parked = moveAside(dest, backupDir);
     movedAside.push({ name, parked });
-  } else if (action === 'update') {
-    // Ours, by manifest entry or by boot-card content. Safe to replace.
-    fs.rmSync(dest, { recursive: true, force: true });
   }
 
-  fs.cpSync(path.join(DIST_CODEX, name), dest, { recursive: true });
+  const staging = `${dest}.tmp-${Date.now()}`;
+  const backup = `${dest}.bak-${Date.now()}`;
+  try {
+    fs.cpSync(path.join(DIST_CODEX, name), staging, { recursive: true });
+    if (fs.existsSync(dest)) {
+      fs.renameSync(dest, backup);
+    }
+    fs.renameSync(staging, dest);
+    if (fs.existsSync(backup)) {
+      fs.rmSync(backup, { recursive: true, force: true });
+    }
+  } catch (err) {
+    if (fs.existsSync(staging)) {
+      fs.rmSync(staging, { recursive: true, force: true });
+    }
+    if (!fs.existsSync(dest) && fs.existsSync(backup)) {
+      fs.renameSync(backup, dest);
+    }
+    throw err;
+  }
   installedSkills.push({ name, path: dest, hash: hashSkillDir(dest) });
 
   const verb =

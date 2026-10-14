@@ -48,13 +48,28 @@ if (dryRun) {
 } else {
   fs.mkdirSync(path.dirname(target), { recursive: true });
   const existed = fs.existsSync(target);
-  // Removing the whole plugin directory is safe in a way the codex path is not:
-  // this location is namespaced to us, so nothing a player owns can be sitting
-  // here by accident. Known and accepted behaviour, not an oversight: any edits
-  // a player made INSIDE our plugin directory are replaced on update.
-  fs.rmSync(target, { recursive: true, force: true });
-  fs.cpSync(source, target, { recursive: true });
-  console.log(`  ${existed ? 'replaced' : 'installed'} ${skills.length} skills`);
+  const staging = path.join(path.dirname(target), `.tmp-the-system-player-${Date.now()}`);
+  const backup = path.join(path.dirname(target), `.bak-the-system-player-${Date.now()}`);
+  try {
+    fs.mkdirSync(staging, { recursive: true });
+    fs.cpSync(source, staging, { recursive: true });
+    if (fs.existsSync(target)) {
+      fs.renameSync(target, backup);
+    }
+    fs.renameSync(staging, target);
+    if (fs.existsSync(backup)) {
+      fs.rmSync(backup, { recursive: true, force: true });
+    }
+    console.log(`  ${existed ? 'replaced' : 'installed'} ${skills.length} skills (atomic transactional swap)`);
+  } catch (err) {
+    if (fs.existsSync(staging)) {
+      fs.rmSync(staging, { recursive: true, force: true });
+    }
+    if (!fs.existsSync(target) && fs.existsSync(backup)) {
+      fs.renameSync(backup, target);
+    }
+    throw err;
+  }
 }
 
 // NOT `agy plugin list`. That enumerates only the *imported* registry, which

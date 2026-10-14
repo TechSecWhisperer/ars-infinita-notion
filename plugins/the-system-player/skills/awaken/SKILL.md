@@ -69,11 +69,11 @@ Check each entity in `references/template-schemas.md` exists and matches schema:
 
 Fill the 🧬 Kernel page:
 
-1. **Instance ID table** — every entity above: page ID + data source ID, discovered from the player's own workspace.
+1. **Instance ID table** — every entity discovered automatically from the player's workspace root ("The System — Job Search HQ") using the deterministic discovery protocol (validating databases and pages against reference schemas). Never ask the player to look up or paste database UUIDs.
 2. **Player section** — interrogate one question at a time, only for what's missing: preferred name · email · timezone (compute all future dates/SLAs in it) · anything they want marked confidential from employers (bank it here and in the Status Window; hard rule 4 protects it forever).
 3. **Theme** — record the theme the player chose at the Step 0.5 gate. If this field is empty at this point on the **build path**, setup skipped the gate: stop, go back to Step 0.5, and ask. Never fill it with a default to get past this step. **This halt is build-path only.** In Migration mode, a Kernel with no theme recorded is simply an existing player who predates the gate — do **not** halt and do **not** interrogate them (Migration mode never re-asks settled questions). Carry on, and log an Open Question in the player's System Log so a later /awaken or /theme can settle it.
 4. **Versions** — Seed version (from the Seed page), **Mechanics Version = current Patch Feed head** (a fresh awakening always builds at feed-head; late joiners are never behind), last Sigil Check = today.
-5. **Nexus links** — ask the player for their Seed link (the one the Game Admin sent); copy the Patch Feed and Rule Manifest links from it into the Kernel. (Petitions don't need a link here — `/petition` files a GitHub Issue on the public plugin repo.)
+5. **Nexus links** — auto-populate the canonical Nexus links from package defaults (public mirror: `https://raw.githubusercontent.com/TechSecWhisperer/ars-infinita-notion/main/feed.json` and canonical Notion feed/manifest pages). Never ask the player for their Seed link or external URLs. (Petitions don't need a link here — `/petition` files a GitHub Issue on the public plugin repo.)
 6. **Sharing toggles** — default all yes; tell the player in one line what the heartbeat shares (handle, level, XP, streak, versions, last-active — game stats only, each toggleable off, never job-search content) and honour any "no".
 
 **Milestone 2 — ledger key "Awakening: Kernel inscribed" · +50 XP.**

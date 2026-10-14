@@ -20,6 +20,7 @@ import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 
 const TARGETS = {
+  'install': './install-unified.mjs',
   'install-codex': './install-codex.mjs',
   'install-agy': './install-agy.mjs',
   'home-check': './home-check.mjs',
