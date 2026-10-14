@@ -13,6 +13,7 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 - **Desktop App Native Visualizations.** In desktop or web GUI sessions (Claude Desktop, Claude Web, Antigravity IDE), skills render native interactive visual widgets (XP radars, fit-gap spider charts, pipeline stage funnels) to enhance visual comprehension.
 - **Terminal CLI Zero-Slop Contract.** In pure terminal CLIs (Claude Code CLI, agy CLI, Codex CLI, SSH/tmux), skills strictly render clean Unicode ASCII art (box-drawing frames, block progress bars, aligned tables), preventing raw unrendered HTML/SVG markup dumps in terminal streams.
 - **Multi-Surface Presentation Adapter.** Introduces `@ars-infinita-notion/system-skills/lib/visualization-adapter.mjs` with positive surface detection and clean fallbacks.
+- **Vendor Capabilities & Multi-Surface Guide.** Documents grounded vendor beta feature intelligence (Claude inline visualizations, Claude Dashboards via MCP, OpenAI Intelligent UI, Canvas) in `plugins/the-system-player/references/vendor-capabilities.md`, fanning out to local client installations.
 
 **Note on numbering:** mechanics version moves to 2.0.18 in lockstep. Multi-surface visual presentation and CLI zero-slop improvements. No XP value, level threshold, badge criterion or unlock rule moved. Patch.
 
