@@ -14,8 +14,8 @@ Logs the event, preps whatever attendee intel and talking points are feasible ah
 
 2. **If the player names specific people or companies attending**, do a light public-source check (same rules as /scout — public professional info only, no scraping) so they walk in with a couple of talking points per person/org, not cold. If they don't have an attendee list yet, this step is just the event logged — that's a fine outcome, don't invent attendees.
 
-**Live pages: invoke `/browse` with the URL and what you need extracted** (event page, an attendee's public profile). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, log the event with what you have and say which it was — never invent attendee intel.
+**Live pages: invoke `/browse` with the URL and what you need extracted** (event page, an attendee's public profile). It probes, routes and reports; do not open pages here. On `no browser` or `unreachable`, log the event with what the player supplied and say which it was. Pasted event or profile text is acceptable player-provided input; label it and never invent attendee intel.
 
 3. **Prep general talking points** from the Status Window/Stat Sheet relevant to the event's likely audience (e.g. a security meetup vs a general tech networking night calls for a different angle to lead with).
 
-4. **Report back**: the event is logged, plus whatever attendee prep you were able to do. After the event, remind the player that `/recruit` is the follow-up command for logging who they actually met.
+4. **Report back**: the event is logged, plus whatever attendee prep you were able to do, labelled **completed**, **prepared**, or **deferred**. After the event, remind the player that `/recruit` is the follow-up command for logging who they actually met.

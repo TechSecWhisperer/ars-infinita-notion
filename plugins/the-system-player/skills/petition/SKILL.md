@@ -43,7 +43,7 @@ The petition write-path is a **GitHub Issue on `TechSecWhisperer/ars-infinita-no
 
    Show the player the exact title and body and get a yes before running the command. Report the issue URL `gh` prints back.
 
-3. **Fallback — no `gh`, or it isn't authenticated.** Don't fake a submission and don't fall back to a browser. Tell the player plainly and give them the link to open themselves:
+3. **Fallback — no `gh`, or it isn't authenticated.** Don't fake a submission and don't fall back to a browser. Report **unavailable** (the shell submission was not completed), preserve the exact prepared title/body for the player, and give them the link to open themselves:
 
    **https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new/choose**
 

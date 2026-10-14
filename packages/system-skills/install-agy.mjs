@@ -7,7 +7,8 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
-import { DIST_AGY, PLUGIN_SLUG, agyPluginsDir } from './lib/paths.mjs';
+import { DIST_AGY, PLUGIN_SLUG, agyPluginsDir, agyStagingRoot } from './lib/paths.mjs';
+import { swapDirectory } from './lib/swap.mjs';
 
 const dryRun = process.argv.includes('--dry-run');
 const source = path.join(DIST_AGY, PLUGIN_SLUG);
@@ -48,12 +49,12 @@ if (dryRun) {
 } else {
   fs.mkdirSync(path.dirname(target), { recursive: true });
   const existed = fs.existsSync(target);
-  // Removing the whole plugin directory is safe in a way the codex path is not:
+  // Replacing the whole plugin directory is safe in a way the codex path is not:
   // this location is namespaced to us, so nothing a player owns can be sitting
   // here by accident. Known and accepted behaviour, not an oversight: any edits
-  // a player made INSIDE our plugin directory are replaced on update.
-  fs.rmSync(target, { recursive: true, force: true });
-  fs.cpSync(source, target, { recursive: true });
+  // a player made INSIDE our plugin directory are replaced on update. The swap
+  // stages the new copy first and restores the old one if the final move fails.
+  swapDirectory({ source, dest: target, stagingRoot: agyStagingRoot() });
   console.log(`  ${existed ? 'replaced' : 'installed'} ${skills.length} skills`);
 }
 

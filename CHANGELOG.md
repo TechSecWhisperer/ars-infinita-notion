@@ -6,6 +6,16 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.16 — 2026-10-14
+
+**Zero-friction discovery engine, Cardinal living overlay, and atomic installer.** Eliminates manual seed-link querying and database UUID prompts during /awaken onboarding:
+
+- **Zero-friction discovery engine.** `/awaken` automatically locates and verifies your Notion workspace root page. It discovers all 13 canonical databases and 7 system pages by name with schema validation. Players are never asked to query IDs or paste seed links.
+- **Cardinal Living Overlay.** Cardinal is promoted from an unverified 8:00 AM cron into the living proctor persona and ambient skill overlay across all player commands. It enforces the Voice and Demeanour, Anti-Cheat, and Zero-Friction principles. If routine scheduling is available, Cardinal proactively offers daily briefings without blocking play.
+- **Atomic Multi-Client Installer.** `install-unified.mjs` provides transactional atomic staging with automatic rollback backup for Codex CLI, Antigravity CLI, and Claude Code environments.
+
+**Note on numbering:** mechanics version moves to 2.0.16 in lockstep. Setup delivery and discovery improvements. No XP value, level threshold, badge criterion or unlock rule moved. Patch.
+
 ## v2.0.15 — 2026-09-28
 
 **Public metadata cleanup.** Personal author metadata is replaced with neutral project contributor metadata across the marketplace, package, plugin, license, and README. No game rules, XP values, thresholds, badges, unlocks, or player data change. Mechanics version moves to 2.0.15 in lockstep — Patch.
