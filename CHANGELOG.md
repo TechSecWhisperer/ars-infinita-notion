@@ -6,6 +6,15 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.17 — 2026-10-14
+
+**Authoritative 28-command catalog sync and cross-runtime descriptions.** Solves command discovery blind spots across decoupled agent runtimes:
+
+- **Authoritative 28-Command Roster.** The shared boot card (`boot-card.md`) embeds the complete catalog of all 28 commands with 1-line plain-language descriptions, execution requirements, and degradation fallbacks. Agents across Claude Code, Codex, and Antigravity immediately understand `/status`, `/levelup`, `/gather`, `/log`, and all specialized skills without needing to inspect every separate skill file.
+- **Cross-Surface Synchronization.** Dist builds and manifest hashes updated across Codex and Antigravity distributions in lockstep.
+
+**Note on numbering:** mechanics version moves to 2.0.17 in lockstep. Delivery and documentation integrity improvements. No XP value, level threshold, badge criterion or unlock rule moved. Patch.
+
 ## v2.0.16 — 2026-10-14
 
 **Zero-friction discovery engine, Cardinal living overlay, and atomic installer.** Eliminates manual seed-link querying and database UUID prompts during /awaken onboarding:
@@ -20,7 +29,7 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **Public metadata cleanup.** Personal author metadata is replaced with neutral project contributor metadata across the marketplace, package, plugin, license, and README. No game rules, XP values, thresholds, badges, unlocks, or player data change. Mechanics version moves to 2.0.15 in lockstep — Patch.
 
-
+## v2.0.14 — 2026-09-28
 
 **/armor grows a consistent look and a guaranteed voice pass.** Two community-requested improvements ship together, and they answer the same underlying complaint from opposite ends: a CV that changes its appearance every export, and a CV that reads like it was written by an assistant.
 
