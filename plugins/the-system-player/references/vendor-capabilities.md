@@ -1,7 +1,6 @@
 # Vendor Capabilities & Multi-Surface Presentation Guide
 
 - **Document**: The System — Player Edition Reference
-- **Version**: 2.0.18
 - **Scope**: Multi-Runtime Client Gating, Vendor Beta Feature Mapping, and Visual Affordances
 
 ---

@@ -6,6 +6,17 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.20 — 2026-10-15
+
+**5-Dimensional skill use-case evaluation inventory and authority-groundedness protocol.** Formalizes rigorous evaluation standards across all System skills and enforces the zero-running-from-memory invariant:
+
+- **5-Dimensional Skill Use-Case Inventory.** Introduces `plugins/the-system-player/references/use-case-inventory.md` establishing evaluation across 5 dimensions: (1) Direct Requests, (2) Indirect Requests, (3) Incomplete Inputs, (4) Negative Boundary Demarcation, and (5) Edge Cases & Invariants.
+- **Foundational Authority Invariant.** Enforces "Zero Running From Memory" across all agent sessions. System state (XP, levels, streak, quest stages) must always be read from live Kernel and database queries rather than stale conversation history or parametric recall.
+- **Independent Claude Sonnet & Codex Audit Fixes.** Fixed relative reference paths (`../../references/`) in `boot-card.md`, renumbered boot ritual sequence cleanly, removed hand-set version headers, updated `transform.mjs` path stripping rules, and validated all 28 built skills against Codex's native `quick_validate.py`.
+- **Automated Test Battery Expansion.** Added `packages/system-skills/test/use-case-inventory.mjs` integrated into `npm test` and `npm run check`.
+
+**Note on numbering:** mechanics version moves to 2.0.20 in lockstep. Quality assurance and authority evaluation framework. No XP value, level threshold, badge criterion or unlock rule moved. Patch.
+
 ## v2.0.19 — 2026-10-15
 
 **Player-side vendor capabilities reference and multi-client install sync.** Delivers grounded vendor beta feature intelligence directly to the player surface:

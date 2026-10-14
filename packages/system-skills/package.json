@@ -1,6 +1,6 @@
 {
   "name": "@ars-infinita-notion/system-skills",
-  "version": "2.0.19",
+  "version": "2.0.20",
   "description": "The System (Player Edition) skills, built for the OpenAI Codex CLI and the Antigravity CLI (agy). Ships prebuilt \u2014 install with `npx @ars-infinita-notion/system-skills install-codex`. Claude Code users should install the native plugin from the marketplace instead.",
   "license": "MIT",
   "author": "Ars Infinita Contributors",
@@ -26,8 +26,8 @@
   ],
   "scripts": {
     "build": "node builder.mjs",
-    "check": "node test/checks.mjs && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs",
-    "test": "node builder.mjs && node test/checks.mjs && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs && node test/smoke.mjs",
+    "check": "node test/checks.mjs && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs && node --test test/use-case-inventory.mjs",
+    "test": "node builder.mjs && node test/checks.mjs && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs && node --test test/use-case-inventory.mjs && node test/smoke.mjs",
     "install": "node builder.mjs && node install-unified.mjs",
     "install-codex": "node builder.mjs && node install-codex.mjs",
     "install-agy": "node builder.mjs && node install-agy.mjs",
