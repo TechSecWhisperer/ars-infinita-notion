@@ -6,6 +6,16 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.19 — 2026-10-15
+
+**Player-side vendor capabilities reference and multi-client install sync.** Delivers grounded vendor beta feature intelligence directly to the player surface:
+
+- **Vendor Capabilities & Multi-Surface Guide.** Establishes `plugins/the-system-player/references/vendor-capabilities.md` detailing official vendor features (Anthropic Claude inline visualizations beta, Claude Dashboards MCP beta, OpenAI Intelligent UI, Canvas) and their application to `/status`, `/appraise`, `/grind`, and `/armor`.
+- **Reference Stamping Across Distribution Targets.** Updates `packages/system-skills/builder.mjs` to stamp `vendor-capabilities.md` into all Codex skill reference folders and the Antigravity plugin references.
+- **Local Multi-Client Deployment.** Automated verification and installation into `~/.gemini/config/plugins/the-system-player` and `~/.codex/skills`.
+
+**Note on numbering:** mechanics version moves to 2.0.19 in lockstep. Reference documentation and multi-client distribution sync. No XP value, level threshold, badge criterion or unlock rule moved. Patch.
+
 ## v2.0.18 — 2026-10-15
 
 **Desktop App Native visual presentation and CLI zero-slop adaptation.** Enforces strict surface boundaries between Desktop App GUI environments and Terminal CLIs:
@@ -13,6 +23,7 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 - **Desktop App Native Visualizations.** In desktop or web GUI sessions (Claude Desktop, Claude Web, Antigravity IDE), skills render native interactive visual widgets (XP radars, fit-gap spider charts, pipeline stage funnels) to enhance visual comprehension.
 - **Terminal CLI Zero-Slop Contract.** In pure terminal CLIs (Claude Code CLI, agy CLI, Codex CLI, SSH/tmux), skills strictly render clean Unicode ASCII art (box-drawing frames, block progress bars, aligned tables), preventing raw unrendered HTML/SVG markup dumps in terminal streams.
 - **Multi-Surface Presentation Adapter.** Introduces `@ars-infinita-notion/system-skills/lib/visualization-adapter.mjs` with positive surface detection and clean fallbacks.
+- **Vendor Capabilities & Multi-Surface Guide.** Documents grounded vendor beta feature intelligence (Claude inline visualizations, Claude Dashboards via MCP, OpenAI Intelligent UI, Canvas) in `plugins/the-system-player/references/vendor-capabilities.md`, fanning out to local client installations.
 
 **Note on numbering:** mechanics version moves to 2.0.18 in lockstep. Multi-surface visual presentation and CLI zero-slop improvements. No XP value, level threshold, badge criterion or unlock rule moved. Patch.
 

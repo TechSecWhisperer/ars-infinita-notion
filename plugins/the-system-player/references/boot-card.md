@@ -101,6 +101,7 @@ Rich inline visualizations (Claude beta inline interactive widgets, HTML/SVG com
 - **Desktop App Native (GUI Sessions)**: Render rich interactive visualizations (beta HTML/SVG widgets in Claude Desktop/Web, native Mermaid diagrams in Antigravity IDE) for `/status` (XP and rank progress gauge), `/appraise` (fit-gap comparative spider chart), `/grind` (pipeline stage funnel), and `/armor` (moveable section layout blocks).
 - **Terminal CLIs (All CLI Sessions)**: Must NEVER emit raw HTML tags or unrendered widgets. Strictly render clean Unicode ASCII art (box-drawing frames `┌───┐`, block progress bars `[████████░░]`, aligned tables).
 - **Notion Database Views**: Actively direct players to native Notion views when visual workflows help: the ⚔️ Quest Board **Board** view for drag-and-drop pipeline progression, **📆 Next Actions** for calendar alignment, and 🏢 Gate Intel / 🏰 Hunter Network **Gallery** views for visual cards.
+- **Reference Spec**: Detailed capability radar mappings, vendor beta research (Claude inline visualizations, Claude Dashboards via MCP, OpenAI Intelligent UI, Canvas), and surface contracts live in `references/vendor-capabilities.md`.
 
 ## Capability tiers & graceful degradation
 Commands differ by what they *need*, surfaced only at invocation — never as a device-class label. Two tiers:

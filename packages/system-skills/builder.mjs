@@ -43,6 +43,7 @@ import {
   MARKETPLACE_PATH,
   PLUGIN_SLUG,
   REPO_ROOT,
+  SHARED_REFERENCES_DIR,
   SOURCE_PLUGIN_MANIFEST,
   SOURCE_SKILLS_DIR,
 } from './lib/paths.mjs';
@@ -118,6 +119,19 @@ function emitSkillDir(skill, profile, targetDir, bootCard) {
   const bootCardDest = path.join(targetDir, BOOT_CARD_LOCAL_REF);
   fs.mkdirSync(path.dirname(bootCardDest), { recursive: true });
   fs.writeFileSync(bootCardDest, stripClaudeIdioms(bootCard, profile));
+
+  // Stamp shared references (e.g. vendor-capabilities.md) into references/.
+  if (fs.existsSync(SHARED_REFERENCES_DIR)) {
+    for (const refName of fs.readdirSync(SHARED_REFERENCES_DIR)) {
+      if (refName === 'boot-card.md') continue;
+      const refSrc = path.join(SHARED_REFERENCES_DIR, refName);
+      if (fs.statSync(refSrc).isFile()) {
+        const refDest = path.join(targetDir, 'references', refName);
+        fs.mkdirSync(path.dirname(refDest), { recursive: true });
+        fs.writeFileSync(refDest, stripClaudeIdioms(fs.readFileSync(refSrc, 'utf8'), profile));
+      }
+    }
+  }
 
   const extras = listExtraFiles(skill.dir);
   for (const rel of extras) {
@@ -211,6 +225,22 @@ function main() {
       2,
     ) + '\n',
   );
+
+  const agyRefsDir = path.join(agyPluginDir, 'references');
+  fs.mkdirSync(agyRefsDir, { recursive: true });
+  fs.writeFileSync(path.join(agyRefsDir, 'boot-card.md'), stripClaudeIdioms(bootCard, AGENT_PROFILES.agy));
+  if (fs.existsSync(SHARED_REFERENCES_DIR)) {
+    for (const refName of fs.readdirSync(SHARED_REFERENCES_DIR)) {
+      if (refName === 'boot-card.md') continue;
+      const refSrc = path.join(SHARED_REFERENCES_DIR, refName);
+      if (fs.statSync(refSrc).isFile()) {
+        fs.writeFileSync(
+          path.join(agyRefsDir, refName),
+          stripClaudeIdioms(fs.readFileSync(refSrc, 'utf8'), AGENT_PROFILES.agy),
+        );
+      }
+    }
+  }
 
   const manifestSkills = [];
   const residuals = [];
