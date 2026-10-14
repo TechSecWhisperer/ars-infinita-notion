@@ -24,4 +24,4 @@ Fit score (1–10) + honest gap analysis, written to the Stat Sheet and a new �
 
 7. **Trigger /scout** if the linked Gate Intel company's `Research Status` isn't `Complete` — either run it now (if you have the room to) or tell the player you'd recommend it next.
 
-8. **Report back**: the fit score, one line on why, the single biggest gap, and a link to the full note.
+8. **Report back**: the fit score, one line on why, the single biggest gap, and a link to the full note. In Desktop App GUI sessions, enrich with an interactive visual fit-gap chart (HTML/SVG matrix in Claude Desktop, Mermaid diagram in Antigravity IDE). In Terminal CLIs, strictly render a clean ASCII comparison table (never raw HTML) per Multi-Runtime Visual Affordances in the boot card.
