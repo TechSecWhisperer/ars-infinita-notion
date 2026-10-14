@@ -8,7 +8,7 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 ## v2.0.17 — 2026-10-14
 
-**Authoritative 28-command catalog sync and cross-runtime descriptions.** Solves command discovery blind spots across decoupled agent runtimes:
+**Authoritative 28-command catalog sync and cross-runtime descriptions.** Solves command discovery omissions across decoupled agent runtimes:
 
 - **Authoritative 28-Command Roster.** The shared boot card (`boot-card.md`) embeds the complete catalog of all 28 commands with 1-line plain-language descriptions, execution requirements, and degradation fallbacks. Agents across Claude Code, Codex, and Antigravity immediately understand `/status`, `/levelup`, `/gather`, `/log`, and all specialized skills without needing to inspect every separate skill file.
 - **Cross-Surface Synchronization.** Dist builds and manifest hashes updated across Codex and Antigravity distributions in lockstep.

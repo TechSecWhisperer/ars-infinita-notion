@@ -264,7 +264,7 @@
       "applies_to": "Forward-only",
       "min_level": 0,
       "title": "v2.0.17 — Authoritative 28-command catalog sync and cross-runtime descriptions",
-      "player_facing_summary": "Skill visibility synchronized across all surfaces: the shared boot card now embeds the complete 28-command roster with inline 1-line descriptions, execution capability tiers, and degradation paths, ensuring decoupled runtimes (Codex, agy, Claude Code) recognize universal skills at boot without exploratory blind spots."
+      "player_facing_summary": "Skill visibility synchronized across all surfaces: the shared boot card now embeds the complete 28-command roster with inline 1-line descriptions, execution capability tiers, and degradation paths, ensuring decoupled runtimes (Codex, agy, Claude Code) recognize universal skills at boot without exploratory guesswork."
     }
   ],
   "commands_count": 27,
