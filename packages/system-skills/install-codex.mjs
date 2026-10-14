@@ -25,7 +25,9 @@ import {
   codexBackupRoot,
   codexManifestPath,
   codexSkillsDir,
+  codexStagingRoot,
 } from './lib/paths.mjs';
+import { swapDirectory } from './lib/swap.mjs';
 import {
   buildManifest,
   classifyDestination,
@@ -113,12 +115,12 @@ for (const { name, dest, action } of plan) {
     // force is guaranteed here: the non-force path exited above.
     const parked = moveAside(dest, backupDir);
     movedAside.push({ name, parked });
-  } else if (action === 'update') {
-    // Ours, by manifest entry or by boot-card content. Safe to replace.
-    fs.rmSync(dest, { recursive: true, force: true });
   }
 
-  fs.cpSync(path.join(DIST_CODEX, name), dest, { recursive: true });
+  // 'update' is ours, by manifest entry or by boot-card content, so replacing it is
+  // safe; a 'collision' was moved aside above. Either way the new copy is staged
+  // outside skills/ and swapped in, so a failure leaves the previous skill in place.
+  swapDirectory({ source: path.join(DIST_CODEX, name), dest, stagingRoot: codexStagingRoot() });
   installedSkills.push({ name, path: dest, hash: hashSkillDir(dest) });
 
   const verb =

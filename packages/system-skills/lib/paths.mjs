@@ -63,6 +63,13 @@ export function codexBackupRoot() {
   return path.join(codexHome(), '.ars-infinita-backup');
 }
 
+// Where installs are staged before the swap. Same reasoning as the backup root:
+// outside the directory the CLI scans, so a crash cannot leave a loadable duplicate.
+// Same filesystem as the destination, so the final rename is atomic.
+export function codexStagingRoot() {
+  return path.join(codexHome(), '.ars-infinita-staging');
+}
+
 // agy (Antigravity CLI) discovers global customisations under ~/.gemini/config/.
 // Plugins live at <root>/plugins/<name>/ with a plugin.json marker and skills/ inside.
 // Verified against ~/.gemini/antigravity-cli/builtin/skills/agy-customizations/docs/.
@@ -74,4 +81,8 @@ export function agyConfigRoot() {
 
 export function agyPluginsDir() {
   return path.join(agyConfigRoot(), 'plugins');
+}
+
+export function agyStagingRoot() {
+  return path.join(agyConfigRoot(), '.ars-infinita-staging');
 }

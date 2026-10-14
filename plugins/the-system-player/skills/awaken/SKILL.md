@@ -69,11 +69,11 @@ Check each entity in `references/template-schemas.md` exists and matches schema:
 
 Fill the 🧬 Kernel page:
 
-1. **Instance ID table** — every entity above: page ID + data source ID, discovered from the player's own workspace.
+1. **Instance ID table** — every entity discovered automatically from the player's workspace root ("The System — Job Search HQ") using the deterministic discovery protocol (validating databases and pages against reference schemas). Never ask the player to look up or paste database UUIDs.
 2. **Player section** — interrogate one question at a time, only for what's missing: preferred name · email · timezone (compute all future dates/SLAs in it) · anything they want marked confidential from employers (bank it here and in the Status Window; hard rule 4 protects it forever).
 3. **Theme** — record the theme the player chose at the Step 0.5 gate. If this field is empty at this point on the **build path**, setup skipped the gate: stop, go back to Step 0.5, and ask. Never fill it with a default to get past this step. **This halt is build-path only.** In Migration mode, a Kernel with no theme recorded is simply an existing player who predates the gate — do **not** halt and do **not** interrogate them (Migration mode never re-asks settled questions). Carry on, and log an Open Question in the player's System Log so a later /awaken or /theme can settle it.
 4. **Versions** — Seed version (from the Seed page), **Mechanics Version = current Patch Feed head** (a fresh awakening always builds at feed-head; late joiners are never behind), last Sigil Check = today.
-5. **Nexus links** — ask the player for their Seed link (the one the Game Admin sent); copy the Patch Feed and Rule Manifest links from it into the Kernel. (Petitions don't need a link here — `/petition` files a GitHub Issue on the public plugin repo.)
+5. **Nexus links** — discover the Patch Feed and Rule Manifest from the duplicated workspace, and record the verified public feed mirror (`https://raw.githubusercontent.com/TechSecWhisperer/ars-infinita-notion/main/feed.json`). If the player duplicated via the Seed link, copy the Patch Feed and Rule Manifest links directly from their Seed page into the Kernel without prompting for external URLs. (Petitions don't need a link here — `/petition` files a GitHub Issue on the public plugin repo.)
 6. **Sharing toggles** — default all yes; tell the player in one line what the heartbeat shares (handle, level, XP, streak, versions, last-active — game stats only, each toggleable off, never job-search content) and honour any "no".
 
 **Milestone 2 — ledger key "Awakening: Kernel inscribed" · +50 XP.**
@@ -107,6 +107,10 @@ Write the player's first Daily Log entry (today, domains touched, mood if offere
 - **Self-contained prompt.** Each firing starts a fresh session with no memory of this one. The scheduled prompt must therefore boot from the player's own 🧬 Kernel (resolve page IDs from there, same as any other session), run the daily briefing duties per the live `KERNEL:Operating Manual`, write today's Daily Log entry, add a 📅 System Calendar row (`Type: Daily Briefing`), and close with a concise briefing summary.
 
 **Offer, never impose** — and once it's created, suggest the player turn on notifications for it, so the briefing reaches them instead of sitting unread.
+
+If this session has no scheduler, mark the schedule step **deferred** and keep the
+rest of awakening moving; do not claim that a routine exists. If a scheduler was
+attempted but rejected, mark it **unavailable** and preserve the manual next step.
 
 **Verify it can actually run unattended — and if it can't, say so rather than leaving a routine that looks fine.** On some surfaces a routine *created by an agent* is granted weaker permissions than the same routine created by the player: it runs under a classifier that can pause any tool call mid-run, so the briefing stalls part-written instead of delivering. **No prompt fixes this** — the permission model follows the creation path, and on an agent-created routine the setting is not even exposed. Agent-created routines are a known case on some surfaces; assume any surface may behave this way until shown otherwise. Where it applies, **walk the player through creating the routine themselves**, and give them an acceptance test in two parts:
 
@@ -190,7 +194,7 @@ So: **attempt each write, then check it landed.** Resolve the project directory,
 3. **One wrote and the other did not.** **Report this as a failure of the step, never as a success.** Name the file that is missing and the refusal for it verbatim, and say which agent that leaves without context: no `AGENTS.md` means Codex and the Antigravity CLI start cold here, no `CLAUDE.md` means Claude Code does. Re-running `/awaken` retries the missing one. **Never report the half that succeeded as the step being done** — a folder with one of the two files is the silent cold start this step exists to prevent, and it is the outcome most likely to be mistaken for success.
 4. **No filesystem at all.** Only when this session has **no file-writing tool whatsoever** — not a tool that exists and refuses. Skip, and note in the close that a desktop session is what seats the project context. **If a write tool exists and the write was refused, that is outcome 2, not this** — a desktop chat app with no connected folder is the common case, and it belongs in outcome 2, where the remedy is the directory-resolution section above (ask where it should live and create it there), then a re-run.
 
-The rest of setup is complete either way. This step failing is not a failed awakening — but it must never be reported as a success it did not achieve.
+**Notion-backed setup can continue either way.** Step 7.5 itself is not complete unless both files were written and read back. In a chat-only session with no filesystem, mark Step 7.5 **deferred** and leave a concise handover pointer for a capable session; do not ask the player to claim that context files were written.
 
 **If a file already exists, read it before writing.** A player may already have a `CLAUDE.md` or `AGENTS.md` of their own — from another tool, or hand-written. Decide by a marker, not by judgement. Both templates below begin with the line:
 
