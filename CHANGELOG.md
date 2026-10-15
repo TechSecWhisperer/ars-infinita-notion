@@ -6,6 +6,16 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.21 — 2026-10-15
+
+**Dual-channel petition intake with player preference check and simplified quick start.** Enhances player-to-admin communication with preference-based channel routing and simplifies onboarding:
+
+- **Dual-Channel Petition Routing.** Upgrades `/petition` to inspect session capabilities (`gh auth status` and `/browse` agent-browser support) and prompt the player for their preferred submission route: GitHub Issues (public, requires GitHub account) or Notion Petition Intake (private admin intake, filled automatically by the agent via browser automation on paid subscriptions).
+- **Player Quick Start Simplification.** Streamlines step 1 setup across Claude Code, Claude Desktop, and CLIs by replacing repetitive directory creation explanations with direct, punchy setup instructions while fully preserving the project lore, story, and commands.
+- **Contract and Test Alignment.** Updates `packages/system-skills/test/checks.mjs` to authorize dual-channel routing and verifies all 10 check gates, mobile degradation fixtures, and visualization adapter tests.
+
+**Note on numbering:** mechanics version moves to 2.0.21 in lockstep. Usability, documentation, and channel routing update. No XP value, level threshold, badge criterion or unlock rule moved. Patch.
+
 ## v2.0.20 — 2026-10-15
 
 **5-Dimensional skill use-case evaluation inventory and authority-groundedness protocol.** Formalizes rigorous evaluation standards across all System skills and enforces the zero-running-from-memory invariant:
