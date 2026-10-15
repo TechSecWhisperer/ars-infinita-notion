@@ -511,7 +511,7 @@ check('single-surface-lint', () => {
           'the Quest Board only, surfaced by its native 📆 Next Actions view',
       );
     }
-    if (/Petition form/i.test(text)) {
+    if (/Petition form/i.test(text) && name !== 'petition') {
       offenders.push(`${name}: still routes to the Notion Petition form — /petition files a GitHub Issue`);
     }
     // /browse is the sole browser router (public #21). Naming the *name* is

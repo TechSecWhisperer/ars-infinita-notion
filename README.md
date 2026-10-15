@@ -52,7 +52,7 @@ Every path is four steps and ends the same way: you run `/awaken` and the agent 
 
 **First, install Claude Code itself** if you haven't — `curl -fsSL https://claude.ai/install.sh | bash` on macOS, Linux or WSL; `irm https://claude.ai/install.ps1 | iex` in Windows PowerShell. `claude --version` should print a version. Other install routes and system requirements: [Claude Code setup](https://code.claude.com/docs/en/setup).
 
-1. **Pick where your project lives — or let `/awaken` ask.** You never have to create the folder by hand: if you start Claude Code in a folder you're happy with, `/awaken` uses it; if not, it asks you for a full path (for example `~/the-system`) and builds the folder itself. Making one first, as below, just means no question later. `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off. Keep both — see [why two files](docs/TROUBLESHOOTING.md#awaken-finished-but-nothing-works-in-my-next-session).
+1. **Set your project directory.** Open Claude Code in your project directory (`mkdir ~/ars-infinita && cd ~/ars-infinita`). If you skip this, `/awaken` asks where your project should live and creates it automatically. Keep both `AGENTS.md` and `CLAUDE.md` that `/awaken` generates.
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
@@ -73,7 +73,7 @@ Now [run `/awaken`](#-then-run-awaken).
 
 ### Claude desktop app
 
-1. **Connect a folder to your session, or let `/awaken` ask.** You never have to create the folder by hand: `/awaken` builds it and asks you where it should live if your session has none. Connecting one first — create a folder for The System on your computer, then in the prompt area, before you send anything, pick it in the **Project folder** dropdown — just means `/awaken` uses it without asking. If you skip this and your session ends up with no file access at all, `/awaken` still finishes setup in Notion, but it can't write `AGENTS.md` and `CLAUDE.md`, so a later session on this machine starts cold.
+1. **Set your project directory.** In the prompt area, pick or create a project folder in the **Project folder** dropdown. If you skip this, `/awaken` prompts you for a folder path during setup.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** In the **Code** tab, click the **+** next to the prompt box → **Connectors** → **Notion**, and follow the sign-in flow. Grant access to the workspace holding your Seed copy. (Settings → Connectors is where you *manage* one later, not where you add it.)
 4. **Install the commands.** In the **Code** tab, click the **+** next to the prompt box → **Plugins**, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it. (You can also type the two slash commands from the [Claude Code](#claude-code) path straight into the prompt box.)
@@ -82,11 +82,11 @@ Now [run `/awaken`](#-then-run-awaken).
 
 ### Codex, Antigravity & other CLIs
 
-1. **Pick where your project lives — or let `/awaken` ask.** You never have to create the folder by hand: start your CLI in a folder you're happy with and `/awaken` uses it; otherwise it asks you for a full path (for example `~/the-system`) and builds the folder itself. `/awaken` writes `AGENTS.md` and `CLAUDE.md` there so later sessions pick up where you left off.
+1. **Set your project directory.** Open your CLI in your project directory (`mkdir ~/ars-infinita && cd ~/ars-infinita`). If you skip this, `/awaken` prompts you for a folder path and builds it for you.
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
-   Your CLI reads `AGENTS.md`, which holds the content. `CLAUDE.md` is a one-line import of it, written so that opening this same folder in Claude Code later still works — keep both.
+   Your CLI reads `AGENTS.md`. Keep both `AGENTS.md` and `CLAUDE.md` that `/awaken` generates.
 2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
 3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` to your CLI's MCP config and complete the OAuth flow, granting access to your Seed copy. Codex: `~/.codex/config.toml`, under `[mcp_servers.notion]`. Antigravity: `~/.gemini/config/`, or `agy mcp add` if your build has it. Your CLI's own docs win over this line.
 4. **Install the commands.** No clone needed; Node 18+, no dependencies:
@@ -125,7 +125,11 @@ Every real action earns XP. XP earns levels. Levels and streaks give you the one
 
 ## 🙋 Questions, bugs, ideas
 
-**[Open an Issue](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)** — Issues are **public**, so leave confidential job-search details out. Once installed, `/petition` does it for you: with an authenticated `gh` CLI it files the Issue after showing you the exact text; without one it hands you that text and the link to post yourself. Answers are best-effort: this is a beta run by one Game Admin.
+Petitions are processed through two supported channels:
+- **GitHub Issues**: File a public issue on **[GitHub](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)**, or run `/petition` with an authenticated `gh` CLI. Leave confidential job-search details out.
+- **Notion Petition Intake**: Run `/petition` and choose Notion. If you use a paid agent plan with in-built or agent-browser tools, your agent completes the private Notion form for you.
+
+Answers are best-effort. Responses arrive on the issue itself, via Notion triage reply, or in the next patch notes.
 
 ## ⚠️ Status
 
