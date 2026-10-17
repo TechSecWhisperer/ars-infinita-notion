@@ -44,7 +44,7 @@ Then pick your agent:
 |---|---|---|
 | **[Claude Code](#claude-code)** | Terminal, most tested path | `/plugin marketplace add TechSecWhisperer/ars-infinita-notion` |
 | **[Claude desktop app](#claude-desktop-app)** | No terminal | Plugins panel → add the same marketplace |
-| **[Codex · Antigravity · other CLIs](#codex-antigravity--other-clis)** | Any Notion-capable agent | `npx @ars-infinita-notion/system-skills install-codex` |
+| **[Codex · Antigravity · other CLIs](#codex-antigravity--other-clis)** | Any Notion-capable agent | `npx @ars-infinita-notion/system-skills install-codex` / `install-agy` |
 
 Every path is four steps and ends the same way: you run `/awaken` and the agent builds the rest.
 
@@ -56,7 +56,7 @@ Every path is four steps and ends the same way: you run `/awaken` and the agent 
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
-2. **Duplicate the Seed** — the empty A.I.N template — into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** (top right) → choose your workspace. Keep this link; `/awaken` may ask for it.
+2. **Duplicate the Seed** — the empty A.I.N template — into your Notion workspace: open the **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** while signed into Notion → **Duplicate** (top right) → choose your workspace. *(If logged out, click "Sign up or login" first; Notion displays "Duplicate" once signed in).* Keep this link; `/awaken` may ask for it.
 3. **Connect Notion.** Add the server, then authenticate — it does not happen on its own:
    ```sh
    claude mcp add --scope user --transport http notion https://mcp.notion.com/mcp
@@ -74,7 +74,7 @@ Now [run `/awaken`](#-then-run-awaken).
 ### Claude desktop app
 
 1. **Set your project directory.** In the prompt area, pick or create a project folder in the **Project folder** dropdown. If you skip this, `/awaken` prompts you for a folder path during setup.
-2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
+2. **Duplicate the Seed** into your Notion workspace: open the **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** while signed into Notion → **Duplicate** → choose your workspace. *(If logged out, click "Sign up or login" first; Notion displays "Duplicate" once signed in).* Keep this link.
 3. **Connect Notion.** In the **Code** tab, click the **+** next to the prompt box → **Connectors** → **Notion**, and follow the sign-in flow. Grant access to the workspace holding your Seed copy. (Settings → Connectors is where you *manage* one later, not where you add it.)
 4. **Install the commands.** In the **Code** tab, click the **+** next to the prompt box → **Plugins**, add the marketplace `TechSecWhisperer/ars-infinita-notion`, then install **the-system-player** from it. (You can also type the two slash commands from the [Claude Code](#claude-code) path straight into the prompt box.)
 
@@ -87,7 +87,7 @@ Now [run `/awaken`](#-then-run-awaken).
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
    Your CLI reads `AGENTS.md`. Keep both `AGENTS.md` and `CLAUDE.md` that `/awaken` generates.
-2. **Duplicate the Seed** into your Notion workspace: **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** → **Duplicate** → choose your workspace. Keep this link.
+2. **Duplicate the Seed** into your Notion workspace: open the **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** while signed into Notion → **Duplicate** → choose your workspace. *(If logged out, click "Sign up or login" first; Notion displays "Duplicate" once signed in).* Keep this link.
 3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` to your CLI's MCP config and complete the OAuth flow, granting access to your Seed copy. Codex: `~/.codex/config.toml`, under `[mcp_servers.notion]`. Antigravity: `~/.gemini/config/`, or `agy mcp add` if your build has it. Your CLI's own docs win over this line.
 4. **Install the commands.** No clone needed; Node 18+, no dependencies:
    ```sh
@@ -118,22 +118,23 @@ Stuck? **[Troubleshooting →](docs/TROUBLESHOOTING.md)**
 - **Forge it** — a tailored cover letter and CV in *your* voice, with the AI tells stripped out.
 - **Run the pipeline** — applications, follow-ups and interview stages tracked, with a nudge before something goes stale.
 - **Work your network** — log who you meet, get reminded who's due, prep for events.
+- **Multi-surface visuals** — Desktop apps (Claude Desktop, Antigravity IDE) render native interactive visual widgets (XP radars, spider charts, pipeline funnels), while terminal CLIs receive clean, distraction-free Unicode ASCII art.
 
 Every real action earns XP. XP earns levels. Levels and streaks give you the one thing a job hunt almost never does: the sense that you're getting somewhere.
 
-**[All 27 commands →](docs/COMMANDS.md)**
+**[All 27 commands →](docs/COMMANDS.md)** *(plus the hidden `/handover` session state bookmark, totaling 28 installed skills)*
 
 ## 🙋 Questions, bugs, ideas
 
 Petitions are processed through two supported channels:
 - **GitHub Issues**: File a public issue on **[GitHub](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)**, or run `/petition` with an authenticated `gh` CLI. Leave confidential job-search details out.
-- **Notion Petition Intake**: Run `/petition` and choose Notion. If you use a paid agent plan with in-built or agent-browser tools, your agent completes the private Notion form for you.
+- **Notion Petition Intake**: Run `/petition` and choose Notion. If you use a paid agent plan with in-built or agent-browser tools, your agent completes the private Notion form for you (or submit in a browser).
 
 Answers are best-effort. Responses arrive on the issue itself, via Notion triage reply, or in the next patch notes.
 
 ## ⚠️ Status
 
-> 🧪 **Beta — open and active.** Maintenance lifted 2026-09-14. Expect rough edges; report them and they get fixed. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
+> 🧪 **Beta — open and active.** Continuously verified and maintained. Expect rough edges; report them and they get fixed. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
 
 **Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
 

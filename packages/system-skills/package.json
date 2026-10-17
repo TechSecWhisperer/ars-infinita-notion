@@ -28,7 +28,7 @@
     "build": "node builder.mjs",
     "check": "node test/checks.mjs && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs && node --test test/use-case-inventory.mjs",
     "test": "node builder.mjs && node test/checks.mjs && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs && node --test test/use-case-inventory.mjs && node test/smoke.mjs",
-    "install": "node builder.mjs && node install-unified.mjs",
+    "install-unified": "node builder.mjs && node install-unified.mjs",
     "install-codex": "node builder.mjs && node install-codex.mjs",
     "install-agy": "node builder.mjs && node install-agy.mjs",
     "prepublishOnly": "node builder.mjs && node test/checks.mjs && python3 ../../tools/leak_check.py && node ../../tools/gate_audit.mjs"
