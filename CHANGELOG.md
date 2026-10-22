@@ -6,6 +6,12 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.22 — 2026-10-22
+
+**Codex and Antigravity setup works from a checkout and the published package.** A checkout refreshes generated player files before installation; the published package installs its included files. No XP, progression, or player data changes.
+
+**Note on numbering:** plugin, package, and Patch Feed move to 2.0.22 in lockstep.
+
 ## v2.0.21 — 2026-10-15
 
 **Dual-channel petition intake with player preference check and simplified quick start.** Enhances player-to-admin communication with preference-based channel routing and simplifies onboarding:
