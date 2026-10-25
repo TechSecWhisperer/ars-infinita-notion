@@ -1,184 +1,129 @@
-# Publishes @ars-infinita-notion/system-skills — the Codex / Antigravity distribution
-# channel.
-#
-# TWO ENTRY POINTS, ONE JOB.
-#
-#   1. A merge to main. The job reads the version out of package.json, and if
-#      no matching tag exists yet it creates the tag and then publishes.
-#   2. A release tag pushed by hand. Unchanged from before.
-#
-# The merge path exists because a tag pushed by a workflow using the default
-# GITHUB_TOKEN does not trigger further workflow runs — GitHub's loop
-# prevention. A separate "tagger" workflow would therefore create the tag and
-# silently never publish. The same run has to do both, which is why this lives
-# here as a second trigger rather than in a new file.
-#
-# RULESETS. Tag creation under refs/tags/v* is deliberately NOT restricted,
-# because this job has to create the tag and there is no way to let it. Adding
-# the GitHub Actions app as a ruleset bypass actor is an organization-only
-# feature — on a user-owned repository the API rejects it with "Actor GitHub
-# Actions integration must be part of the ruleset source or owner
-# organization". The alternative, a PAT or App token, reintroduces exactly the
-# secret this workflow's OIDC design exists to avoid.
-#
-# Unrestricted creation is not the load-bearing control anyway. A stray v* tag
-# from anyone with write access starts this workflow, but verify_release_tag
-# fails it unless both manifests agree, and npm trusted publishing only
-# authenticates from this workflow — so a tag on its own publishes nothing.
-#
-# What IS enforced is the "Release tags are immutable" ruleset: deletion,
-# update and non-fast-forward on refs/tags/v* are blocked for everyone except
-# repository admins. A published version cannot be moved out from under the
-# package that shipped it. `contents: write` below is still scoped to this
-# job rather than granted repo-wide.
-#
-# The tag stays an independent claim about what ships:
-# tools/verify_release_tag.mjs fails the release unless the tag, plugin.json
-# and package.json all name the same version. Nothing else checks that,
-# because release-metadata-check compares two files that are both inside the
-# commit being tagged.
-#
-# ORDER: tag first, then publish. If the publish fails, a tag exists with no
-# package behind it. Recover by deleting the tag (`git push origin
-# :refs/tags/vX.Y.Z`), fixing the cause, and pushing the tag again — the merge
-# path no-ops while the tag exists, so it will not race you. That deletion
-# needs repository admin, since the immutability ruleset above blocks it for
-# everyone else; this is the one operation a maintainer has to do by hand.
-#
-# AUTHENTICATION: npm trusted publishing (OIDC). There is deliberately no
-# NPM_TOKEN anywhere — no secret to scope, leak or rotate. `id-token: write`
-# is what authenticates, and npm generates provenance automatically, so
-# --provenance is NOT needed and must not be added.
-#
-# FIRST PUBLISH IS MANUAL. A trusted publisher is configured per package on
-# npmjs.com, so the package must exist before this workflow can authenticate.
-# See MAINTAINERS.md, "Publishing the npm package".
-#
-# Kept deliberately thin. The build, the structural gate and the leak check
-# all run inside `npm publish` via the package's prepublishOnly script, so
-# they cannot be skipped by editing this file — and they stay testable from a
-# normal checkout instead of only inside CI.
-
+# The Admin post-merge ritual is the sole release creator. This workflow only
+# publishes a GitHub Release event after independently rechecking its source PR,
+# review, exact-head required checks, cadence, and versioned tag.
 name: Publish to npm
 
 on:
-  push:
-    branches: [main]
-    tags: ["v*"]
+  release:
+    types: [published]
 
 permissions:
-  contents: write # create the release tag on the merge path
-  id-token: write # OIDC — this is what replaces NPM_TOKEN
+  contents: write
+  checks: read
+  id-token: write
+  pull-requests: read
+  statuses: read
+
+concurrency:
+  group: player-release-publication
+  cancel-in-progress: false
 
 jobs:
   publish:
-    name: Publish @ars-infinita-notion/system-skills
-    # Provenance requires a public repo and a cloud-hosted runner; both hold
-    # here. The repository guard stops a fork that pushes a tag from trying
-    # to publish under this package name.
+    name: Publish authorized player release
     if: github.repository == 'TechSecWhisperer/ars-infinita-notion'
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out the tagged commit
+      - name: Check out the released commit
         uses: actions/checkout@v4
-
-      # Decides what this run is for, and whether it should do anything at all.
-      #
-      # On the tag path the tag is given, and the run always proceeds. On the
-      # merge path the version comes from package.json, and the run is a no-op
-      # whenever that tag already exists — most merges to main do not bump the
-      # version, and those must pass quietly rather than fail on a duplicate
-      # publish.
-      #
-      # The existence check is against the tag, not against the registry. The
-      # tag is the claim this repo releases on, and it is one ls-remote rather
-      # than a network round trip to npm.
-      - name: Work out the release tag
-        id: release
-        env:
-          REF_TYPE: ${{ github.ref_type }}
-        run: |
-          set -euo pipefail
-          if [ "$REF_TYPE" = "tag" ]; then
-            tag="${GITHUB_REF_NAME}"
-            echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-            echo "should_tag=false" >> "$GITHUB_OUTPUT"
-            echo "proceed=true" >> "$GITHUB_OUTPUT"
-            echo "Tag push: releasing ${tag}"
-            exit 0
-          fi
-          version="$(node -p "require('./packages/system-skills/package.json').version")"
-          tag="v${version}"
-          echo "tag=${tag}" >> "$GITHUB_OUTPUT"
-          if git ls-remote --exit-code origin "refs/tags/${tag}" >/dev/null 2>&1; then
-            echo "should_tag=false" >> "$GITHUB_OUTPUT"
-            echo "proceed=false" >> "$GITHUB_OUTPUT"
-            echo "${tag} already exists — nothing to release."
-          else
-            echo "should_tag=true" >> "$GITHUB_OUTPUT"
-            echo "proceed=true" >> "$GITHUB_OUTPUT"
-            echo "Merge to main: ${tag} does not exist yet, releasing it."
-          fi
+        with:
+          ref: ${{ github.event.release.tag_name }}
+          fetch-depth: 0
 
       - name: Set up Node
-        if: steps.release.outputs.proceed == 'true'
         uses: actions/setup-node@v4
         with:
-          node-version: "22"
-          registry-url: "https://registry.npmjs.org"
+          node-version: '22'
+          registry-url: https://registry.npmjs.org
 
-      # Trusted publishing needs npm >= 11.5.1, and Node 22 bundles npm 10.9.
-      # An older npm does not perform the OIDC token exchange at all — it just
-      # sends an unauthenticated PUT, and the registry answers 404 rather than
-      # 401 so it does not leak which packages exist. That 404 is what failed
-      # the v1.3.3 tag, and it reads like a missing package rather than a
-      # missing credential, so it is worth naming here.
-      # Pinned, not @latest. This job holds id-token: write, so whatever npm
-      # is installed here handles the publishing credential — a floating tag
-      # would hand that to whatever the registry served that morning. 11.5.1
-      # is the first release that can do the OIDC exchange; bump it
-      # deliberately, never automatically.
-      - name: Upgrade npm to a version that can do OIDC
-        if: steps.release.outputs.proceed == 'true'
-        run: npm install -g npm@11.5.1
-
-      - name: Show the npm version actually publishing
-        if: steps.release.outputs.proceed == 'true'
-        run: npm --version
-
-      # Passed explicitly rather than read from GITHUB_REF_NAME, because on the
-      # merge path that is "main" and the script would exit 2 (BLOCKED). Exits
-      # 1 if the tag disagrees with either manifest, and 2 if it is not a
-      # release tag at all — never a pass on an undetermined state.
-      #
-      # This runs BEFORE the tag is created, so a version mismatch fails the
-      # run without leaving a tag behind.
-      #
-      # Passed through env rather than interpolated into the run script: on
-      # the merge path this string comes out of package.json.
-      - name: Verify the tag agrees with both manifests
-        if: steps.release.outputs.proceed == 'true'
+      - name: Verify version and release authorization
         env:
-          TAG: ${{ steps.release.outputs.tag }}
-        run: node tools/verify_release_tag.mjs "$TAG"
-
-      # Tags the exact commit this run checked out, not whatever main points at
-      # by now. Pushing this tag does NOT start another run of this workflow —
-      # GITHUB_TOKEN pushes never do — which is why the publish has to happen
-      # in this same job, below.
-      - name: Create the release tag
-        if: steps.release.outputs.should_tag == 'true'
-        env:
-          TAG: ${{ steps.release.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           set -euo pipefail
-          git tag "$TAG" "${GITHUB_SHA}"
-          git push origin "refs/tags/$TAG"
+          node tools/verify_release_tag.mjs "$RELEASE_TAG"
+          actual_sha="$(git rev-parse "${RELEASE_TAG}^{commit}")"
+          if [ "$actual_sha" != "$(git rev-parse HEAD)" ]; then
+            echo 'Released tag did not resolve to the checked-out commit.' >&2
+            exit 2
+          fi
+          node tools/release_authorization.mjs "$RELEASE_TAG"
 
-      # prepublishOnly runs: builder.mjs, test/checks.mjs, tools/leak_check.py.
-      # Any failure aborts the publish. python3 is preinstalled on the runner.
-      - name: Publish
-        if: steps.release.outputs.proceed == 'true'
-        run: npm publish --access public
+      - name: Install the pinned OIDC-capable npm client
+        run: npm install --global npm@11.5.1
+
+      - name: Run player package, leak, and placement checks
         working-directory: packages/system-skills
+        run: |
+          set -euo pipefail
+          npm run build
+          npm run check
+          python3 ../../tools/leak_check.py
+          node ../../tools/gate_audit.mjs
+
+      - name: Publish the exact verified package artifact
+        id: publish-package
+        working-directory: packages/system-skills
+        run: |
+          set -euo pipefail
+          pack_json="$RUNNER_TEMP/player-package.json"
+          npm pack --json --pack-destination "$RUNNER_TEMP" > "$pack_json"
+          package_file="$(node -e 'const p=require(process.argv[1])[0]; if (!p || !p.filename || !p.integrity) process.exit(2); process.stdout.write(p.filename)' "$pack_json")"
+          package_integrity="$(node -e 'const p=require(process.argv[1])[0]; process.stdout.write(p.integrity)' "$pack_json")"
+          package_version="$(node -p "require('./package.json').version")"
+          echo "integrity=$package_integrity" >> "$GITHUB_OUTPUT"
+          echo "version=$package_version" >> "$GITHUB_OUTPUT"
+          registry_spec="@ars-infinita-notion/system-skills@${package_version}"
+          registry_err="$RUNNER_TEMP/npm-view.err"
+          set +e
+          registry_integrity="$(npm view "$registry_spec" dist.integrity 2>"$registry_err")"
+          registry_status=$?
+          set -e
+          if [ "$registry_status" -eq 0 ]; then
+            if [ "$registry_integrity" = "$package_integrity" ]; then
+              echo "Verified ${registry_spec} is already published with the exact package integrity; retry is a no-op."
+              exit 0
+            fi
+            echo "Registry version ${registry_spec} exists with different integrity; refusing to overwrite or claim success." >&2
+            exit 2
+          fi
+          if ! grep -q 'E404' "$registry_err"; then
+            echo 'Could not establish whether this package version already exists in npm.' >&2
+            exit 2
+          fi
+          npm publish "$RUNNER_TEMP/$package_file" --access public
+
+      - name: Verify registry integrity and attach delivery receipt
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_SHA: ${{ github.sha }}
+          PACKAGE_INTEGRITY: ${{ steps.publish-package.outputs.integrity }}
+          PACKAGE_VERSION: ${{ steps.publish-package.outputs.version }}
+          WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          registry_spec="@ars-infinita-notion/system-skills@${PACKAGE_VERSION}"
+          registry_integrity=''
+          for attempt in $(seq 1 30); do
+            if registry_integrity="$(npm view "$registry_spec" dist.integrity 2>/dev/null)" \
+              && [ "$registry_integrity" = "$PACKAGE_INTEGRITY" ]; then
+              break
+            fi
+            if [ "$attempt" -eq 30 ]; then
+              echo 'Registry did not read back the exact published package integrity.' >&2
+              exit 2
+            fi
+            sleep 10
+          done
+          asset_name="$(node -e 'const v=process.argv[1]; const m=/^sha512-([A-Za-z0-9+/]+={0,2})$/.exec(v||""); if(!m) process.exit(2); const d=Buffer.from(m[1],"base64"); if(d.length!==64 || d.toString("base64")!==m[1]) process.exit(2); process.stdout.write(`ain-npm-delivery-v1-${d.toString("base64url")}.json`)' "$PACKAGE_INTEGRITY")"
+          receipt="$RUNNER_TEMP/$asset_name"
+          node -e 'const [file, tag, sha, version, integrity, runId] = process.argv.slice(1); require("node:fs").writeFileSync(file, JSON.stringify({tag, commitSha:sha, package:"@ars-infinita-notion/system-skills", version, integrity, workflowRunId:runId})+"\n", {mode:0o600})' \
+            "$receipt" "$RELEASE_TAG" "$RELEASE_SHA" "$PACKAGE_VERSION" "$PACKAGE_INTEGRITY" "$WORKFLOW_RUN_ID"
+          gh release upload "$RELEASE_TAG" "$receipt" --repo TechSecWhisperer/ars-infinita-notion --clobber
+          readback="$(gh release view "$RELEASE_TAG" --repo TechSecWhisperer/ars-infinita-notion --json assets --jq ".assets[] | select(.name == \"$asset_name\") | .name")"
+          if [ "$readback" != "$asset_name" ]; then
+            echo 'GitHub Release delivery receipt failed destination readback.' >&2
+            exit 2
+          fi

@@ -9,16 +9,18 @@
 ## 🧪 Beta is live
 
 **The System is in open beta.** Players can install, awaken, and play today — and the
-petition channel is staffed: file an issue and you will get an acknowledgement and a
-reply. What beta means in practice:
+petition channel returns a one-time receipt when a public issue is opened. A receipt
+confirms delivery; it is not a review, decision, or promise that every request will
+receive a substantive answer. What beta means in practice:
 
 - **Working end to end** — install through the Seed, run `/awaken`, hunt, earn XP, level up.
 - **The rules you see are the rules that run** — the Patch Feed, Rule Manifest and this
   repo's `feed.json` are checked against each other automatically; a release that breaks
   lockstep does not ship.
-- **Petitions get answers** — validated replies only; nothing quotes the game's internals.
+- **Petitions get a validated receipt** — any substantive reply must be grounded in
+  published documentation; nothing quotes private player data or unpublished decisions.
 - **Bumps may be bumpy** — the version is 2.x, the game is young. Report what breaks;
-  petitions have driven every fix so far.
+  verified fixes and shipped changes are recorded in the release notes.
 
 > Part of **Ars Infinita** — a personal brand for building worlds without limits. **A.I.N** is its Notion-native chapter. *(And yes — the **AI** is right there in the name.)*
 
@@ -126,21 +128,21 @@ Every real action earns XP. XP earns levels. Levels and streaks give you the one
 
 ## 🙋 Questions, bugs, ideas
 
-Petitions are processed through two supported channels:
-- **GitHub Issues**: File a public issue on **[GitHub](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)**, or run `/petition` with an authenticated `gh` CLI. Leave confidential job-search details out.
-- **Notion Petition Intake**: Run `/petition` and choose Notion. If you use a paid agent plan with in-built or agent-browser tools, your agent completes the private Notion form for you (or submit in a browser).
+File petitions as public **[GitHub Issues](https://github.com/TechSecWhisperer/ars-infinita-notion/issues/new)**, or run `/petition` with an authenticated `gh` CLI. Keep confidential job-search details and personal or security-sensitive information out of the issue.
 
-Answers are best-effort. Responses arrive on the issue itself, via Notion triage reply, or in the next patch notes.
+Verified answers and shipped outcomes are best-effort. Updates appear on the issue
+or in the next patch notes. The automatic issue receipt does not mean the request
+has been reviewed or accepted.
 
 ## ⚠️ Status
 
-> 🧪 **Beta — open and active.** Continuously verified and maintained. Expect rough edges; report them and they get fixed. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
+> 🧪 **Beta — open and active.** Expect rough edges and report what breaks. An automatic receipt confirms that a report arrived; it does not promise review or resolution. Verified fixes and updates appear in the release notes when they are ready. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
 
 **Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
 
 ## 📄 License
 
-[MIT](LICENSE) — © 2026 Ars Infinita Contributors. The game's sealed mechanics live only in the author's admin workspace; nothing here is withheld from you by licence.
+[MIT](LICENSE) — © 2026 Ars Infinita Contributors.
 
 ---
 

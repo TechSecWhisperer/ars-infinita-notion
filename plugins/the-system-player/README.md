@@ -20,11 +20,11 @@ This plugin sits next to several other version numbers. They are deliberately di
 - **Patches:** every command's lite boot compares the Kernel's Mechanics Version to the Nexus Patch Feed and applies missed patches. The Runebook (on the Seed page) is ground truth for any agent; this plugin is the Claude convenience wrapper.
 - **Privacy:** Party Wall + whitelist push. No job-search content ever leaves the player's workspace.
 
-## Maintenance (Game Admin)
+## Maintenance
 
 **This checked-in tree is canonical.** Edit it here, in a reviewed change — nothing is copied over it wholesale from elsewhere.
 
 - **Shared-rule fixes → edit `references/boot-card.md`. That's it.** There is exactly one copy and no sync ritual. (`packages/system-skills/builder.mjs` stamps a per-skill copy into its gitignored `dist/` for the Codex and Antigravity CLIs, whose formats install skills as standalone folders with no shared parent. Those are build output. The build's `shared-reference-build-check` fails if any stamped copy differs from this file by so much as a byte — never hand-edit one.)
 - **Single-command fixes** → that skill's `SKILL.md`.
 - **Pre-ship validation ritual** — see `MAINTAINERS.md` for the full release flow, including the mandatory leak gate.
-- **Masking rules:** no reference anywhere to admin-side machinery or sealed mechanics — the authoritative masked-terms list lives in the Game Admin's build doc, not in this package. Player-facing register for anything sealed: "The System occasionally grants bonus quests."
+- **Player-facing content:** keep private operating details and unreleased game content out of the distributed package. Describe only the behavior a player needs to use the feature.

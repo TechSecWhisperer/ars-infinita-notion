@@ -6,6 +6,12 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.22 — 2026-10-22
+
+**Codex and Antigravity setup now works from a checkout and the published package.** The setup instructions include all required project context, and each install path uses the files available in that distribution. Run `npx @ars-infinita-notion/system-skills install` for combined setup. No XP, progression, or player data changes.
+
+**Note on numbering:** plugin, package, and Patch Feed move to 2.0.22 in lockstep.
+
 ## v2.0.21 — 2026-10-15
 
 **Dual-channel petition intake with player preference check and simplified quick start.** Enhances player-to-admin communication with preference-based channel routing and simplifies onboarding:
@@ -59,10 +65,10 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 ## v2.0.16 — 2026-10-14
 
-**Zero-friction discovery engine, Cardinal living overlay, and atomic installer.** Eliminates manual seed-link querying and database UUID prompts during /awaken onboarding:
+**Simpler setup and clearer daily guidance.** Eliminates manual seed-link queries and ID prompts during `/awaken` onboarding:
 
 - **Zero-friction discovery engine.** `/awaken` automatically locates and verifies your Notion workspace root page. It discovers all 13 canonical databases and 7 system pages by name with schema validation. Players are never asked to query IDs or paste seed links.
-- **Cardinal Living Overlay.** Cardinal is promoted from an unverified 8:00 AM cron into the living proctor persona and ambient skill overlay across all player commands. It enforces the Voice and Demeanour, Anti-Cheat, and Zero-Friction principles. If routine scheduling is available, Cardinal proactively offers daily briefings without blocking play.
+- **Daily briefing guidance.** Clear, grounded guidance is available across commands. When routine scheduling is supported, setup can offer a daily briefing without blocking play.
 - **Atomic Multi-Client Installer.** `install-unified.mjs` provides transactional atomic staging with automatic rollback backup for Codex CLI, Antigravity CLI, and Claude Code environments.
 
 **Note on numbering:** mechanics version moves to 2.0.16 in lockstep. Setup delivery and discovery improvements. No XP value, level threshold, badge criterion or unlock rule moved. Patch.

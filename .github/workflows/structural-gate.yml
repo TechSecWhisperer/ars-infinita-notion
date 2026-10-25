@@ -24,6 +24,12 @@ jobs:
         working-directory: packages/system-skills
       - run: node test/checks.mjs
         working-directory: packages/system-skills
+      - run: node test/public-feed-contract.mjs
+        working-directory: packages/system-skills
+      - run: node ../../tools/generate_catalog.mjs --check
+        working-directory: packages/system-skills
+      - run: node --test test/source-install-build.test.mjs
+        working-directory: packages/system-skills
 
       # builder.mjs regenerates the committed generated files, so the steps
       # above can end up comparing a freshly-regenerated file against itself.

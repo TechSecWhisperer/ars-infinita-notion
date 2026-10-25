@@ -59,7 +59,7 @@ All 27 commands, in the plugin's own words — **generated** from each skill's f
 | `/status` | Reports the player's current player state in "The System" — level, XP, streak, active debuffs, and recent unlocks. |
 | `/levelup` | Runs the player's weekly review ritual for The System — pipeline check, archive stats (response rates), a lint pass over the wiki for contradictions/stale claims, and 2-3 logged Enhancement Suggestions. |
 | `/browse` | Drive a live web page with agent-browser (the vercel-labs browser CLI) using its real interface — health-check, open, snapshot, click, fill — so browser work actually runs instead of being hallucinated or silently skipped. |
-| `/petition` | Sends a question, enhancement idea, bug report, or mercy appeal from the player to the Game Admin via GitHub Issues (requires GitHub account) or the Notion petition form (requires in-built or agent browser tools from paid subscriptions). |
+| `/petition` | Sends a question, enhancement idea, bug report, or mercy appeal from the player to the Game Admin through public GitHub Issues. |
 
 ---
 

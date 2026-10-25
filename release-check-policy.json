@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "repository": "TechSecWhisperer/ars-infinita-notion",
+  "requiredChecks": [
+    { "context": "Delivery freshness", "appId": 15368 },
+    { "context": "Sealed-mechanics leak check", "appId": 15368 },
+    { "context": "Structural gate", "appId": 15368 },
+    { "context": "AIN/Thermo-Nuclear Review", "appId": null }
+  ]
+}

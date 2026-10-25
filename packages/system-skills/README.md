@@ -134,13 +134,17 @@ After installing, start a fresh session:
 ```sh
 npm run build   # node builder.mjs
 npm run check   # structural gate plus the player home-check fixtures
-npm test        # check, then node test/smoke.mjs
+npm test        # deterministic package checks
 ```
+
+`npm run check` validates the public feed's root and nested patch schema,
+player-facing text, command catalog output, and generator read/write boundary.
+`prepublishOnly` and Structural Gate CI run the same feed and generator checks so
+unsupported release metadata cannot be preserved by catalog generation.
 
 ### `test/checks.mjs` — the structural gate
 
-Zero dependencies, no network, no CLIs; it runs anywhere and is expected to actually run
-(unlike the smoke test, which skips when a CLI is missing). Ten named checks:
+Zero dependencies and no network; it runs anywhere. Eleven named checks:
 
 | Check | Catches |
 | --- | --- |
@@ -148,37 +152,18 @@ Zero dependencies, no network, no CLIs; it runs anywhere and is expected to actu
 | `release-metadata-check` | `marketplace.json` not regenerated, or growing a duplicate `version`/`description`/`author`/`license` that `plugin.json` already owns; `CHANGELOG.md`'s newest entry disagreeing with `plugin.json` (hard fail); `feed.json` disagreeing (**WARN** only — the feed legitimately leads mid-release-train); `feed_version` coming back. |
 | `command-catalog-check` | A skill with broken or mismatched frontmatter; `feed.json`'s command list drifting from the actual `skills/` directories; the hidden `/handover` route leaking into the published list. |
 | `kernel-reference-check` | A skill writing to a Kernel entity that `/awaken`'s `template-schemas.md` never builds — an instruction that reads correctly and points at nothing. |
-| `single-surface-lint` | The duplicate write-paths cut in v1.3.1 creeping back: a Calendar `Follow-up Due` mirror, a Notion "Petition form" route, browser-gating language on the `feed.json` mirror. |
+| `single-surface-lint` | Duplicate player write paths returning: a Calendar `Follow-up Due` mirror, any Notion Petition form route, or browser-gating language on the `feed.json` mirror. |
 | `resume-library-check` | `/armor`'s `RESUME-LIBRARY.md` drifting from `resume-library.json`, which generates it — so "generated" stays a property rather than a claim in a header. Delegates to the generator's own `check` rather than re-implementing the render, which would itself be a second source of truth. |
 | `codex-install-guard` | `install-codex` regaining the ability to destroy a directory it did not install — the v1.3.5 data-loss defect. **Behavioural, not structural:** it runs the real installer against a sandboxed `CODEX_HOME`. It lives here rather than in `smoke.mjs` so `prepublishOnly` runs it and no workflow edit can skip it. |
 | `rewrite-collision-check` | The per-target rewrite colliding with the words around it and producing text no author wrote. It shipped `the the assistant desktop app` into both builds — the source said `the Claude desktop app` and the rule fired inside it. Reads the built tree, because the defect exists only after the rewrite. |
-| `context-file-check` | `/awaken` Step 7.5 dropping back to writing one context file, or duplicating the body into both instead of importing. `AGENTS.md` carries the content and `CLAUDE.md` imports it; one file alone means a folder opened in the other agent starts cold. |
+| `context-file-check` | `/awaken` Step 7.5 dropping back to writing one context file, or duplicating the body into both instead of importing. It checks the full referenced setup contract survives in both built copies: `AGENTS.md` carries the content and `CLAUDE.md` imports it. |
+| `agy-skill-context-limit` | Any built Antigravity skill exceeding its 24,000-byte loaded context limit, which would truncate instructions such as `/awaken` setup steps. |
 | `checks-doc-check` | This very table drifting from the suite it documents — a check added or renamed without the README following. It has gone stale twice: documented as four when six ran, then as six when nine did. |
 
-### `test/smoke.mjs` — the real CLIs
+## Local verification
 
-`test/smoke.mjs` invokes the **real** CLIs non-interactively — no mocks:
-
-```sh
-codex exec --sandbox read-only --skip-git-repo-check --output-last-message <f> -   # prompt on stdin
-agy --sandbox --print "<prompt>"
-```
-
-For each of the 3 smallest built skills (currently `gather`, `touch`, `status`) it feeds the whole
-built SKILL.md plus `Smoke check: reply OK plus one sentence on what this skill does`, then asserts
-the answer is non-empty, non-error, and mentions at least one domain term derived from the skill's
-own name and description.
-
-Environment failures (CLI not on PATH, auth, quota, timeout) **skip with a warning**; they are never
-counted as passes. A run where nothing executed exits `2` (inconclusive), not `0`.
-
-Knobs: `SMOKE_SKILL_LIMIT`, `SMOKE_TIMEOUT_MS`, `SMOKE_AGENT=codex|agy`.
-
-## Evals are never committed
-
-Prompts, raw CLI transcripts, and summaries are written to `evals/<timestamp>/`. That directory —
-along with `dist/`, `test-output/` and `*.eval.*` — is in this package's `.gitignore`. Do not
-relocate eval artefacts outside those paths.
+Package checks and fixtures validate the install experience. Local test artifacts are
+not part of the published package.
 
 ## Format notes and assumptions
 
@@ -197,27 +182,3 @@ Verified empirically on this machine, not guessed:
   and it is exactly what both targets read.
 - The extra `version`/`description` fields written into the agy `plugin.json` are informational;
   agy only requires `name`.
-
-## Known issues
-
-- **codex rejects a prompt beginning with `---`.** Passing the built SKILL.md as a positional
-  argument fails with `error: unexpected argument '---`, because the arg parser reads the YAML
-  frontmatter fence as a flag. The smoke test therefore pipes the prompt on stdin and passes `-`
-  as the prompt argument. This only affects passing skill text as a CLI argument, not normal
-  skill loading from `$CODEX_HOME/skills`.
-- **agy boolean flags need to precede the prompt.** `agy --print "<prompt>" --sandbox` works, but
-  `agy --print --sandbox "<prompt>"` is the form the tests use; putting `--sandbox` immediately
-  before the prompt string makes Go's flag parser swallow it.
-- No auth or quota failures were observed on this machine at the time of writing; both CLIs
-  returned real answers for all 6 checks. If either starts failing for auth/quota, the smoke test
-  reports `SKIP ... environment failure — <exact CLI error>` and does not fake a pass.
-
-## Publishing
-
-Published from CI, never from a laptop. A merge to `main` that moves the version cuts the release
-tag and publishes in the same run; a hand-pushed `v*` tag does the same thing. Authentication is
-npm trusted publishing (OIDC) — there is deliberately no `NPM_TOKEN` anywhere, so there is no
-secret to scope, leak or rotate.
-
-The gates cannot be skipped by editing the workflow: `prepublishOnly` runs `builder.mjs`,
-`test/checks.mjs` and `tools/leak_check.py` inside `npm publish` itself.
