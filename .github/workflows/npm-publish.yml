@@ -1,11 +1,15 @@
-# The Admin post-merge ritual is the sole release creator. This workflow only
-# publishes a GitHub Release event after independently rechecking its source PR,
-# review, exact-head required checks, cadence, and versioned tag.
+# Publishes the exact package for a draft player release. The separately
+# authorized release flow publishes the GitHub Release after npm readback.
 name: Publish to npm
+run-name: Publish player release ${{ inputs.release_tag }}
 
 on:
-  release:
-    types: [published]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Version tag for the player release
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -27,7 +31,7 @@ jobs:
       - name: Check out the released commit
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.release.tag_name }}
+          ref: ${{ inputs.release_tag }}
           fetch-depth: 0
 
       - name: Set up Node
@@ -37,9 +41,10 @@ jobs:
           registry-url: https://registry.npmjs.org
 
       - name: Verify version and release authorization
+        id: verify-source
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           set -euo pipefail
           node tools/verify_release_tag.mjs "$RELEASE_TAG"
@@ -48,7 +53,8 @@ jobs:
             echo 'Released tag did not resolve to the checked-out commit.' >&2
             exit 2
           fi
-          node tools/release_authorization.mjs "$RELEASE_TAG"
+          node tools/release_authorization.mjs "$RELEASE_TAG" --allow-draft
+          echo "release_sha=$actual_sha" >> "$GITHUB_OUTPUT"
 
       - name: Install the pinned OIDC-capable npm client
         run: npm install --global npm@11.5.1
@@ -97,8 +103,8 @@ jobs:
       - name: Verify registry integrity and attach delivery receipt
         env:
           GH_TOKEN: ${{ github.token }}
-          RELEASE_TAG: ${{ github.event.release.tag_name }}
-          RELEASE_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          RELEASE_SHA: ${{ steps.verify-source.outputs.release_sha }}
           PACKAGE_INTEGRITY: ${{ steps.publish-package.outputs.integrity }}
           PACKAGE_VERSION: ${{ steps.publish-package.outputs.version }}
           WORKFLOW_RUN_ID: ${{ github.run_id }}
