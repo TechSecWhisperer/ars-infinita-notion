@@ -70,6 +70,10 @@ function authorizationFixture({ draft = true } = {}) {
   const runGh = (args) => {
     if (args[0] === 'api') {
       const route = args.at(-1);
+      if (args.includes('--paginate') && args.includes('--slurp')
+          && route === 'repos/TechSecWhisperer/ars-infinita-notion/releases?per_page=100') {
+        return JSON.stringify([[release]]);
+      }
       if (route.endsWith(`/releases/tags/${tag}`)) return JSON.stringify(release);
       if (route.endsWith(`/commits/${tag}`)) return JSON.stringify({ sha: mergeSha });
       if (route.endsWith(`/commits/${mergeSha}/pulls`)) return JSON.stringify(associated);
@@ -97,6 +101,26 @@ test('publisher authorization accepts a draft only for the pre-publication dispa
     assert.equal(result.releaseState, 'draft');
     assert.equal(result.pullRequest, 119);
     assert.equal(result.sourceReviewMethod, 'thermo-review');
+  } finally { fixture.cleanup(); }
+});
+
+test('draft release authorization reads the paginated list when the tag endpoint hides drafts', () => {
+  const fixture = authorizationFixture({ draft: true });
+  const requests = [];
+  const runGh = (args) => {
+    requests.push(args);
+    if (args[0] === 'api' && args.at(-1) === `repos/TechSecWhisperer/ars-infinita-notion/releases/tags/${tag}`) {
+      throw new Error('gh: Not Found (HTTP 404)');
+    }
+    if (args[0] === 'api' && args.at(-1) === 'repos/TechSecWhisperer/ars-infinita-notion/releases?per_page=100') {
+      return JSON.stringify([[fixture.release]]);
+    }
+    return fixture.runGh(args);
+  };
+  try {
+    const result = verifyReleaseAuthorization(tag, { runGh, policyPath: fixture.policyPath, allowDraft: true });
+    assert.equal(result.releaseState, 'draft');
+    assert.ok(requests.some((args) => args.includes('--paginate') && args.includes('--slurp')));
   } finally { fixture.cleanup(); }
 });
 
