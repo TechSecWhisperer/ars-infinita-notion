@@ -56,7 +56,7 @@ PY
 }
 
 check_range() {
-  local range="$1"
+  local range="$1" local_ref="$2" local_sha="$3" base_ref="$4"
   local commit seen=0
   while IFS= read -r commit; do
     [[ -n "$commit" ]] || continue
@@ -82,6 +82,15 @@ check_range() {
     fi
   done < <(git rev-list "$range")
   if (( seen == 0 )); then
+    # Creating a tag for an existing commit adds a name, not a new commit.
+    # Permit that empty range only when the tag resolves to a commit already
+    # reachable from the comparison base. New or unavailable commits remain
+    # subject to the normal identity check or fail closed.
+    if [[ "$local_ref" == refs/tags/* ]] \
+      && git rev-parse --verify "${local_sha}^{commit}" >/dev/null 2>&1 \
+      && git merge-base --is-ancestor "${local_sha}^{commit}" "${base_ref}^{commit}"; then
+      return 0
+    fi
     echo "pre-push: identity range '$range' is empty or unavailable; refusing push" >&2
     return 1
   fi
@@ -98,5 +107,5 @@ while read -r local_ref local_sha remote_ref remote_sha; do
     echo "pre-push: cannot resolve comparison base $base_ref; refusing push" >&2
     exit 1
   }
-  check_range "$base_ref..$local_sha" || exit 1
+  check_range "$base_ref..$local_sha" "$local_ref" "$local_sha" "$base_ref" || exit 1
 done <"$push_lines"

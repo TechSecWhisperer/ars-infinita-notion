@@ -18,6 +18,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+      - run: node --test tests/*.test.mjs
       # The battery hard-fails on an unbuilt dist/ rather than reporting
       # success without running, so this build step is load-bearing.
       - run: node builder.mjs

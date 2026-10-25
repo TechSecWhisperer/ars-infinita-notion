@@ -7,7 +7,7 @@ import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
-import { exactHeadReviewState } from './review_policy.mjs';
+import { exactHeadReleaseReviewState } from './review_policy.mjs';
 
 const REPOSITORY = 'TechSecWhisperer/ars-infinita-notion';
 const REPO_ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -95,11 +95,15 @@ function gh(args) {
   return execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 }).trim();
 }
 
-export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUIRED_CHECK_POLICY } = {}) {
+export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUIRED_CHECK_POLICY, allowDraft = false } = {}) {
   const api = (path) => JSON.parse(runGh(['api', `repos/${REPOSITORY}/${path}`]));
   if (!/^v\d+\.\d+\.\d+$/.test(String(tag || ''))) throw new Error('BLOCKED_RELEASE_TAG_INVALID');
   const release = api(`releases/tags/${encodeURIComponent(tag)}`);
-  if (release.tag_name !== tag || release.draft !== false || release.prerelease !== false || !release.published_at) {
+  const releaseState = allowDraft ? 'draft' : 'published';
+  const validReleaseState = allowDraft
+    ? release.draft === true && !release.published_at
+    : release.draft === false && Boolean(release.published_at);
+  if (release.tag_name !== tag || !validReleaseState || release.prerelease !== false) {
     throw new Error('BLOCKED_RELEASE_DESTINATION_UNVERIFIED');
   }
   const commit = api(`commits/${encodeURIComponent(tag)}`);
@@ -119,25 +123,32 @@ export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUI
       || String(pr.mergeCommit?.oid || '').toLowerCase() !== releaseSha.toLowerCase()
       || !/^[a-f0-9]{40}$/i.test(String(pr.headRefOid || ''))) throw new Error('BLOCKED_RELEASE_SOURCE_REVIEW_UNKNOWN');
   const reviewRows = JSON.parse(runGh(['api', '--paginate', '--slurp', `repos/${REPOSITORY}/pulls/${prNumber}/reviews?per_page=100`])).flat();
-  const reviewOutcome = exactHeadReviewState(reviewRows, pr.author?.login, pr.headRefOid);
-  if (reviewOutcome.state !== 'APPROVED') throw new Error('BLOCKED_RELEASE_EXACT_HEAD_REVIEW_UNKNOWN');
-
   const { required, digest: requiredCheckPolicyDigest } = readRequiredCheckPolicy(policyPath);
   const checkData = api(`commits/${pr.headRefOid}/check-runs?per_page=100`);
   const statusData = api(`commits/${pr.headRefOid}/status`);
+  const reviewOutcome = exactHeadReleaseReviewState(reviewRows, pr.author?.login, pr.headRefOid, statusData);
+  if (reviewOutcome.state !== 'APPROVED') throw new Error('BLOCKED_RELEASE_EXACT_HEAD_REVIEW_UNKNOWN');
+
   const checkResult = evaluateRequiredReleaseChecks(required, checkData.check_runs, statusData.statuses);
   if (!checkResult.passed) throw new Error(`BLOCKED_RELEASE_CHECKS:${checkResult.reason}`);
 
-  const [latestPr, latestReviewRows] = [
+  const [latestPr, latestReviewRows, latestCheckData, latestStatusData] = [
     JSON.parse(runGh(['pr', 'view', String(prNumber), '--repo', REPOSITORY,
       '--json', 'state,mergedAt,mergeCommit,headRefOid,author'])),
     JSON.parse(runGh(['api', '--paginate', '--slurp', `repos/${REPOSITORY}/pulls/${prNumber}/reviews?per_page=100`])).flat(),
+    api(`commits/${pr.headRefOid}/check-runs?per_page=100`),
+    api(`commits/${pr.headRefOid}/status`),
   ];
+  const latestReviewOutcome = exactHeadReleaseReviewState(latestReviewRows, latestPr.author?.login,
+    latestPr.headRefOid, latestStatusData);
+  const latestCheckResult = evaluateRequiredReleaseChecks(required, latestCheckData.check_runs, latestStatusData.statuses);
   if (latestPr.state !== 'MERGED' || !latestPr.mergedAt
       || latestPr.headRefOid !== pr.headRefOid
       || String(latestPr.mergeCommit?.oid || '').toLowerCase() !== releaseSha.toLowerCase()
       || latestPr.author?.login !== pr.author?.login
-      || exactHeadReviewState(latestReviewRows, latestPr.author?.login, latestPr.headRefOid).state !== 'APPROVED') {
+      || latestReviewOutcome.state !== 'APPROVED'
+      || latestReviewOutcome.method !== reviewOutcome.method
+      || !latestCheckResult.passed) {
     throw new Error('BLOCKED_RELEASE_SOURCE_CHANGED_DURING_CHECK');
   }
 
@@ -146,13 +157,16 @@ export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUI
   const emergency = (pr.labels || []).some((label) => label.name === 'release:emergency');
   const cadence = evaluatePublisherCadence(releases, { currentTag: tag, emergency });
   if (!cadence.allowed) throw new Error(`BLOCKED_RELEASE_CADENCE:${cadence.reason}`);
-  return { tag, releaseSha, pullRequest: prNumber, exactHeadSha: pr.headRefOid,
+  return { tag, releaseSha, releaseState, pullRequest: prNumber, exactHeadSha: pr.headRefOid,
+    sourceReviewMethod: reviewOutcome.method,
     requiredCheckCount: required.length, requiredCheckPolicyDigest, cadence };
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   try {
-    const result = verifyReleaseAuthorization(process.argv[2] || process.env.GITHUB_REF_NAME);
+    const result = verifyReleaseAuthorization(process.argv[2] || process.env.GITHUB_REF_NAME, {
+      allowDraft: process.argv.includes('--allow-draft'),
+    });
     console.log(`RELEASE_AUTHORIZED ${JSON.stringify(result)}`);
   } catch (error) {
     console.error(String(error?.message || 'BLOCKED_RELEASE_AUTHORIZATION').slice(0, 200));
