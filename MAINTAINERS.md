@@ -1,18 +1,18 @@
-# Maintainers Notes (Admin-Only)
+# Maintainer notes
 
-This file is for whoever cuts releases of this repo — not for players. It's checked into the repo because it's not sensitive on its own (no sealed content, no admin IDs), but the practices in it are only relevant to the Game Admin.
+Contributor guidance for this repository. Assume every file here is publicly readable; keep player distribution content free of private operational details.
 
-## The admin plugin is never published here
+## Keep the player distribution player-facing
 
-`the-system` (the admin plugin) contains content that must never reach a player-facing surface. **It must never be copied into this repository, in whole or in part, under any path.** Only `the-system-player` (the Player Edition mirror) belongs in `plugins/`.
+Only player-facing skills and documentation belong in `plugins/the-system-player/`. Do not copy unrelated packages or private operational material into the player distribution.
 
-If you're ever unsure whether a file belongs here, ask: "would I be comfortable with all 3–6 alpha players reading this line?" If no, it doesn't go in this repo.
+If unsure whether content belongs in the player distribution, write it as though every player will read it. Keep private operating details out.
 
 ## `plugins/the-system-player/` is canonical
 
 The checked-in tree **is** the Player Edition source. It is not a mirror of anything, and nothing is ever copied over it wholesale.
 
-This used to say the opposite — that a release began by copying an external "current Player Edition source" over the whole directory. That instruction was already false in practice (`packages/system-skills/builder.mjs` reads this tree directly and calls it the source of truth) and actively harmful: a wholesale copy silently reverts any fix made here in a reviewed PR, and an external edit reaches players without review. **Edit this tree, in a pull request, like any other code.** If the sealed admin system ever needs to produce player content, it opens a reviewed change — it does not overwrite the directory.
+**Edit this tree through a reviewed pull request.** Do not overwrite it from another copy; doing so can silently revert reviewed fixes or bypass review.
 
 ## Cutting a release
 
@@ -84,18 +84,24 @@ The practical rule follows from the repository being public and git history not 
 
 `@ars-infinita-notion/system-skills` is a **second distribution channel** carrying a prebuilt copy of the skills for the two non-Claude CLIs. Claude Code is deliberately not a target — it installs from the marketplace, and a second path would mean two installs able to disagree.
 
-### The release flow — tag-driven
+### The release flow — authorized GitHub Release
 
 **`npm version patch` is the wrong tool in this repo.** It bumps `package.json` only, and this package's version is *coupled* to `plugin.json` — so it would immediately fail `release-metadata-check`. The version is hand-set in exactly one place and everything else follows it:
 
 ```bash
 # 1. bump plugin.json's version, and sync the package to it
 # 2. add the CHANGELOG entry (checks.mjs fails if its newest heading disagrees)
-# 3. commit, merge to main, then tag the merge commit:
-git tag v1.3.3 && git push origin v1.3.3
+# 3. commit and merge through the protected pull-request path, then create a
+#    draft GitHub Release for the reviewed merge tag and publish it after checks.
 ```
 
-The tag triggers the publish workflow. `tools/verify_release_tag.mjs` runs first and fails the release if the tag, `plugin.json` and `package.json` do not all name the same version — **the tag is an independent claim about what ships**, and nothing else checks it, so a tag naming a third version would otherwise publish content under a number nobody chose.
+Publishing the GitHub Release triggers the workflow; pushing a tag alone does not.
+The workflow verifies the tag, its exact merged commit, the associated approved PR,
+required checks, and release cadence before publishing. `tools/verify_release_tag.mjs`
+also fails if the tag, `plugin.json` and `package.json` do not all name the same
+version — **the tag is an independent claim about what ships**, and nothing else
+checks it, so a tag naming a third version would otherwise publish content under a
+number nobody chose.
 
 ### Authentication — no token
 
@@ -107,7 +113,7 @@ Publishing uses **npm trusted publishing (OIDC)**, so there is no `NPM_TOKEN` an
 npm publish --access public
 ```
 
-Then, on npmjs.com, configure the trusted publisher (repo `TechSecWhisperer/ars-infinita-notion`, the publish workflow's filename), and every release after that is tag-driven with no credential.
+Then, on npmjs.com, configure the trusted publisher (repo `TechSecWhisperer/ars-infinita-notion`, workflow file `npm-publish.yml`). Publishing a reviewed GitHub Release after that uses OIDC with no long-lived npm token.
 
 Either way `prepublishOnly` runs the build, the structural gate and the leak check first and aborts on any failure, so a broken or leaking tarball cannot go out by forgetting a step.
 

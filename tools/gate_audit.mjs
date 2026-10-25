@@ -68,6 +68,10 @@ const MUTATIONS = [
       (d) => { d.description = 'a different pitch entirely'; }) },
   { gate: 'checks', name: 'feed head and mechanics_version disagree',
     mutate: (w) => editJSON(w, 'feed.json', (d) => { d.head = '9.9.9'; }) },
+  { gate: 'checks', name: 'unsupported feed root field is rejected',
+    mutate: (w) => editJSON(w, 'feed.json', (d) => { d.annotation = 'unsupported'; }) },
+  { gate: 'checks', name: 'unsupported patch field is rejected',
+    mutate: (w) => editJSON(w, 'feed.json', (d) => { d.patches[0].annotation = 'unsupported'; }) },
   { gate: 'checks', name: 'feed head names a patch that does not exist',
     mutate: (w) => editJSON(w, 'feed.json',
       (d) => { d.head = '9.9.9'; d.mechanics_version = '9.9.9'; }) },
@@ -195,6 +199,7 @@ function runGate(gate, w) {
   try {
     if (gate === 'checks') {
       execFileSync('node', ['test/checks.mjs'], { cwd: path.join(w, PKG), stdio: 'pipe' });
+      execFileSync('node', ['test/public-feed-contract.mjs'], { cwd: path.join(w, PKG), stdio: 'pipe' });
     } else {
       execFileSync('python3', ['tools/leak_check.py'], { cwd: w, stdio: 'pipe' });
     }

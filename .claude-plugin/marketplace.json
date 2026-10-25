@@ -2,8 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
   "name": "ars-infinita-notion",
   "owner": {
-    "name": "Ars Infinita Contributors",
-    "email": "mosesw45@gmail.com"
+    "name": "Ars Infinita Contributors"
   },
   "description": "Ars Infinita Notion (A.I.N) — the Player Edition plugin marketplace for The System, a gamified job-search tracker in your own Notion workspace.",
   "plugins": [

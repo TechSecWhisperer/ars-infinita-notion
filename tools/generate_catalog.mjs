@@ -21,6 +21,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseFrontmatter } from '../packages/system-skills/lib/transform.mjs';
+import { rewritePlayerFeedCommands } from '../packages/system-skills/lib/public-feed-contract.mjs';
 import {
   REPO_ROOT,
   SOURCE_SKILLS_DIR,
@@ -103,21 +104,12 @@ function publicCommands(skills) {
   return listed;
 }
 
-// feed.json is regenerated on every patch by /broadcast and the nightly sync;
-// this only rewrites the commands_count field and the commands array,
-// byte-preserving the rest of the file (a full JSON round-trip would reorder
-// escapes in the long _comment string). commands_count exists so the README
-// badge can be derived from this file instead of hand-edited.
+// Update the command catalog while enforcing the public feed's exact schema.
+// Release metadata and player-facing patch entries remain authored data.
 function renderFeedCommands(skills) {
   const order = publicCommands(skills);
   const count = `  "commands_count": ${order.length},`;
   return `${count}\n  "commands": [\n${order.map((n) => `    "/${n}"`).join(',\n')}\n  ]`;
-}
-
-function rewriteFeedCommands(feedText, block) {
-  const re = /  "commands_count": \d+,\n  "commands": \[\n(?:.*\n)*?  \]|  "commands": \[\n(?:.*\n)*?  \]/;
-  if (!re.test(feedText)) throw new Error('feed.json: could not locate the commands array');
-  return feedText.replace(re, block);
 }
 
 function diffHint(file, before, after) {
@@ -131,7 +123,7 @@ publicCommands(skills); // validates the section map before anything is written
 const docBefore = fs.readFileSync(COMMANDS_DOC_PATH, 'utf8');
 const docAfter = renderCommandsDoc(skills);
 const feedBefore = fs.readFileSync(FEED_PATH, 'utf8');
-const feedAfter = rewriteFeedCommands(feedBefore, renderFeedCommands(skills));
+const feedAfter = rewritePlayerFeedCommands(feedBefore, publicCommands(skills).map((name) => `/${name}`));
 
 const stale = [
   diffHint('docs/COMMANDS.md', docBefore, docAfter),

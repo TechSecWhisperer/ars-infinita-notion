@@ -29,7 +29,7 @@ reconciliation or maintenance run.
 
 ## Step 3 — classify each failure local vs remote
 - **Local** (the player's own instance — a missing database or schedule, a drifted surface, a partial Kernel): fixable here.
-- **Remote** (admin/Nexus-side — a broken Patch Feed page, a Rule Manifest that itself looks wrong): not the player's to fix.
+- **Remote** (a shared feed or rule authority is unavailable or inconsistent): not the player's to fix.
 
 ## Step 4 — repair
 
@@ -38,7 +38,7 @@ reconciliation or maintenance run.
 **Never rebuild a live instance.** An empty or "uninitialised-looking" Kernel *together with* a populated Quest Board / XP Ledger means a **Kernel-resolution problem**, not an uninitialised instance — treat it as a WARN and log an Open Question, never an /awaken rebuild. Only run the /awaken *build* path when corroborating probes agree the instance is genuinely absent (no Hub, no databases). Running /awaken over live data is destructive-by-omission, so this guard is mandatory.
 
 - **Local → run the /awaken repair path** (subject to the two guards above). It's idempotent and ledger-keyed, so it rebuilds only what's missing and never double-awards — recreate a missing schedule, rewrite a drifted surface from the Manifest, rebuild a genuinely partial Kernel. Re-run the affected checks after to confirm PASS.
-- **Remote → escalate via /petition.** Package the failing checks (Category: Bug) and file them through `/petition`, which opens a GitHub Issue on the plugin repo so it reaches the Game Admin. A diagnostic scorecard is game-state, not job-search data, but the issue is public — show the player the body before it goes. Tell them plainly it's admin-side, best-effort response.
+- **Remote → escalate via /petition.** Summarize the failing checks (Category: Bug) and show the player the proposed text before filing, because the report is public. Tell them maintainers will review it; do not promise a resolution time.
 
 ## Step 5 — report
 A short scorecard — each check with its verdict, what was fixed locally, what was escalated, what still needs their desktop. On a healthy system, say so in one line, not a wall of green.

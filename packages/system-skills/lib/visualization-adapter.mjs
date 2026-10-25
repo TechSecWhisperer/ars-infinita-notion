@@ -53,9 +53,7 @@ export function detectSurface(env = process.env, options = {}) {
     env.CLAUDE_CODE ||
     env.AGY_CLI ||
     env.CODEX_CLI ||
-    env.SSH_CONNECTION ||
-    env.N8N_EXECUTION ||
-    env.AIN_EXECUTION_BRIDGE
+    env.SSH_CONNECTION
   ) {
     return SURFACES.TERMINAL_CLI;
   }

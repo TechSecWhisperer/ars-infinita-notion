@@ -266,7 +266,7 @@ check('release-metadata-check', () => {
     owner: marketplace.owner,
     description: marketplace.description,
   });
-  const AUTHORED_PIN = '41aa85ffb170608387a755cbb65ba5a3';
+  const AUTHORED_PIN = 'e0c08b94517bda86d2c3ee877de61d1d';
   const authoredHash = createHash('sha256').update(authored).digest('hex').slice(0, 32);
   ok(
     authoredHash === AUTHORED_PIN,
@@ -511,8 +511,8 @@ check('single-surface-lint', () => {
           'the Quest Board only, surfaced by its native 📆 Next Actions view',
       );
     }
-    if (/Petition form/i.test(text) && name !== 'petition') {
-      offenders.push(`${name}: still routes to the Notion Petition form — /petition files a GitHub Issue`);
+    if (/Petition form|app\.notion\.com\/p\//i.test(text)) {
+      offenders.push(`${name}: still routes to the retired Notion Petition form — /petition files a GitHub Issue`);
     }
     // /browse is the sole browser router (public #21). Naming the *name* is
     // fine — every caller has to say what it delegates to. Naming a
@@ -875,7 +875,12 @@ check('context-file-check', () => {
   const awakenPath = path.join(SOURCE_SKILLS_DIR, 'awaken', 'SKILL.md');
   ok(fs.existsSync(awakenPath), 'awaken/SKILL.md is missing');
   if (!fs.existsSync(awakenPath)) return;
-  const authoredFull = fs.readFileSync(awakenPath, 'utf8');
+  const authoredSkill = fs.readFileSync(awakenPath, 'utf8');
+  const projectSetupPath = path.join(SOURCE_SKILLS_DIR, 'awaken', 'references', 'project-context-setup.md');
+  ok(fs.existsSync(projectSetupPath), 'awaken/references/project-context-setup.md is missing');
+  if (!fs.existsSync(projectSetupPath)) return;
+  const projectSetupReference = fs.readFileSync(projectSetupPath, 'utf8');
+  const authoredFull = `${authoredSkill}\n${projectSetupReference}`;
 
   // Scope every prose assertion to Step 7.5's own section. A review defeated the
   // whole-file version by leaving the pinned literal untouched and undoing it a
@@ -892,7 +897,7 @@ check('context-file-check', () => {
   // after ##, so a heading written `##  Step 7.5b` terminated the slice (the
   // terminator matches '\n## ') while staying invisible to this count. Markdown
   // renders both identically, so that is a stray keystroke, not an exotic case.
-  const stepHeadings = (authoredFull.match(/^##\s+Step\s*7\.5[^\n]*$/gm) || []);
+  const stepHeadings = (authoredSkill.match(/^##\s+Step\s*7\.5[^\n]*$/gm) || []);
   ok(
     stepHeadings.length === 1,
     `awaken/SKILL.md has ${stepHeadings.length} "## Step 7.5" headings - exactly one must exist, or the guard validates one section while another governs`,
@@ -903,14 +908,19 @@ check('context-file-check', () => {
       `the Step 7.5 heading marks itself as no longer live: "${h.trim()}"`,
     );
   }
-  const stepStart = authoredFull.indexOf('## Step 7.5');
+  const stepStart = authoredSkill.indexOf('## Step 7.5');
   ok(stepStart !== -1, 'awaken/SKILL.md no longer has a "## Step 7.5" heading');
   if (stepStart === -1) return;
-  const nextHeading = authoredFull.indexOf('\n## ', stepStart + 1);
-  const authored = authoredFull.slice(
+  const nextHeading = authoredSkill.indexOf('\n## ', stepStart + 1);
+  const inlineStep = authoredSkill.slice(
     stepStart,
-    nextHeading === -1 ? authoredFull.length : nextHeading,
+    nextHeading === -1 ? authoredSkill.length : nextHeading,
   );
+  ok(
+    inlineStep.includes('references/project-context-setup.md'),
+    'Step 7.5 no longer directs the player agent to read its full setup contract before writing',
+  );
+  const authored = `${inlineStep}\n${projectSetupReference}`;
 
   // 1. The authored step names both files and states the import relationship.
   ok(
@@ -1195,7 +1205,12 @@ check('context-file-check', () => {
       fail(`${label}: built awaken/SKILL.md is missing at ${rel(p)}`);
       continue;
     }
-    const built = fs.readFileSync(p, 'utf8');
+    const referencePath = path.join(path.dirname(p), 'references', 'project-context-setup.md');
+    if (!fs.existsSync(referencePath)) {
+      fail(`${label}: the complete Step 7.5 reference is missing from the built skill`);
+      continue;
+    }
+    const built = `${fs.readFileSync(p, 'utf8')}\n${fs.readFileSync(referencePath, 'utf8')}`;
     for (const phrase of PINNED) {
       ok(
         built.includes(phrase),
@@ -1234,6 +1249,28 @@ check('context-file-check', () => {
       `${label}: the closing marker did not survive the rewrite`,
     );
   }
+});
+
+check('agy-skill-context-limit', () => {
+  const skillsDir = path.join(DIST_AGY, PLUGIN_SLUG, 'skills');
+  const maxBytes = 24_000;
+  if (!fs.existsSync(skillsDir)) {
+    fail('built Antigravity skills are missing - run `node builder.mjs` first');
+    return;
+  }
+  const oversized = fs.readdirSync(skillsDir, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => ({
+      name: entry.name,
+      bytes: Buffer.byteLength(fs.readFileSync(path.join(skillsDir, entry.name, 'SKILL.md'))),
+    }))
+    .filter((skill) => skill.bytes > maxBytes);
+  ok(
+    oversized.length === 0,
+    oversized.length
+      ? `Antigravity loads only the first ${maxBytes} bytes of a skill; oversized: ${oversized.map((skill) => `${skill.name}=${skill.bytes}`).join(', ')}`
+      : `all built Antigravity skills fit within ${maxBytes} bytes`,
+  );
 });
 
 // The README documents this suite in a table, and that table has now gone stale
