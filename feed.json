@@ -1,314 +1,314 @@
 {
-  "mechanics_version": "2.0.23",
-  "head": "2.0.23",
+  "mechanics_version": "2.0.24",
+  "head": "2.0.24",
   "generated": "2026-10-26",
   "source": "The System — Nexus Patch Feed",
   "patches": [
     {
       "version": "1.0.0",
+      "title": "v1.0.0 — Gate Protocol goes live",
+      "player_facing_summary": "The System becomes multiplayer-distributable: the Seed, /awaken, /petition, /party, the Patch Feed itself, and the Sigil Check. Existing instances keep their history untouched; new features are usable from today.",
       "date": "2026-07-20",
       "type": "Major",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v1.0.0 — Gate Protocol goes live",
-      "player_facing_summary": "The System becomes multiplayer-distributable: the Seed, /awaken, /petition, /party, the Patch Feed itself, and the Sigil Check. Existing instances keep their history untouched; new features are usable from today."
+      "min_level": 0
     },
     {
       "version": "1.0.1",
+      "title": "v1.0.1 — Codex copy: \"Story Bank\" naming unified",
+      "player_facing_summary": "Copy-only patch: the XP table line \"Story added to Skill Inventory\" now reads \"Story added to Story Bank\" everywhere, matching the database's display name. No XP values, rules, or schemas change.",
       "date": "2026-07-20",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v1.0.1 — Codex copy: \"Story Bank\" naming unified",
-      "player_facing_summary": "Copy-only patch: the XP table line \"Story added to Skill Inventory\" now reads \"Story added to Story Bank\" everywhere, matching the database's display name. No XP values, rules, or schemas change."
+      "min_level": 0
     },
     {
       "version": "1.0.2",
+      "title": "v1.0.2 — Maintenance window (schedule-setup fix incoming)",
+      "player_facing_summary": "The System is briefly in maintenance while we fix an issue with automated schedule setup during /awaken. Your data is untouched and commands work normally. If your daily briefing didn't switch on after you awakened, that's the known issue — a fix is coming and you'll be prompted to re-run /awaken. You may see a short maintenance note instead of an automated briefing during the window.",
       "date": "2026-07-21",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v1.0.2 — Maintenance window (schedule-setup fix incoming)",
-      "player_facing_summary": "The System is briefly in maintenance while we fix an issue with automated schedule setup during /awaken. Your data is untouched and commands work normally. If your daily briefing didn't switch on after you awakened, that's the known issue — a fix is coming and you'll be prompted to re-run /awaken. You may see a short maintenance note instead of an automated briefing during the window."
+      "min_level": 0
     },
     {
       "version": "1.1.0",
+      "title": "v1.1.0 — Better diagnostics and clear mobile support",
+      "player_facing_summary": "The System now checks which features are available in your session and adapts accordingly. Use /vitals to see what you can do and /doctor to find and fix common issues. On mobile or sessions without a browser, commands explain what is unavailable instead of failing silently. Setup also helps you connect a browser when you want the full experience. No XP values, levels, or rules change.",
       "date": "2026-07-23",
       "type": "Minor",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v1.1.0 — Better diagnostics and clear mobile support",
-      "player_facing_summary": "The System now checks which features are available in your session and adapts accordingly. Use /vitals to see what you can do and /doctor to find and fix common issues. On mobile or sessions without a browser, commands explain what is unavailable instead of failing silently. Setup also helps you connect a browser when you want the full experience. No XP values, levels, or rules change."
+      "min_level": 0
     },
     {
       "version": "1.2.0",
+      "title": "v1.2.0 — Alpha 2: The Gates Reopen",
+      "player_facing_summary": "Alpha 2 is here. Gatecrasher I now unlocks at 2 tracked applications — forward-only, so nothing you've already earned is re-locked. Levels 1–4 are now the Tutorial Arc, your onboarding stretch; once it closes you'll see a stated normal daily-XP band so progress reads clearly. New 📅 System Calendar: your daily briefings and reminders now appear as calendar entries you can browse later, not just one-off notifications. The schedule-setup fix shipped: /awaken now creates your Daily Quest Briefing scheduled task — existing players, re-run /awaken once to pick it up. And The System's plugin now installs from the public marketplace repo — one link. Your history and data are untouched.",
       "date": "2026-07-23",
       "type": "Major",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v1.2.0 — Alpha 2: The Gates Reopen",
-      "player_facing_summary": "Alpha 2 is here. Gatecrasher I now unlocks at 2 tracked applications — forward-only, so nothing you've already earned is re-locked. Levels 1–4 are now the Tutorial Arc, your onboarding stretch; once it closes you'll see a stated normal daily-XP band so progress reads clearly. New 📅 System Calendar: your daily briefings and reminders now appear as calendar entries you can browse later, not just one-off notifications. The schedule-setup fix shipped: /awaken now creates your Daily Quest Briefing scheduled task — existing players, re-run /awaken once to pick it up. And The System's plugin now installs from the public marketplace repo — one link. Your history and data are untouched."
+      "min_level": 0
     },
     {
       "version": "1.3.0",
+      "title": "v1.3.0 — Follow-up, refocused (rules adopted; plugin build to follow)",
+      "player_facing_summary": "Rules change today; the plugin that implements them ships next. ADOPTED NOW: follow-up becomes stage-weighted — chasing an application nobody has answered rarely changes the outcome, so pre-contact quests (Saved, Applied) stop raising overdue flags, debuffs, streak consequences or any \"you're late\" framing, while post-contact quests (Recruiter Screen and beyond, where a human has replied) keep the tight cadence and become the priority surface. Also adopted: setup will ask which theme you want and refuse to proceed until you answer — no default, no silent fallback; and any number Notion can compute itself will be computed by Notion and read by your agent rather than re-derived, so your Player Card can't drift from your Ledger. NOT YET IN YOUR PLUGIN: until the next plugin build lands, your installed copy still runs the old flat two-day cadence and setup still has no theme question. You may still see follow-up prompts on quests nobody has answered — those are retired by rule, and you can ignore them. Forward-only: no past XP or streak is re-scored, and nothing is required from you. TRUE TODAY: The System is now MIT licensed — free to use, fork and modify.",
       "date": "2026-07-27",
       "type": "Minor",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v1.3.0 — Follow-up, refocused (rules adopted; plugin build to follow)",
-      "player_facing_summary": "Rules change today; the plugin that implements them ships next. ADOPTED NOW: follow-up becomes stage-weighted — chasing an application nobody has answered rarely changes the outcome, so pre-contact quests (Saved, Applied) stop raising overdue flags, debuffs, streak consequences or any \"you're late\" framing, while post-contact quests (Recruiter Screen and beyond, where a human has replied) keep the tight cadence and become the priority surface. Also adopted: setup will ask which theme you want and refuse to proceed until you answer — no default, no silent fallback; and any number Notion can compute itself will be computed by Notion and read by your agent rather than re-derived, so your Player Card can't drift from your Ledger. NOT YET IN YOUR PLUGIN: until the next plugin build lands, your installed copy still runs the old flat two-day cadence and setup still has no theme question. You may still see follow-up prompts on quests nobody has answered — those are retired by rule, and you can ignore them. Forward-only: no past XP or streak is re-scored, and nothing is required from you. TRUE TODAY: The System is now MIT licensed — free to use, fork and modify."
+      "min_level": 0
     },
     {
       "version": "1.3.1",
+      "title": "v1.3.1 — The build landed",
+      "player_facing_summary": "The two changes your v1.3.0 note listed as adopted as rule, not yet in your plugin — stage-weighted follow-up, and the theme question at setup — are now in the installed plugin. Update to receive them. Forward-only: nothing re-scored. (Supersedes the v1.3.0 line saying your copy still ran the flat cadence and had no theme question.)",
       "date": "2026-08-01",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v1.3.1 — The build landed",
-      "player_facing_summary": "The two changes your v1.3.0 note listed as adopted as rule, not yet in your plugin — stage-weighted follow-up, and the theme question at setup — are now in the installed plugin. Update to receive them. Forward-only: nothing re-scored. (Supersedes the v1.3.0 line saying your copy still ran the flat cadence and had no theme question.)"
+      "min_level": 0
     },
     {
       "version": "1.3.8",
-      "type": "Patch",
-      "date": "2026-08-13",
-      "applies_to": "Forward-only",
-      "min_level": 0,
       "title": "v1.3.8 — Two clearer rule references",
-      "player_facing_summary": "The Forge now answers directly when you ask how it works. The XP guide also uses the same name for your Competency Matrix as your workspace. XP values and past progress are unchanged."
+      "player_facing_summary": "The Forge now answers directly when you ask how it works. The XP guide also uses the same name for your Competency Matrix as your workspace. XP values and past progress are unchanged.",
+      "date": "2026-08-13",
+      "type": "Patch",
+      "applies_to": "Forward-only",
+      "min_level": 0
     },
     {
       "version": "1.3.9",
-      "type": "Patch",
-      "date": "2026-08-13",
-      "applies_to": "Available-from-now",
-      "min_level": 0,
       "title": "v1.3.9 — Codex installer safety notice",
-      "player_facing_summary": "If you installed the Codex version before v1.3.6, the installer may have replaced a local skill with the same name. The current installer warns before replacing files and keeps your original files safe. Your Notion workspace was not affected."
+      "player_facing_summary": "If you installed the Codex version before v1.3.6, the installer may have replaced a local skill with the same name. The current installer warns before replacing files and keeps your original files safe. Your Notion workspace was not affected.",
+      "date": "2026-08-13",
+      "type": "Patch",
+      "applies_to": "Available-from-now",
+      "min_level": 0
     },
     {
       "version": "1.3.10",
-      "type": "Patch",
-      "date": "2026-08-27",
-      "applies_to": "Available-from-now",
-      "min_level": 0,
       "title": "v1.3.10 — Build your CV the way you want it read",
-      "player_facing_summary": "Your CV builder now works the way you would expect to be able to ask it. /armor assembles your CV from named sections, so you can rearrange it in plain language — \"move my skills above experience\", \"drop the interests section\", \"put certifications at the top\". Layout presets cover different situations (graduate, career change, technical, academic, and cleared or government roles), and switching between them reorders your sections without changing a word of what they say. /armor now also adapts to where the job is rather than where you are. Resume convention genuinely differs by country, and getting it wrong costs you in both directions: two pages is right in the UK and over-long in the US, a photo is conventional in Germany and can get an application discarded in Australia or the US, and some European employers expect a data-processing consent line. /armor reads the target country from the quest and applies that market's conventions for length, spelling, dates, personal details, referees and work rights — then tells you in one line what it changed, so you can overrule it. Nothing is invented on your behalf: adapting to a market changes how your history is presented, never the facts in it. Forward-only — no XP value, level threshold, badge criterion or unlock rule changed, and nothing you have already earned is re-scored."
+      "player_facing_summary": "Your CV builder now works the way you would expect to be able to ask it. /armor assembles your CV from named sections, so you can rearrange it in plain language — \"move my skills above experience\", \"drop the interests section\", \"put certifications at the top\". Layout presets cover different situations (graduate, career change, technical, academic, and cleared or government roles), and switching between them reorders your sections without changing a word of what they say. /armor now also adapts to where the job is rather than where you are. Resume convention genuinely differs by country, and getting it wrong costs you in both directions: two pages is right in the UK and over-long in the US, a photo is conventional in Germany and can get an application discarded in Australia or the US, and some European employers expect a data-processing consent line. /armor reads the target country from the quest and applies that market's conventions for length, spelling, dates, personal details, referees and work rights — then tells you in one line what it changed, so you can overrule it. Nothing is invented on your behalf: adapting to a market changes how your history is presented, never the facts in it. Forward-only — no XP value, level threshold, badge criterion or unlock rule changed, and nothing you have already earned is re-scored.",
+      "date": "2026-08-27",
+      "type": "Patch",
+      "applies_to": "Available-from-now",
+      "min_level": 0
     },
     {
       "version": "2.0.0",
-      "type": "Major",
-      "date": "2026-09-09",
-      "applies_to": "Available-from-now",
-      "min_level": 0,
       "title": "v2.0.0 — Beta. Setup tells you when it couldn't finish.",
-      "player_facing_summary": "The System is in Beta. Nothing about how you play changes, nothing you have earned is re-scored, and there is nothing to do on your side.\n\nWhat is actually different is setup, which is the part that was quietly failing. At the end of /awaken it writes a small file to your computer so your next session picks The System back up without you explaining it again. On the desktop app that write can fail for one specific reason: the app has no access to your files at all until you connect a folder to the session. Setup used to finish looking successful anyway, and every session afterwards started cold with nothing saying why.\n\nNow /awaken tries the write and checks it landed. If it worked, it tells you where the file is. If it could not, it says so plainly and tells you what to do — connect a folder, then run /awaken again, which is safe to re-run and will not rebuild anything already in your Notion. Everything built in Notion is finished either way; only that last local step is affected.\n\nAlso fixed: if /awaken cannot find your duplicated template it used to tell you to ask the Game Admin for the Seed link — a link the setup instructions had already given you. It now points you back to those instructions instead.\n\nOn the version jumping to 2.0.0: the first number is a release line, not a warning. Alpha was 1.x, Beta is 2.x. Nothing you have installed stops working because it moved."
+      "player_facing_summary": "The System is in Beta. Nothing about how you play changes, nothing you have earned is re-scored, and there is nothing to do on your side.\n\nWhat is actually different is setup, which is the part that was quietly failing. At the end of /awaken it writes a small file to your computer so your next session picks The System back up without you explaining it again. On the desktop app that write can fail for one specific reason: the app has no access to your files at all until you connect a folder to the session. Setup used to finish looking successful anyway, and every session afterwards started cold with nothing saying why.\n\nNow /awaken tries the write and checks it landed. If it worked, it tells you where the file is. If it could not, it says so plainly and tells you what to do — connect a folder, then run /awaken again, which is safe to re-run and will not rebuild anything already in your Notion. Everything built in Notion is finished either way; only that last local step is affected.\n\nAlso fixed: if /awaken cannot find your duplicated template it used to tell you to ask the Game Admin for the Seed link — a link the setup instructions had already given you. It now points you back to those instructions instead.\n\nOn the version jumping to 2.0.0: the first number is a release line, not a warning. Alpha was 1.x, Beta is 2.x. Nothing you have installed stops working because it moved.",
+      "date": "2026-09-09",
+      "type": "Major",
+      "applies_to": "Available-from-now",
+      "min_level": 0
     },
     {
       "version": "2.0.1",
-      "type": "Patch",
-      "date": "2026-09-09",
-      "applies_to": "Available-from-now",
-      "min_level": 0,
       "title": "v2.0.1 — /gather can find your networking events",
-      "player_facing_summary": "The command now finds and logs your networking events consistently. If something needed is missing from your workspace, The System tells you instead of silently stopping."
+      "player_facing_summary": "The command now finds and logs your networking events consistently. If something needed is missing from your workspace, The System tells you instead of silently stopping.",
+      "date": "2026-09-09",
+      "type": "Patch",
+      "applies_to": "Available-from-now",
+      "min_level": 0
     },
     {
       "version": "2.0.2",
-      "type": "Patch",
-      "date": "2026-09-09",
-      "applies_to": "Available-from-now",
-      "min_level": 0,
       "title": "v2.0.2 — Live-page research is more reliable",
-      "player_facing_summary": "Commands that need current web pages now open them through /browse and check that the page was reached. If it cannot be reached, The System tells you what happened instead of guessing."
+      "player_facing_summary": "Commands that need current web pages now open them through /browse and check that the page was reached. If it cannot be reached, The System tells you what happened instead of guessing.",
+      "date": "2026-09-09",
+      "type": "Patch",
+      "applies_to": "Available-from-now",
+      "min_level": 0
     },
     {
       "version": "2.0.3",
+      "title": "v2.0.3 — Your setup notes now work in whichever agent you open next",
+      "player_facing_summary": "At the end of setup, /awaken writes a small file into your folder so your next session picks The System back up without you explaining it again. It used to write one file, named for whichever agent you installed from. Open that same folder in a different agent and it started cold, because the agents do not agree on the filename. It now writes both: AGENTS.md holds the content, CLAUDE.md is a one-line import of it. Nothing to do on your side — run /awaken again if you want the second file now, or it arrives on your next repair or migration run.",
       "date": "2026-09-09",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.3 — Your setup notes now work in whichever agent you open next",
-      "player_facing_summary": "At the end of setup, /awaken writes a small file into your folder so your next session picks The System back up without you explaining it again. It used to write one file, named for whichever agent you installed from. Open that same folder in a different agent and it started cold, because the agents do not agree on the filename. It now writes both: AGENTS.md holds the content, CLAUDE.md is a one-line import of it. Nothing to do on your side — run /awaken again if you want the second file now, or it arrives on your next repair or migration run."
+      "min_level": 0
     },
     {
       "version": "2.0.4",
+      "title": "v2.0.4 — Package information clarified",
+      "player_facing_summary": "The package guide is clearer about what to expect when you install. The game, your progress, and your workspace behave the same.",
       "date": "2026-09-09",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.4 — Package information clarified",
-      "player_facing_summary": "The package guide is clearer about what to expect when you install. The game, your progress, and your workspace behave the same."
+      "min_level": 0
     },
     {
       "version": "2.0.5",
+      "title": "v2.0.5 — Clear guidance when a Word export is unavailable",
+      "player_facing_summary": "Your CV tool now tells you clearly when a Word document can be created. If it cannot, you still get an alternative you can open in Word. Your saved CV and other exports remain unchanged.",
       "date": "2026-09-09",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.5 — Clear guidance when a Word export is unavailable",
-      "player_facing_summary": "Your CV tool now tells you clearly when a Word document can be created. If it cannot, you still get an alternative you can open in Word. Your saved CV and other exports remain unchanged."
+      "min_level": 0
     },
     {
       "version": "2.0.6",
+      "title": "v2.0.6 — The System is in maintenance: keep playing, expect rough edges",
+      "player_facing_summary": "The System is in maintenance mode while work is under way. This is a heads-up, not a stop: keep playing, every command still works, and nothing you have earned is affected. But you may hit rough edges — a command that behaves oddly, a run that reports something strange, an export that isn't right. If you hit one, report it with /petition or open an Issue; that is exactly what this period is for. Your Notion workspace and your history are untouched throughout. We will publish a note here when maintenance lifts.",
       "date": "2026-09-09",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.6 — The System is in maintenance: keep playing, expect rough edges",
-      "player_facing_summary": "The System is in maintenance mode while work is under way. This is a heads-up, not a stop: keep playing, every command still works, and nothing you have earned is affected. But you may hit rough edges — a command that behaves oddly, a run that reports something strange, an export that isn't right. If you hit one, report it with /petition or open an Issue; that is exactly what this period is for. Your Notion workspace and your history are untouched throughout. We will publish a note here when maintenance lifts."
+      "min_level": 0
     },
     {
       "version": "2.0.7",
+      "title": "v2.0.7 — Register your Hunter handle safely",
+      "player_facing_summary": "You can register a self-chosen handle with a dedicated form that explains the privacy rules before you submit. If the handle is already taken, the Game Admin will help resolve it.",
       "date": "2026-09-15",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.7 — Register your Hunter handle safely",
-      "player_facing_summary": "You can register a self-chosen handle with a dedicated form that explains the privacy rules before you submit. If the handle is already taken, the Game Admin will help resolve it."
+      "min_level": 0
     },
     {
       "version": "2.0.8",
+      "title": "v2.0.8 — /mercy: cancel an optional quest without penalty",
+      "player_facing_summary": "Cancel one active bonus quest right away, without losing progress or being talked out of it. A monthly note can help you notice patterns, but it never blocks your choice.",
       "date": "2026-09-16",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.8 — /mercy: cancel an optional quest without penalty",
-      "player_facing_summary": "Cancel one active bonus quest right away, without losing progress or being talked out of it. A monthly note can help you notice patterns, but it never blocks your choice."
+      "min_level": 0
     },
     {
       "version": "2.0.9",
+      "title": "v2.0.9 — A command reference you can trust",
+      "player_facing_summary": "Find an accurate description for every available command in one place. The guide now stays aligned with the features you can actually use.",
       "date": "2026-09-16",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.9 — A command reference you can trust",
-      "player_facing_summary": "Find an accurate description for every available command in one place. The guide now stays aligned with the features you can actually use."
+      "min_level": 0
     },
     {
       "version": "2.0.10",
+      "title": "v2.0.10 — Rules are checked before you earn XP",
+      "player_facing_summary": "Before an XP-earning action, The System checks that your rules match the current published version. If something is out of date, it explains how to fix it; actions that do not affect XP remain available.",
       "date": "2026-09-16",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.10 — Rules are checked before you earn XP",
-      "player_facing_summary": "Before an XP-earning action, The System checks that your rules match the current published version. If something is out of date, it explains how to fix it; actions that do not affect XP remain available."
+      "min_level": 0
     },
     {
       "version": "2.0.11",
+      "title": "v2.0.11 — /awaken creates your project folder and asks where it goes",
+      "player_facing_summary": "During setup, /awaken used to ask you to attach or create a project folder by hand whenever your session had none — the single largest piece of avoidable setup friction. It now resolves the folder itself: it uses the folder already attached to your session, or asks one question — where should your System project live? — with no suggestion, no pre-filled path, and no blank-answer fallback. You give the full path; it creates exactly that. Declining is still respected: no folder is ever created that you did not name. Setup no longer hands you a machine's job. Nothing about rules, XP or your data changes; re-running /awaken stays safe and never rebuilds or duplicates anything.",
       "date": "2026-09-19",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.11 — /awaken creates your project folder and asks where it goes",
-      "player_facing_summary": "During setup, /awaken used to ask you to attach or create a project folder by hand whenever your session had none — the single largest piece of avoidable setup friction. It now resolves the folder itself: it uses the folder already attached to your session, or asks one question — where should your System project live? — with no suggestion, no pre-filled path, and no blank-answer fallback. You give the full path; it creates exactly that. Declining is still respected: no folder is ever created that you did not name. Setup no longer hands you a machine's job. Nothing about rules, XP or your data changes; re-running /awaken stays safe and never rebuilds or duplicates anything."
+      "min_level": 0
     },
     {
       "version": "2.0.12",
+      "title": "v2.0.12 — Setup instructions now match your experience",
+      "player_facing_summary": "The setup guide now follows the current /awaken flow and clarifies what each installation includes, so the steps are easier to follow.",
       "date": "2026-09-19",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.12 — Setup instructions now match your experience",
-      "player_facing_summary": "The setup guide now follows the current /awaken flow and clarifies what each installation includes, so the steps are easier to follow."
+      "min_level": 0
     },
     {
       "version": "2.0.13",
+      "title": "v2.0.13 — The View Window: see your game in your own workspace",
+      "player_facing_summary": "/awaken's setup now builds the game's whole view window in your Notion, not just the calendar: a 🎯 Active Quests table on the Quest Board showing what you're playing right now; an XP: last 30 days table on the XP Ledger — the raw ledger behind your streak and level; and an Earned gallery on Achievements showing only what you've actually unlocked — locked tiers and sealed mechanics stay invisible, always. The existing Next Actions calendar is unchanged. Migration runs create any missing views too, and the migration check now verifies all four by name. No XP value, level threshold or badge criterion moved.",
       "date": "2026-09-21",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.13 — The View Window: see your game in your own workspace",
-      "player_facing_summary": "/awaken's setup now builds the game's whole view window in your Notion, not just the calendar: a 🎯 Active Quests table on the Quest Board showing what you're playing right now; an XP: last 30 days table on the XP Ledger — the raw ledger behind your streak and level; and an Earned gallery on Achievements showing only what you've actually unlocked — locked tiers and sealed mechanics stay invisible, always. The existing Next Actions calendar is unchanged. Migration runs create any missing views too, and the migration check now verifies all four by name. No XP value, level threshold or badge criterion moved."
+      "min_level": 0
     },
     {
       "version": "2.0.14",
+      "title": "v2.0.14 — /armor: a consistent look and a guaranteed voice pass",
+      "player_facing_summary": "Both community-requested improvements to /armor are in. Your CV exports (the HTML copy and the .docx) now share a canonical default template — one typography, one spacing rhythm, one section treatment — so every CV you export looks like it came from the same person; choose a layout preset or say the word and any part of it is yours to override. And before any export is produced, the draft automatically gets a /ghost voice pass — the same de-AI rewrite /forge already applies — so what leaves your workspace reads like you wrote it, not your agent. No XP values, level thresholds or badge criteria moved.",
       "date": "2026-09-23",
       "type": "Patch",
       "applies_to": "Available-from-now",
-      "min_level": 0,
-      "title": "v2.0.14 — /armor: a consistent look and a guaranteed voice pass",
-      "player_facing_summary": "Both community-requested improvements to /armor are in. Your CV exports (the HTML copy and the .docx) now share a canonical default template — one typography, one spacing rhythm, one section treatment — so every CV you export looks like it came from the same person; choose a layout preset or say the word and any part of it is yours to override. And before any export is produced, the draft automatically gets a /ghost voice pass — the same de-AI rewrite /forge already applies — so what leaves your workspace reads like you wrote it, not your agent. No XP values, level thresholds or badge criteria moved."
+      "min_level": 0
     },
     {
       "version": "2.0.15",
+      "title": "v2.0.15 — A consistent project identity",
+      "player_facing_summary": "The project now uses one consistent publisher name across its public pages. Your game rules, progress, badges, and workspace are unchanged.",
       "date": "2026-09-28",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.15 — A consistent project identity",
-      "player_facing_summary": "The project now uses one consistent publisher name across its public pages. Your game rules, progress, badges, and workspace are unchanged."
+      "min_level": 0
     },
     {
       "version": "2.0.16",
+      "title": "v2.0.16 — Easier setup, helpful guidance, and safer updates",
+      "player_facing_summary": "Set up The System with fewer steps, get helpful guidance across commands, and install updates with added safeguards.",
       "date": "2026-10-14",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.16 — Easier setup, helpful guidance, and safer updates",
-      "player_facing_summary": "Set up The System with fewer steps, get helpful guidance across commands, and install updates with added safeguards."
+      "min_level": 0
     },
     {
       "version": "2.0.17",
+      "title": "v2.0.17 — A clearer guide to every command",
+      "player_facing_summary": "The command guide now explains what each command does and when to use it, so it is easier to find the help you need.",
       "date": "2026-10-14",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.17 — A clearer guide to every command",
-      "player_facing_summary": "The command guide now explains what each command does and when to use it, so it is easier to find the help you need."
+      "min_level": 0
     },
     {
       "version": "2.0.18",
+      "title": "v2.0.18 — Clearer charts and previews in supported sessions",
+      "player_facing_summary": "Charts and previews now adapt to your session, so progress and job details are easier to follow in visual and text-only tools.",
       "date": "2026-10-14",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.18 — Clearer charts and previews in supported sessions",
-      "player_facing_summary": "Charts and previews now adapt to your session, so progress and job details are easier to follow in visual and text-only tools."
+      "min_level": 0
     },
     {
       "version": "2.0.19",
+      "title": "v2.0.19 — Better guidance for the tools you use",
+      "player_facing_summary": "Learn which features your assistant supports, and use The System across more of the clients you already work with.",
       "date": "2026-10-15",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.19 — Better guidance for the tools you use",
-      "player_facing_summary": "Learn which features your assistant supports, and use The System across more of the clients you already work with."
+      "min_level": 0
     },
     {
       "version": "2.0.20",
+      "title": "v2.0.20 — Clearer guidance for every command",
+      "player_facing_summary": "Every command now explains when it can help, what information it needs, and when another command may be a better fit.",
       "date": "2026-10-15",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.20 — Clearer guidance for every command",
-      "player_facing_summary": "Every command now explains when it can help, what information it needs, and when another command may be a better fit."
+      "min_level": 0
     },
     {
       "version": "2.0.21",
+      "title": "v2.0.21 — More ways to ask for help",
+      "player_facing_summary": "Choose whether to send a petition through GitHub Issues or the Notion form. The quick start is also simpler.",
       "date": "2026-10-15",
       "type": "Patch",
       "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.21 — More ways to ask for help",
-      "player_facing_summary": "Choose whether to send a petition through GitHub Issues or the Notion form. The quick start is also simpler."
-    },
-    {
-      "version": "2.0.22",
-      "date": "2026-10-22",
-      "type": "Patch",
-      "applies_to": "Forward-only",
-      "min_level": 0,
-      "title": "v2.0.22 — Codex and Antigravity setup works from source and package",
-      "player_facing_summary": "Codex and Antigravity setup works from a checkout and the published package. The setup instructions include all required project context, and each install path uses the files available in that distribution. No XP, progression, or player data changes."
+      "min_level": 0
     },
     {
       "version": "2.0.23",
+      "title": "v2.0.23 — Codex marketplace install and clearer data handling",
+      "player_facing_summary": "Codex users can install The System from this repository's plugin marketplace or use standalone npm skills. Notion connection and new-session setup instructions are clearer. The guide explains that an AI assistant may process the content you ask it to use under its configured provider's terms. No XP, progression, or player data changes.",
       "date": "2026-10-26",
       "type": "Patch",
       "applies_to": "Forward-only",
+      "min_level": 0
+    },
+    {
+      "version": "2.0.24",
+      "date": "2026-10-27",
+      "type": "Patch",
+      "applies_to": "Forward-only",
       "min_level": 0,
-      "title": "v2.0.23 — Codex marketplace install and clearer data handling",
-      "player_facing_summary": "Codex users can install The System from this repository's plugin marketplace or use standalone npm skills. Notion connection and new-session setup instructions are clearer. The guide explains that an AI assistant may process the content you ask it to use under its configured provider's terms. No XP, progression, or player data changes."
+      "title": "v2.0.24 — Clearer release availability and marketplace updates",
+      "player_facing_summary": "Installation guidance now points to live package and published release destinations, and Codex users can select a specific repository marketplace tag when they update. No XP, progression, or player data changes."
     }
   ],
   "commands_count": 27,

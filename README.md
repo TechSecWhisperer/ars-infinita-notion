@@ -15,7 +15,7 @@ receive a substantive answer. What beta means in practice:
 
 - **Built for end-to-end play** — install through the Seed, run `/awaken`, hunt, earn XP,
   and level up. Distribution and source versions can differ while a release is being
-  delivered; check the availability record below before choosing an install path.
+  delivered; use the live release links below when choosing an install path.
 - **One source of truth for game rules** — the Patch Feed, Rule Manifest and this repo's
   `feed.json` describe the current source rules. A matching version in source does not
   mean every package or marketplace has delivered it yet.
@@ -28,20 +28,17 @@ receive a substantive answer. What beta means in practice:
 
 **Your job hunt as an RPG, inside your own Notion workspace.** You bring a job link; an AI agent tracks it, scores your fit, researches the company, drafts your materials in your voice, and turns real progress into XP and levels.
 
-**Release availability (checked 2026-10-27):** repository source, GitHub Releases, npm,
-and the plugin marketplace are separate destinations.
-
-| Surface | Version | Availability |
-| --- | --- | --- |
-| npm package (`@ars-infinita-notion/system-skills`) | `2.0.21` | Latest version in the npm registry. |
-| Repository source (`feed.json`) | `2.0.22` | The `v2.0.22` tag exists, but its GitHub Release is still a draft and npm has no `2.0.22` package. |
-| Codex marketplace package | — | Not included in a published release yet. The repository marketplace install path is documented below for releases that include it. |
+**Release availability:** the mechanics badge at the top follows the repository's
+`feed.json` source on `main`, so it can move before package publication finishes. Check
+the [published GitHub Releases](https://github.com/TechSecWhisperer/ars-infinita-notion/releases)
+and the [npm package](https://www.npmjs.com/package/@ars-infinita-notion/system-skills)
+for delivered versions. They are separate destinations and can differ during delivery.
+Codex installs use this repository's marketplace at a chosen release tag; that source
+is not a listing in the universal public Plugins Directory.
 
 Before using npm, run `npm view @ars-infinita-notion/system-skills version` to check
-the current registry version. A draft release is not proof that npm has published the
-package, and a repository source version is not proof that every distribution has it.
-
-**Release status:** The project remains in Beta. Treat repository source and draft releases as Beta until a published GitHub Release explicitly identifies the available version.
+the current registry version. A source version or draft release alone does not prove
+that the package has been published.
 
 The job market is a void of spreadsheets and silence. A.I.N imposes order on it — and makes the grind *feel* like progress, because it is.
 
@@ -121,9 +118,22 @@ codex mcp list
 
 Complete the browser sign-in and grant access to the workspace holding your Seed copy. Start a fresh Codex session, verify the plugin with `codex plugin list`, run `/vitals`, then `/awaken`.
 
-This is a repository marketplace source, not a listing in the universal public Plugins Directory. Check the release availability table above before using a release tag. See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins) for current Codex marketplace behavior.
+This is a repository marketplace source, not a listing in the universal public Plugins Directory. Choose a tag from the [published GitHub Releases](https://github.com/TechSecWhisperer/ars-infinita-notion/releases). See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins) for current Codex marketplace behavior.
 
-For another release, refresh the marketplace with `codex plugin marketplace upgrade ars-infinita-notion`. Verify the installed plugin with `codex plugin list`. To remove it, run `codex plugin remove the-system-player@ars-infinita-notion`; remove the marketplace source with `codex plugin marketplace remove ars-infinita-notion` when you no longer use it. See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins) for current plugin commands.
+`codex plugin marketplace upgrade ars-infinita-notion` refreshes the configured
+marketplace at its existing Git ref; it does not select a different release tag. To
+move to a newer release, remove the current plugin and marketplace source, then add the
+new tag and reinstall:
+
+```sh
+codex plugin remove the-system-player@ars-infinita-notion
+codex plugin marketplace remove ars-infinita-notion
+codex plugin marketplace add TechSecWhisperer/ars-infinita-notion --ref <new-release-tag>
+codex plugin add the-system-player@ars-infinita-notion
+codex plugin list
+```
+
+See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins) for current plugin commands.
 
 ### npx-installed skills
 
@@ -188,7 +198,7 @@ has been reviewed or accepted.
 ## Update or remove an installation
 
 - **Claude Code / Claude desktop Code tab:** use the Installed tab in `/plugin` to update or uninstall **the-system-player**. From a terminal, `claude plugin update the-system-player@ars-infinita-notion` updates it and `claude plugin uninstall the-system-player@ars-infinita-notion` removes it. To remove the marketplace and its installed plugins, use `claude plugin marketplace remove ars-infinita-notion`. See [Claude Code's plugin management guide](https://code.claude.com/docs/en/plugins/install).
-- **Codex repository plugin:** refresh with `codex plugin marketplace upgrade ars-infinita-notion`; verify with `codex plugin list`. Remove the plugin with `codex plugin remove the-system-player@ars-infinita-notion`, then remove the marketplace source with `codex plugin marketplace remove ars-infinita-notion` when you no longer need it. See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins).
+- **Codex repository plugin:** use the tag-specific remove and re-add sequence in [Plugin-supported hosts → Codex](#codex). The `marketplace upgrade` command refreshes the currently configured ref; it does not select a newer tag. To uninstall without replacing it, remove the plugin with `codex plugin remove the-system-player@ars-infinita-notion`, then remove the source with `codex plugin marketplace remove ars-infinita-notion`. See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins).
 - **Antigravity / Codex standalone skills:** update by re-running the matching `npx @ars-infinita-notion/system-skills install-agy` or `install-codex` command. The npm package has no standalone-skill uninstaller. Antigravity's package-owned directory is `~/.gemini/config/plugins/the-system-player/`; preserve any files you added there before removing that directory. For Codex standalone skills, inspect `$CODEX_HOME/.ars-infinita-install.json`, preserve edits you made, and remove only the listed A.I.N skill directories and that manifest. Do not remove the shared skills folder.
 
 ## 📄 License

@@ -154,9 +154,13 @@ Run `/vitals` any time to see what your current session can do.
 New mechanics arrive two ways:
 
 - A **Patch Feed** entry appears in your Notion workspace describing what changed and why. The same feed is published as a plain file at [`feed.json`](../feed.json), which any agent can read over HTTPS without a browser.
-- You pull the update: use the plugin manager for Claude Code or Claude desktop, run
-  `codex plugin marketplace upgrade ars-infinita-notion` for the Codex repository plugin,
+- You pull the update: use the plugin manager for Claude Code or Claude desktop, follow
+  the tag-specific remove-and-re-add steps in the README's
+  [Codex plugin instructions](../README.md#codex) for a newer repository-plugin release,
   or re-run the matching `npx` installer for standalone Antigravity/Codex skills.
+
+  `codex plugin marketplace upgrade ars-infinita-notion` refreshes the configured Git
+  snapshot at its existing ref; it does not select a new tag.
 
 The promise that makes this safe to keep running: **new mechanics never rewrite your history, and your XP is never re-scored.** What you have already earned, you keep. Updates add to the game going forward.
 
