@@ -26,6 +26,10 @@ export const BOOT_CARD_LOCAL_REF = 'references/boot-card.md';
 // Repo-root release metadata. marketplace.json is GENERATED from plugin.json —
 // see builder.mjs. feed.json is the public projection of the Notion Patch Feed.
 export const MARKETPLACE_PATH = path.join(REPO_ROOT, '.claude-plugin', 'marketplace.json');
+// Codex repo plugin surface. These checked-in files are generated from the
+// canonical Claude plugin identity plus the Codex listing template in builder.mjs.
+export const CODEX_PLUGIN_MANIFEST_PATH = path.join(SOURCE_PLUGIN_DIR, 'plugin.json');
+export const CODEX_MARKETPLACE_PATH = path.join(REPO_ROOT, '.agents', 'plugins', 'marketplace.json');
 export const FEED_PATH = path.join(REPO_ROOT, 'feed.json');
 export const CHANGELOG_PATH = path.join(REPO_ROOT, 'CHANGELOG.md');
 

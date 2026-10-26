@@ -2,21 +2,22 @@
 
 Cross-agent build of **The System — Player Edition** skills.
 
-The canonical skills live in `plugins/the-system-player/` as a Claude Code plugin. This package
-re-emits them for two other CLIs:
+The canonical skills live in `plugins/the-system-player/` as a Claude Code plugin and a portable
+Codex plugin. This npm package separately builds standalone skills for:
 
 - **OpenAI Codex CLI** (`codex`) — as user skills in `$CODEX_HOME/skills/<name>/SKILL.md`
 - **Antigravity CLI** (`agy`, Gemini-based) — as a plugin in `~/.gemini/config/plugins/the-system-player/`
 
-**Claude Code users should keep using the native plugin** (`/plugin install the-system-player@ars-infinita-notion`).
-This package exists only for the other two CLIs; nothing here is needed for Claude.
+Claude Code and Codex can use their respective repository marketplace plugin paths. This npm
+package is for Antigravity and Codex users who want standalone skills instead of the Codex plugin.
 
 Zero dependencies, Node stdlib only, Node >= 18.
 
-## Before you install — two prerequisites
+## Before you install
 
-- **A paid AI agent subscription.** The System is an agent doing real work for you every day, so it needs a plan that allows that. This is agent-agnostic — whichever CLI you install these skills into, expect to need a tier that permits sustained daily agent work. **It is the one thing you have to pay for.**
-- **Confirm your agent can run routines** — scheduled, recurring, unattended tasks. **A paid plan does not guarantee this capability**, so check it explicitly rather than discovering it later: it is what delivers your morning briefing without you asking. If your agent can't run them, The System still works — you drive it yourself, saying *"run my daily briefing"* each weekday morning instead of it arriving on its own.
+- Use a supported host with Notion MCP access. Account and plan requirements vary by host; check its current setup documentation.
+- Node.js 18+ is required for the npx installer.
+- Scheduled routines are optional. If your host supports them, it can run the morning briefing automatically. Otherwise, run *"run my daily briefing"* yourself.
 
 **Notion's free plan is all you need.** Nothing here requires a paid Notion plan, and anything that turns out to is a bug worth reporting.
 
@@ -44,7 +45,7 @@ live home; it is not a workspace maintenance reconciliation.
 
 Versions **up to and including 1.3.5 did not do this** — they replaced same-named directories silently. If you installed before v1.3.6, that is worth checking. Antigravity installs were never affected; that path writes only to its own namespaced plugin directory (and, by the same token, replaces any edits you made *inside* it on update).
 
-**The version tracks the plugin version**, because this package carries a real copy of the skills rather than just the tooling that builds them: `@ars-infinita-notion/system-skills@1.3.2` contains the v1.3.2 skills. `release-metadata-check` fails the build if the two numbers ever diverge, so the npm channel cannot silently ship different content from the marketplace channel.
+**The package version tracks the plugin version**, because this package carries a real copy of the skills rather than just the tooling that builds them. `release-metadata-check` fails the build if the package and plugin versions diverge.
 
 **What the three digits mean here**, because npm cannot infer a project's convention and ours is not quite the usual one:
 
@@ -56,7 +57,7 @@ Versions **up to and including 1.3.5 did not do this** — they replaced same-na
 
 So `1.x → 2.0.0` is worth reading the notes for, but it is a phase marker first. Nothing about your installed skills stops working because the major moved.
 
-**Claude Code is deliberately not a target.** It installs from the marketplace, and adding an npm path would mean two ways to get the same skills onto one machine, free to disagree. `cli.mjs` prints the marketplace command instead.
+**This npm package does not install into Claude Code.** Use Claude Code's marketplace route from the [main setup guide](https://github.com/TechSecWhisperer/ars-infinita-notion#plugin-supported-hosts). The npm package is for Antigravity and the optional Codex standalone-skills fallback; Codex users can instead install the repository plugin.
 
 ## What the build does
 
@@ -93,12 +94,13 @@ place. Rebuild and commit it whenever `plugin.json` changes.
 
 ## The boot card is stamped, not stored
 
-The repo tracks **one** `boot-card.md`, at `plugins/the-system-player/references/`. Claude
+The repo tracks **one** authored `boot-card.md`, at `plugins/the-system-player/references/`. Plugin
 skills read that exact file (`${CLAUDE_SKILL_DIR}/../../references/boot-card.md`) — the
 whole plugin tree is materialised on install, so a plugin-root path resolves.
 
-codex and agy can't do that: both install skills as **standalone folders with no shared
-parent**, so there is no plugin root to point at. For those two targets only, the build
+The npm installers for Codex and Antigravity place skills as **standalone folders with no shared
+parent**, so those installed skills have no plugin root to point at. The Codex repository plugin
+does retain the plugin root. For the standalone npm targets, the build
 stamps a per-skill copy into `dist/` and rewrites the reference to the local
 `references/boot-card.md`. Those copies are build output — never hand-edit one, and never
 commit one. `test/checks.mjs` fails if any stamped copy differs from the single source by a

@@ -11,6 +11,8 @@
 //   dist/agy/the-system-player/...                        -> ~/.gemini/config/plugins
 //   dist/manifest.json                                    (test + installer input)
 //   .claude-plugin/marketplace.json     (TRACKED, generated from plugin.json)
+//   plugins/the-system-player/plugin.json (portable Codex plugin metadata)
+//   .agents/plugins/marketplace.json     (Codex repository marketplace)
 //
 // Boot-card fan-out: the repo tracks exactly one boot-card.md, at the plugin
 // root. Claude skills point at it with `${CLAUDE_SKILL_DIR}/../../references/…`,
@@ -36,6 +38,8 @@ import {
   BOOT_CARD_LOCAL_REF,
   BOOT_CARD_PATH,
   BOOT_CARD_REF,
+  CODEX_MARKETPLACE_PATH,
+  CODEX_PLUGIN_MANIFEST_PATH,
   DIST_AGY,
   DIST_CODEX,
   DIST_DIR,
@@ -176,6 +180,62 @@ export function renderMarketplace(sourcePlugin, existing) {
   };
 }
 
+export function renderCodexPluginManifest(sourcePlugin) {
+  return {
+    $schema: 'https://agent-plugins.org/schemas/1.0.0/plugin.schema.json',
+    name: sourcePlugin.name,
+    version: sourcePlugin.version,
+    description: 'Guided skills for tracking job applications, researching employers, preparing application materials, and building momentum in your own Notion workspace. Notion is the source of truth; an AI assistant may process task-relevant content with its configured provider when you ask it to use that content.',
+    author: { name: sourcePlugin.author.name },
+    homepage: 'https://github.com/TechSecWhisperer/ars-infinita-notion',
+    repository: 'https://github.com/TechSecWhisperer/ars-infinita-notion',
+    license: sourcePlugin.license,
+    keywords: ['job-search', 'notion', 'career', 'skills'],
+    extensions: {
+      'com.openai': {
+        onboardingSkill: './skills/awaken/SKILL.md',
+        interface: {
+          displayName: 'The System — Player Edition',
+          shortDescription: 'Your job hunt, made playable',
+          longDescription: 'Guided skills for tracking job applications, researching employers, preparing application materials, and keeping progress in your own Notion workspace. The plugin does not send applications or messages on your behalf. Notion is the source of truth; when you ask an AI assistant to work with postings, profile details, or drafts, its configured provider may process relevant content under its terms. Connect a Notion MCP server and follow /awaken to set up your workspace.',
+          developerName: sourcePlugin.author.name,
+          category: 'Productivity',
+          capabilities: ['Read', 'Write'],
+          websiteURL: 'https://github.com/TechSecWhisperer/ars-infinita-notion',
+          defaultPrompt: [
+            'Use /awaken to set up The System in my Notion workspace.',
+            'Help me track a job posting with /quest.',
+          ],
+        },
+      },
+    },
+  };
+}
+
+export function renderCodexMarketplace() {
+  return {
+    name: 'ars-infinita-notion',
+    interface: { displayName: 'Ars Infinita Notion' },
+    plugins: [
+      {
+        name: PLUGIN_SLUG,
+        source: { source: 'local', path: `./plugins/${PLUGIN_SLUG}` },
+        policy: { installation: 'AVAILABLE', authentication: 'ON_USE' },
+        category: 'Productivity',
+      },
+    ],
+  };
+}
+
+function writeCodexArtifacts(sourcePlugin) {
+  const pluginManifest = `${JSON.stringify(renderCodexPluginManifest(sourcePlugin), null, 2)}\n`;
+  const marketplace = `${JSON.stringify(renderCodexMarketplace(), null, 2)}\n`;
+  fs.mkdirSync(path.dirname(CODEX_PLUGIN_MANIFEST_PATH), { recursive: true });
+  fs.mkdirSync(path.dirname(CODEX_MARKETPLACE_PATH), { recursive: true });
+  fs.writeFileSync(CODEX_PLUGIN_MANIFEST_PATH, pluginManifest);
+  fs.writeFileSync(CODEX_MARKETPLACE_PATH, marketplace);
+}
+
 function writeMarketplace(sourcePlugin) {
   const existing = JSON.parse(fs.readFileSync(MARKETPLACE_PATH, 'utf8'));
   const next = JSON.stringify(renderMarketplace(sourcePlugin, existing), null, 2) + '\n';
@@ -286,6 +346,7 @@ function main() {
   }
 
   const marketplace = writeMarketplace(sourcePlugin);
+  writeCodexArtifacts(sourcePlugin);
 
   fs.writeFileSync(
     MANIFEST_PATH,
@@ -294,7 +355,6 @@ function main() {
         generatedFrom: 'plugins/the-system-player',
         sourceVersion: sourcePlugin.version,
         pluginSlug: PLUGIN_SLUG,
-        builtAt: new Date().toISOString(),
         agents: Object.keys(AGENT_PROFILES),
         // The one authored boot card, and the digest every stamped copy must
         // match. `shared-reference-build-check` in test/checks.mjs reads this.
@@ -324,6 +384,7 @@ function main() {
   console.log(
     `  marketplace -> ${MARKETPLACE_PATH}${marketplace.changed ? ' (REWRITTEN — commit this)' : ' (already in sync)'}`,
   );
+  console.log(`  Codex plugin -> ${CODEX_PLUGIN_MANIFEST_PATH} + ${CODEX_MARKETPLACE_PATH}`);
 
   if (residuals.length) {
     console.error('\nresidual Claude-specific mentions survived the rewrite:');

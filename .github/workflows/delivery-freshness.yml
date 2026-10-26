@@ -17,7 +17,21 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0      # REQUIRED — the gate reads history
-      - uses: actions/setup-node@v4
+      - name: Set up pinned release toolchain
+        uses: actions/setup-node@v4
         with:
-          node-version: "20"
-      - run: node tools/delivery_gate.mjs
+          node-version-file: .node-version
+      - name: Install pinned npm packer
+        run: |
+          set -euo pipefail
+          npm install --global "npm@$(cat .npm-version)"
+          test "$(npm --version)" = "$(tr -d '\r\n' < .npm-version)"
+      - name: Build generated package files
+        working-directory: packages/system-skills
+        run: node builder.mjs
+      - name: Check package output under the release toolchain
+        env:
+          AIN_VERIFY_PINNED_NPM: '1'
+        run: npm run check --prefix packages/system-skills
+      - name: Check public feed freshness
+        run: node tools/delivery_gate.mjs

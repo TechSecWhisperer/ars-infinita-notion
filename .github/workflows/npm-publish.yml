@@ -1,5 +1,6 @@
-# Publishes the exact package for a draft player release. The separately
-# authorized release flow publishes the GitHub Release after npm readback.
+# Publisher tooling is read from the exact reviewed main SHA selected by the
+# workflow_dispatch event. Package bytes come only from the immutable release
+# tag checked out into package-source. The SHA pair is retained in the receipt.
 name: Publish to npm
 run-name: Publish player release ${{ inputs.release_tag }}
 
@@ -25,52 +26,82 @@ concurrency:
 jobs:
   publish:
     name: Publish authorized player release
-    if: github.repository == 'TechSecWhisperer/ars-infinita-notion'
+    if: github.repository == 'TechSecWhisperer/ars-infinita-notion' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the released commit
+      - name: Check out trusted publisher tools
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          path: publisher
+          fetch-depth: 0
+
+      - name: Check out exact immutable package source
         uses: actions/checkout@v4
         with:
           ref: ${{ inputs.release_tag }}
+          path: package-source
           fetch-depth: 0
 
-      - name: Set up Node
+      - name: Set up pinned Node.js toolchain
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version-file: publisher/.node-version
           registry-url: https://registry.npmjs.org
 
-      - name: Verify version and release authorization
+      - name: Install pinned npm packer
+        run: |
+          set -euo pipefail
+          npm install --global "npm@$(cat publisher/.npm-version)"
+          expected_npm="$(tr -d '\r\n' < publisher/.npm-version)"
+          actual_npm="$(npm --version)"
+          if [ "$actual_npm" != "$expected_npm" ]; then
+            echo 'Pinned npm packer did not install exactly.' >&2
+            exit 2
+          fi
+
+      - name: Verify source and publisher identities
         id: verify-source
+        working-directory: publisher
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
+          EVENT_SHA: ${{ github.sha }}
+          EVENT_REF: ${{ github.ref }}
         run: |
           set -euo pipefail
-          node tools/verify_release_tag.mjs "$RELEASE_TAG"
-          actual_sha="$(git rev-parse "${RELEASE_TAG}^{commit}")"
-          if [ "$actual_sha" != "$(git rev-parse HEAD)" ]; then
-            echo 'Released tag did not resolve to the checked-out commit.' >&2
+          if [ "$EVENT_REF" != 'refs/heads/main' ]; then
+            echo 'Publisher dispatch must run from protected main.' >&2
             exit 2
           fi
+          publisher_tool_sha="$(git rev-parse HEAD)"
+          if [ "$publisher_tool_sha" != "$EVENT_SHA" ]; then
+            echo 'Publisher checkout does not match the workflow event SHA.' >&2
+            exit 2
+          fi
+          package_source_sha="$(git -C "$GITHUB_WORKSPACE/package-source" rev-parse "${RELEASE_TAG}^{commit}")"
+          package_head_sha="$(git -C "$GITHUB_WORKSPACE/package-source" rev-parse HEAD)"
+          if [ "$package_source_sha" != "$package_head_sha" ]; then
+            echo 'Release tag does not match the checked-out immutable package source.' >&2
+            exit 2
+          fi
+          node tools/verify_release_tag.mjs "$RELEASE_TAG" --source-dir "$GITHUB_WORKSPACE/package-source"
           node tools/release_authorization.mjs "$RELEASE_TAG" --allow-draft
-          echo "release_sha=$actual_sha" >> "$GITHUB_OUTPUT"
-
-      - name: Install the pinned OIDC-capable npm client
-        run: npm install --global npm@11.5.1
+          echo "publisher_tool_sha=$publisher_tool_sha" >> "$GITHUB_OUTPUT"
+          echo "package_source_sha=$package_source_sha" >> "$GITHUB_OUTPUT"
 
       - name: Run player package, leak, and placement checks
-        working-directory: packages/system-skills
+        working-directory: package-source/packages/system-skills
         run: |
           set -euo pipefail
-          npm run build
+          node builder.mjs
           npm run check
           python3 ../../tools/leak_check.py
           node ../../tools/gate_audit.mjs
 
       - name: Publish the exact verified package artifact
         id: publish-package
-        working-directory: packages/system-skills
+        working-directory: package-source/packages/system-skills
         run: |
           set -euo pipefail
           pack_json="$RUNNER_TEMP/player-package.json"
@@ -104,7 +135,8 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.release_tag }}
-          RELEASE_SHA: ${{ steps.verify-source.outputs.release_sha }}
+          RELEASE_SHA: ${{ steps.verify-source.outputs.package_source_sha }}
+          PUBLISHER_TOOL_SHA: ${{ steps.verify-source.outputs.publisher_tool_sha }}
           PACKAGE_INTEGRITY: ${{ steps.publish-package.outputs.integrity }}
           PACKAGE_VERSION: ${{ steps.publish-package.outputs.version }}
           WORKFLOW_RUN_ID: ${{ github.run_id }}
@@ -123,10 +155,10 @@ jobs:
             fi
             sleep 10
           done
-          asset_name="$(node -e 'const v=process.argv[1]; const m=/^sha512-([A-Za-z0-9+/]+={0,2})$/.exec(v||""); if(!m) process.exit(2); const d=Buffer.from(m[1],"base64"); if(d.length!==64 || d.toString("base64")!==m[1]) process.exit(2); process.stdout.write(`ain-npm-delivery-v1-${d.toString("base64url")}.json`)' "$PACKAGE_INTEGRITY")"
+          asset_name="$(node -e 'const v=process.argv[1]; const m=/^sha512-([A-Za-z0-9+/]+={0,2})$/.exec(v||""); if(!m) process.exit(2); const d=Buffer.from(m[1],"base64"); if(d.length!==64 || d.toString("base64")!==m[1]) process.exit(2); process.stdout.write(`ain-npm-delivery-v2-${d.toString("base64url")}.json`)' "$PACKAGE_INTEGRITY")"
           receipt="$RUNNER_TEMP/$asset_name"
-          node -e 'const [file, tag, sha, version, integrity, runId] = process.argv.slice(1); require("node:fs").writeFileSync(file, JSON.stringify({tag, commitSha:sha, package:"@ars-infinita-notion/system-skills", version, integrity, workflowRunId:runId})+"\n", {mode:0o600})' \
-            "$receipt" "$RELEASE_TAG" "$RELEASE_SHA" "$PACKAGE_VERSION" "$PACKAGE_INTEGRITY" "$WORKFLOW_RUN_ID"
+          node -e 'const [file, tag, packageSha, publisherSha, version, integrity, runId] = process.argv.slice(1); require("node:fs").writeFileSync(file, JSON.stringify({schemaVersion:2, tag, packageSourceSha:packageSha, publisherToolSha:publisherSha, package:"@ars-infinita-notion/system-skills", version, integrity, workflowRunId:runId})+"\n", {mode:0o600})' \
+            "$receipt" "$RELEASE_TAG" "$RELEASE_SHA" "$PUBLISHER_TOOL_SHA" "$PACKAGE_VERSION" "$PACKAGE_INTEGRITY" "$WORKFLOW_RUN_ID"
           gh release upload "$RELEASE_TAG" "$receipt" --repo TechSecWhisperer/ars-infinita-notion --clobber
           readback="$(gh release view "$RELEASE_TAG" --repo TechSecWhisperer/ars-infinita-notion --json assets --jq ".assets[] | select(.name == \"$asset_name\") | .name")"
           if [ "$readback" != "$asset_name" ]; then

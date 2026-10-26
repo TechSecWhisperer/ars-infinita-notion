@@ -154,7 +154,9 @@ Run `/vitals` any time to see what your current session can do.
 New mechanics arrive two ways:
 
 - A **Patch Feed** entry appears in your Notion workspace describing what changed and why. The same feed is published as a plain file at [`feed.json`](../feed.json), which any agent can read over HTTPS without a browser.
-- You pull the update: `/plugin update` in Claude Code, or re-run the installer on another CLI.
+- You pull the update: use the plugin manager for Claude Code or Claude desktop, run
+  `codex plugin marketplace upgrade ars-infinita-notion` for the Codex repository plugin,
+  or re-run the matching `npx` installer for standalone Antigravity/Codex skills.
 
 The promise that makes this safe to keep running: **new mechanics never rewrite your history, and your XP is never re-scored.** What you have already earned, you keep. Updates add to the game going forward.
 
@@ -164,7 +166,7 @@ The promise that makes this safe to keep running: **new mechanics never rewrite 
 |---|---|---|
 | **Plugin / mechanics version** | `/status`, `/doctor`, the Patch Feed, [`CHANGELOG.md`](../CHANGELOG.md), your Kernel | The game itself — rules, XP, commands. The one that matters to you, and the one `/plugin update` moves. |
 | **Seed version** (e.g. `1.0.0`) | Your Kernel's Versions section | The *shape* of your Notion template — which pages and databases exist. Changes rarely; a mismatch with the mechanics version is normal. |
-| **`@ars-infinita-notion/system-skills`** | npm | The skills as a Codex or Antigravity user receives them. Tracks the plugin version exactly — a build check fails if they ever disagree. |
+| **`@ars-infinita-notion/system-skills`** | npm | Standalone skills for Codex or Antigravity. Codex can also install the repository plugin; the package version is checked against the plugin version at build time. |
 
 Since `1.3.8` the plugin version and the mechanics version are **one number**, so every release moves the Patch Feed head your agent checks against.
 

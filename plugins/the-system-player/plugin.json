@@ -1,0 +1,39 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "the-system-player",
+  "version": "2.0.23",
+  "description": "Guided skills for tracking job applications, researching employers, preparing application materials, and building momentum in your own Notion workspace. Notion is the source of truth; an AI assistant may process task-relevant content with its configured provider when you ask it to use that content.",
+  "author": {
+    "name": "Ars Infinita Contributors"
+  },
+  "homepage": "https://github.com/TechSecWhisperer/ars-infinita-notion",
+  "repository": "https://github.com/TechSecWhisperer/ars-infinita-notion",
+  "license": "MIT",
+  "keywords": [
+    "job-search",
+    "notion",
+    "career",
+    "skills"
+  ],
+  "extensions": {
+    "com.openai": {
+      "onboardingSkill": "./skills/awaken/SKILL.md",
+      "interface": {
+        "displayName": "The System — Player Edition",
+        "shortDescription": "Your job hunt, made playable",
+        "longDescription": "Guided skills for tracking job applications, researching employers, preparing application materials, and keeping progress in your own Notion workspace. The plugin does not send applications or messages on your behalf. Notion is the source of truth; when you ask an AI assistant to work with postings, profile details, or drafts, its configured provider may process relevant content under its terms. Connect a Notion MCP server and follow /awaken to set up your workspace.",
+        "developerName": "Ars Infinita Contributors",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "websiteURL": "https://github.com/TechSecWhisperer/ars-infinita-notion",
+        "defaultPrompt": [
+          "Use /awaken to set up The System in my Notion workspace.",
+          "Help me track a job posting with /quest."
+        ]
+      }
+    }
+  }
+}

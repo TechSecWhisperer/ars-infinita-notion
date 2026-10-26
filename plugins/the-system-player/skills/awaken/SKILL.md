@@ -13,7 +13,7 @@ The player starts at **Level 0** (a level that exists only during awakening). Ev
 
 Setup asks the player to connect and allow several things. Before each one, give a one-line plain-language **why** — a new player is trusting an agent with their workspace, so never let them click "allow" blind. As each comes up:
 
-- **Connecting Notion + granting page access** — "so I can build and run your game board inside your own workspace. I only touch the pages you grant me, and your job-search data never leaves your workspace — not even to the Game Admin."
+- **Connecting Notion + granting page access** — "so I can build and run your game board inside your own workspace. I only touch the pages you grant me. When you ask the AI assistant to research or draft from your workspace, the relevant content may be processed by the provider configured for that assistant; check that provider’s data-handling terms. The plugin does not send applications or messages on your behalf."
 - **Installing the Player Edition plugin** — "optional convenience: it turns the commands into /slash shortcuts. The Runebook does the same job without it, so skip it if you'd rather."
 - **Installing agent-browser + letting it drive a browser** — "so the commands that read live job postings or submit web forms can actually open a page for you. It only controls a browser when you run one of those commands, on your behalf."
 - **Scheduled tasks (daily briefing / weekly review)** — "so your morning briefing and Friday review run on their own. Totally optional — decline now or turn them off anytime."

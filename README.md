@@ -13,10 +13,12 @@ petition channel returns a one-time receipt when a public issue is opened. A rec
 confirms delivery; it is not a review, decision, or promise that every request will
 receive a substantive answer. What beta means in practice:
 
-- **Working end to end** — install through the Seed, run `/awaken`, hunt, earn XP, level up.
-- **The rules you see are the rules that run** — the Patch Feed, Rule Manifest and this
-  repo's `feed.json` are checked against each other automatically; a release that breaks
-  lockstep does not ship.
+- **Built for end-to-end play** — install through the Seed, run `/awaken`, hunt, earn XP,
+  and level up. Distribution and source versions can differ while a release is being
+  delivered; check the availability record below before choosing an install path.
+- **One source of truth for game rules** — the Patch Feed, Rule Manifest and this repo's
+  `feed.json` describe the current source rules. A matching version in source does not
+  mean every package or marketplace has delivered it yet.
 - **Petitions get a validated receipt** — any substantive reply must be grounded in
   published documentation; nothing quotes private player data or unpublished decisions.
 - **Bumps may be bumpy** — the version is 2.x, the game is young. Report what breaks;
@@ -25,6 +27,21 @@ receive a substantive answer. What beta means in practice:
 > Part of **Ars Infinita** — a personal brand for building worlds without limits. **A.I.N** is its Notion-native chapter. *(And yes — the **AI** is right there in the name.)*
 
 **Your job hunt as an RPG, inside your own Notion workspace.** You bring a job link; an AI agent tracks it, scores your fit, researches the company, drafts your materials in your voice, and turns real progress into XP and levels.
+
+**Release availability (checked 2026-10-27):** repository source, GitHub Releases, npm,
+and the plugin marketplace are separate destinations.
+
+| Surface | Version | Availability |
+| --- | --- | --- |
+| npm package (`@ars-infinita-notion/system-skills`) | `2.0.21` | Latest version in the npm registry. |
+| Repository source (`feed.json`) | `2.0.22` | The `v2.0.22` tag exists, but its GitHub Release is still a draft and npm has no `2.0.22` package. |
+| Codex marketplace package | — | Not included in a published release yet. The repository marketplace install path is documented below for releases that include it. |
+
+Before using npm, run `npm view @ars-infinita-notion/system-skills version` to check
+the current registry version. A draft release is not proof that npm has published the
+package, and a repository source version is not proof that every distribution has it.
+
+**Release status:** The project remains in Beta. Treat repository source and draft releases as Beta until a published GitHub Release explicitly identifies the available version.
 
 The job market is a void of spreadsheets and silence. A.I.N imposes order on it — and makes the grind *feel* like progress, because it is.
 
@@ -37,20 +54,23 @@ The job market is a void of spreadsheets and silence. A.I.N imposes order on it 
 You need:
 
 - A **Notion account** — the free plan is enough.
-- A **paid AI agent plan** — the one thing you pay for. For Claude that means **Pro or Max**.
+- An AI host that supports one of the installation routes below. Account and plan
+  requirements vary by host; check its current setup documentation.
+- **Node.js 18+** if you use the npx-installed skills route.
 - An agent that can run **scheduled routines**, if you want your morning briefing to arrive on its own. **A paid plan does not guarantee this** — check before you start. Without it everything still works; you just say *"run my daily briefing"* yourself.
 
 Then pick your agent:
 
-| | Best for | Install |
+| Installation route | Supported hosts | Start here |
 |---|---|---|
-| **[Claude Code](#claude-code)** | Terminal, most tested path | `/plugin marketplace add TechSecWhisperer/ars-infinita-notion` |
-| **[Claude desktop app](#claude-desktop-app)** | No terminal | Plugins panel → add the same marketplace |
-| **[Codex · Antigravity · other CLIs](#codex-antigravity--other-clis)** | Any Notion-capable agent | `npx @ars-infinita-notion/system-skills install-codex` / `install-agy` |
+| **[Plugin-supported hosts](#plugin-supported-hosts)** | Claude Code, Claude desktop, Codex | Install the plugin from its marketplace source. |
+| **[npx-installed skills](#npx-installed-skills)** | Antigravity; Codex standalone-skills fallback | Install the packaged skills with the matching command. |
 
-Every path is four steps and ends the same way: you run `/awaken` and the agent builds the rest.
+Each setup ends the same way: start a fresh session, verify the Notion connection with `/vitals`, then run `/awaken`.
 
-### Claude Code
+### Plugin-supported hosts
+
+#### Claude Code
 
 **First, install Claude Code itself** if you haven't — `curl -fsSL https://claude.ai/install.sh | bash` on macOS, Linux or WSL; `irm https://claude.ai/install.ps1 | iex` in Windows PowerShell. `claude --version` should print a version. Other install routes and system requirements: [Claude Code setup](https://code.claude.com/docs/en/setup).
 
@@ -73,7 +93,7 @@ Every path is four steps and ends the same way: you run `/awaken` and the agent 
 
 Now [run `/awaken`](#-then-run-awaken).
 
-### Claude desktop app
+#### Claude desktop app
 
 1. **Set your project directory.** In the prompt area, pick or create a project folder in the **Project folder** dropdown. If you skip this, `/awaken` prompts you for a folder path during setup.
 2. **Duplicate the Seed** into your Notion workspace: open the **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** while signed into Notion → **Duplicate** → choose your workspace. *(If logged out, click "Sign up or login" first; Notion displays "Duplicate" once signed in).* Keep this link.
@@ -82,23 +102,48 @@ Now [run `/awaken`](#-then-run-awaken).
 
 Now [run `/awaken`](#-then-run-awaken).
 
-### Codex, Antigravity & other CLIs
+#### Codex
 
-1. **Set your project directory.** Open your CLI in your project directory (`mkdir ~/ars-infinita && cd ~/ars-infinita`). If you skip this, `/awaken` prompts you for a folder path and builds it for you.
+Codex can install the repository marketplace package when it is included in a published release:
+
+```sh
+codex plugin marketplace add TechSecWhisperer/ars-infinita-notion --ref <release-tag>
+codex plugin add the-system-player@ars-infinita-notion
+```
+
+Before using it, open your project directory and duplicate the [A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630) into your workspace. Connect Notion to Codex with OAuth:
+
+```sh
+codex mcp add notion --url https://mcp.notion.com/mcp  # only if you do not already have this entry
+codex mcp login notion
+codex mcp list
+```
+
+Complete the browser sign-in and grant access to the workspace holding your Seed copy. Start a fresh Codex session, verify the plugin with `codex plugin list`, run `/vitals`, then `/awaken`.
+
+This is a repository marketplace source, not a listing in the universal public Plugins Directory. Check the release availability table above before using a release tag. See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins) for current Codex marketplace behavior.
+
+For another release, refresh the marketplace with `codex plugin marketplace upgrade ars-infinita-notion`. Verify the installed plugin with `codex plugin list`. To remove it, run `codex plugin remove the-system-player@ars-infinita-notion`; remove the marketplace source with `codex plugin marketplace remove ars-infinita-notion` when you no longer use it. See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins) for current plugin commands.
+
+### npx-installed skills
+
+1. **Set your project directory.** Open Antigravity or Codex in your project directory (`mkdir ~/ars-infinita && cd ~/ars-infinita`). If you skip this, `/awaken` prompts you for a folder path and builds it for you.
    ```sh
    mkdir ~/ars-infinita && cd ~/ars-infinita
    ```
    Your CLI reads `AGENTS.md`. Keep both `AGENTS.md` and `CLAUDE.md` that `/awaken` generates.
 2. **Duplicate the Seed** into your Notion workspace: open the **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** while signed into Notion → **Duplicate** → choose your workspace. *(If logged out, click "Sign up or login" first; Notion displays "Duplicate" once signed in).* Keep this link.
-3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` to your CLI's MCP config and complete the OAuth flow, granting access to your Seed copy. Codex: `~/.codex/config.toml`, under `[mcp_servers.notion]`. Antigravity: `~/.gemini/config/`, or `agy mcp add` if your build has it. Your CLI's own docs win over this line.
-4. **Install the commands.** No clone needed; Node 18+, no dependencies:
+3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` and complete OAuth sign-in, granting access to your Seed copy. For Codex, use `codex mcp add notion --url https://mcp.notion.com/mcp`, then `codex mcp login notion`; if the server is already configured, run the login command only. For Antigravity, add a Notion server to its MCP configuration file using the documented `serverUrl` field, then complete the OAuth prompt. See [Notion's current client setup guide](https://developers.notion.com/guides/mcp/get-started-with-mcp) for both hosts and their current steps.
+4. **Install the skills.** No clone needed; Node 18+, no dependencies:
    ```sh
-   npx @ars-infinita-notion/system-skills install-codex   # Codex CLI  -> $CODEX_HOME/skills (default ~/.codex/skills)
-   npx @ars-infinita-notion/system-skills install-agy     # Antigravity -> ~/.gemini/config/plugins
+   npx @ars-infinita-notion/system-skills install-agy    # Antigravity -> ~/.gemini/config/plugins
+   npx @ars-infinita-notion/system-skills install-codex  # optional Codex standalone-skills fallback -> $CODEX_HOME/skills
    ```
    Add `--dry-run` to see every path it would touch. **Codex only:** if you already have a skill named `status`, `log`, `report` or any other command name, `install-codex` stops without writing and prints the clash — re-run with `--force`, which moves yours aside into a backup folder rather than deleting them. `install-agy` writes only inside its own plugin directory, so it never collides — but by the same token it replaces edits you made *inside* that directory on update.
 
-Then **start a new session** so your CLI picks the skills up. `/awaken` will not exist in the shell you installed from.
+Then **start a new session** so your host picks the skills up. Run `/vitals` to confirm Notion is connected, then `/awaken` to set up. The Codex standalone-skills install is a fallback when you want skills in `$CODEX_HOME/skills` instead of the repository plugin.
+
+To update standalone skills, check `npm view @ars-infinita-notion/system-skills version` and re-run the matching `npx` installer. The package does not provide a standalone-skill uninstall command. For Antigravity, the package-owned install path is `~/.gemini/config/plugins/the-system-player/`; preserve any files you added there, then remove that directory if you want to uninstall. For Codex standalone skills, inspect `$CODEX_HOME/.ars-infinita-install.json`, preserve any edits you made, and remove only the listed A.I.N skill directories and that manifest. Do not remove the shared skills folder. The Codex repository plugin has separate, supported `codex plugin remove` and marketplace-removal commands above.
 
 Now [run `/awaken`](#-then-run-awaken).
 
@@ -138,7 +183,13 @@ has been reviewed or accepted.
 
 > 🧪 **Beta — open and active.** Expect rough edges and report what breaks. An automatic receipt confirms that a report arrived; it does not promise review or resolution. Verified fixes and updates appear in the release notes when they are ready. **Keep playing:** nothing is disabled, your data is untouched, and nothing you have earned is re-scored. New mechanics never rewrite your history and your XP is never re-scored — see the [changelog](CHANGELOG.md).
 
-**Your job-search content never leaves your Notion** — no employer, role, salary, contact or document. The only things that ever go anywhere are game stats you opt into: `/party` shares level, XP, streak and badges with friends you invite, and the same short list goes to the Hunter Registry during your own daily briefing. Every field is toggleable off.
+**Your Notion workspace is the source of truth.** When you ask an AI assistant to appraise a role, research an employer, or draft application material from your workspace, the relevant content may be processed by the provider configured for that assistant; check that provider’s data-handling terms. Some commands also create downloadable documents, such as a tailored CV or cover letter, outside Notion. You choose where to save or share those files. The plugin does not send applications or messages on your behalf. Optional `/party` and Hunter Registry features share only the listed game stats you enable, and each field can be turned off.
+
+## Update or remove an installation
+
+- **Claude Code / Claude desktop Code tab:** use the Installed tab in `/plugin` to update or uninstall **the-system-player**. From a terminal, `claude plugin update the-system-player@ars-infinita-notion` updates it and `claude plugin uninstall the-system-player@ars-infinita-notion` removes it. To remove the marketplace and its installed plugins, use `claude plugin marketplace remove ars-infinita-notion`. See [Claude Code's plugin management guide](https://code.claude.com/docs/en/plugins/install).
+- **Codex repository plugin:** refresh with `codex plugin marketplace upgrade ars-infinita-notion`; verify with `codex plugin list`. Remove the plugin with `codex plugin remove the-system-player@ars-infinita-notion`, then remove the marketplace source with `codex plugin marketplace remove ars-infinita-notion` when you no longer need it. See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins).
+- **Antigravity / Codex standalone skills:** update by re-running the matching `npx @ars-infinita-notion/system-skills install-agy` or `install-codex` command. The npm package has no standalone-skill uninstaller. Antigravity's package-owned directory is `~/.gemini/config/plugins/the-system-player/`; preserve any files you added there before removing that directory. For Codex standalone skills, inspect `$CODEX_HOME/.ars-infinita-install.json`, preserve edits you made, and remove only the listed A.I.N skill directories and that manifest. Do not remove the shared skills folder.
 
 ## 📄 License
 
