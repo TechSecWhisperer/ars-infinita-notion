@@ -98,7 +98,21 @@ function gh(args) {
 export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUIRED_CHECK_POLICY, allowDraft = false } = {}) {
   const api = (path) => JSON.parse(runGh(['api', `repos/${REPOSITORY}/${path}`]));
   if (!/^v\d+\.\d+\.\d+$/.test(String(tag || ''))) throw new Error('BLOCKED_RELEASE_TAG_INVALID');
-  const release = api(`releases/tags/${encodeURIComponent(tag)}`);
+  let release;
+  if (allowDraft) {
+    // GitHub's tag-specific release endpoint can return 404 for drafts even
+    // when the same credential can list the repository's draft releases.
+    const releasePages = JSON.parse(runGh(['api', '--paginate', '--slurp',
+      `repos/${REPOSITORY}/releases?per_page=100`]));
+    if (!Array.isArray(releasePages) || !releasePages.every(Array.isArray)) {
+      throw new Error('BLOCKED_RELEASE_DESTINATION_UNVERIFIED');
+    }
+    const matches = releasePages.flat().filter((item) => item?.tag_name === tag);
+    if (matches.length !== 1) throw new Error('BLOCKED_RELEASE_DESTINATION_UNVERIFIED');
+    release = matches[0];
+  } else {
+    release = api(`releases/tags/${encodeURIComponent(tag)}`);
+  }
   const releaseState = allowDraft ? 'draft' : 'published';
   const validReleaseState = allowDraft
     ? release.draft === true && !release.published_at
