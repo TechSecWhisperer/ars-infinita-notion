@@ -19,11 +19,9 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
-const PLUGIN = path.join(REPO_ROOT, 'plugins', 'the-system-player', '.claude-plugin', 'plugin.json');
-const PKG = path.join(REPO_ROOT, 'packages', 'system-skills', 'package.json');
 
 const PASS = 0;
 const FAIL = 1;
@@ -69,32 +67,50 @@ function selfTest() {
   return bad === 0;
 }
 
-if (process.argv.includes('--self-test')) {
-  console.log('verify-release-tag self-test');
-  const okAll = selfTest();
-  console.log(okAll ? 'PASS self-test' : 'FAIL self-test');
-  process.exit(okAll ? PASS : FAIL);
+export function releaseVersions(sourceRoot = REPO_ROOT) {
+  const pluginPath = path.join(sourceRoot, 'plugins', 'the-system-player', '.claude-plugin', 'plugin.json');
+  const packagePath = path.join(sourceRoot, 'packages', 'system-skills', 'package.json');
+  return {
+    pluginVersion: JSON.parse(fs.readFileSync(pluginPath, 'utf8')).version,
+    pkgVersion: JSON.parse(fs.readFileSync(packagePath, 'utf8')).version,
+  };
 }
 
-const tag = process.argv[2] || process.env.GITHUB_REF_NAME || '';
-let pluginVersion;
-let pkgVersion;
-try {
-  pluginVersion = JSON.parse(fs.readFileSync(PLUGIN, 'utf8')).version;
-  pkgVersion = JSON.parse(fs.readFileSync(PKG, 'utf8')).version;
-} catch (err) {
-  console.log('BLOCKED verify-release-tag');
-  console.log(`  could not read a manifest: ${err.message}`);
-  process.exit(BLOCKED);
-}
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  if (process.argv.includes('--self-test')) {
+    console.log('verify-release-tag self-test');
+    const okAll = selfTest();
+    console.log(okAll ? 'PASS self-test' : 'FAIL self-test');
+    process.exit(okAll ? PASS : FAIL);
+  }
 
-const { code, reason } = verdict({ tag, pluginVersion, pkgVersion });
-console.log(`${code === PASS ? 'PASS' : code === FAIL ? 'FAIL' : 'BLOCKED'} verify-release-tag`);
-console.log(`  ${reason}`);
-if (code !== PASS) {
-  console.log('');
-  console.log('  A tag triggers the publish, so it is an independent claim about what');
-  console.log('  ships. Delete the tag, fix the versions, and re-tag — do not publish');
-  console.log('  content under a number nobody chose.');
+  const args = process.argv.slice(2);
+  const sourceIndex = args.indexOf('--source-dir');
+  if (sourceIndex >= 0 && !args[sourceIndex + 1]) {
+    console.log('BLOCKED verify-release-tag');
+    console.log('  --source-dir requires a path');
+    process.exit(BLOCKED);
+  }
+  const sourceRoot = sourceIndex >= 0 ? path.resolve(args[sourceIndex + 1]) : REPO_ROOT;
+  const tag = args.find((argument, index) => !argument.startsWith('--')
+    && !(sourceIndex >= 0 && index === sourceIndex + 1)) || process.env.GITHUB_REF_NAME || '';
+  let versions;
+  try {
+    versions = releaseVersions(sourceRoot);
+  } catch {
+    console.log('BLOCKED verify-release-tag');
+    console.log('  could not read source manifests');
+    process.exit(BLOCKED);
+  }
+
+  const { code, reason } = verdict({ tag, ...versions });
+  console.log(`${code === PASS ? 'PASS' : code === FAIL ? 'FAIL' : 'BLOCKED'} verify-release-tag`);
+  console.log(`  ${reason}`);
+  if (code !== PASS) {
+    console.log('');
+    console.log('  A tag triggers the publish, so it is an independent claim about what');
+    console.log('  ships. Delete the tag, fix the versions, and re-tag — do not publish');
+    console.log('  content under a number nobody chose.');
+  }
+  process.exit(code);
 }
-process.exit(code);

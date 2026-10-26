@@ -82,7 +82,7 @@ The practical rule follows from the repository being public and git history not 
 
 ## Publishing the npm package (Codex / Antigravity channel)
 
-`@ars-infinita-notion/system-skills` is a **second distribution channel** carrying a prebuilt copy of the skills for the two non-Claude CLIs. Claude Code is deliberately not a target — it installs from the marketplace, and a second path would mean two installs able to disagree.
+`@ars-infinita-notion/system-skills` is the **standalone-skills distribution channel** for Antigravity and the optional Codex fallback. Claude Code uses the Claude plugin route; Codex can use either its repository plugin or the standalone fallback. Keep the plugin and standalone builds generated from the canonical `plugins/the-system-player/` tree.
 
 ### The release flow — authorized GitHub Release
 

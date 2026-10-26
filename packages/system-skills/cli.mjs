@@ -5,10 +5,8 @@
 //   npx @ars-infinita-notion/system-skills install-codex [--dry-run]
 //   npx @ars-infinita-notion/system-skills install-agy   [--dry-run]
 //
-// Claude Code is deliberately NOT a target here. It installs the native
-// plugin from the marketplace, and giving it a second install path would
-// mean two ways to get the same skills onto one machine, able to disagree.
-// See the README.
+// Claude Code uses its plugin marketplace route. Codex users can choose the
+// repository plugin or this separate standalone-skills fallback. See README.
 //
 // The installers are imported for their top-level effect rather than spawned:
 // same process, so --dry-run and the exit code pass through untouched.
@@ -29,13 +27,11 @@ const TARGETS = {
 function usage(problem) {
   if (problem) console.error(`error: ${problem}\n`);
   console.log('The System (Player Edition) — skills for the Codex and Antigravity CLIs\n');
-  console.log('Before you install, two prerequisites:');
-  console.log('  1. A paid AI agent subscription — any agent; The System works your');
-  console.log('     account daily, so it needs a tier that permits that.');
-  console.log('  2. Confirm your agent can run routines (scheduled, unattended tasks).');
-  console.log('     A paid plan does NOT guarantee this. Without it The System still');
-  console.log('     works — you ask for your daily briefing instead of it arriving.');
-  console.log('  Notion\'s free plan is all you need; nothing here requires paid Notion.\n');
+  console.log('Requirements:');
+  console.log('  - Node.js 18+ for the standalone-skill installer.');
+  console.log('  - A supported AI host with Notion MCP access. Host account requirements vary.');
+  console.log('  - Scheduled routines are optional; without them, request your briefing manually.');
+  console.log('  Notion\'s free plan is enough.\n');
   console.log('Usage:');
   console.log('  npx @ars-infinita-notion/system-skills install       [--target agy|codex] [--dry-run] [--force]');
   console.log('  npx @ars-infinita-notion/system-skills install-codex [--dry-run] [--force]');
@@ -44,9 +40,7 @@ function usage(problem) {
   console.log('install-codex writes into the shared skills folder, so it stops rather');
   console.log('than overwrite a skill you wrote yourself. --force moves yours aside to');
   console.log('$CODEX_HOME/.ars-infinita-backup/<timestamp>/ instead — never deletes.\n');
-  console.log('Claude Code users: install the native plugin instead —');
-  console.log('  /plugin marketplace add TechSecWhisperer/ars-infinita-notion');
-  console.log('  /plugin install the-system-player@ars-infinita-notion\n');
+  console.log('For Claude Code, Claude desktop, and Codex plugin installation routes, see README.');
   return problem ? 1 : 0;
 }
 

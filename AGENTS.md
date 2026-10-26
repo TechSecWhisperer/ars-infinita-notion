@@ -16,8 +16,8 @@ repo is not the source of truth for any player's data.
 | You want to | Go to |
 |---|---|
 | Set the game up (any agent) | [`README.md`](README.md) |
-| Set it up on Codex or Antigravity | [README → Codex, Antigravity & other CLIs](README.md#codex-antigravity--other-clis) |
-| Build the skills for a non-Claude CLI | [`packages/system-skills/`](packages/system-skills/) |
+| Install repository plugins or npx skills | [README → Plugin-supported hosts](README.md#plugin-supported-hosts) and [npx-installed skills](README.md#npx-installed-skills) |
+| Inspect the standalone-skill build for Antigravity or the Codex fallback | [`packages/system-skills/`](packages/system-skills/) |
 | Read the player-facing command guide | [`docs/PLAYERS-GUIDE.md`](docs/PLAYERS-GUIDE.md) |
 | See what changed | [`CHANGELOG.md`](CHANGELOG.md) |
 | Check the live rules version | [`feed.json`](feed.json) (`mechanics_version`) |

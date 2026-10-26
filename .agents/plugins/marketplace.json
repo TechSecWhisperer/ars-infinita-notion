@@ -1,0 +1,20 @@
+{
+  "name": "ars-infinita-notion",
+  "interface": {
+    "displayName": "Ars Infinita Notion"
+  },
+  "plugins": [
+    {
+      "name": "the-system-player",
+      "source": {
+        "source": "local",
+        "path": "./plugins/the-system-player"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_USE"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

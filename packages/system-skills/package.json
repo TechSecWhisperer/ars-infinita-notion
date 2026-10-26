@@ -1,7 +1,7 @@
 {
   "name": "@ars-infinita-notion/system-skills",
-  "version": "2.0.22",
-  "description": "The System (Player Edition) skills, built for the OpenAI Codex CLI and the Antigravity CLI (agy). Ships prebuilt \u2014 install with `npx @ars-infinita-notion/system-skills install-codex`. Claude Code users should install the native plugin from the marketplace instead.",
+  "version": "2.0.23",
+  "description": "The System (Player Edition) standalone skills for Antigravity, with an optional Codex fallback. Codex and Claude plugin installs are documented in the main setup guide.",
   "license": "MIT",
   "author": "Ars Infinita Contributors",
   "type": "module",
@@ -32,7 +32,7 @@
   ],
   "scripts": {
     "build": "node builder.mjs",
-    "check": "node test/checks.mjs && node test/public-feed-contract.mjs && node test/package-file-boundary.test.mjs && node ../../tools/generate_catalog.mjs --check && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs && node --test test/use-case-inventory.mjs && node --test test/source-install-build.test.mjs && node --test test/live-smoke-policy.test.mjs && node --test test/smoke-default.test.mjs",
+    "check": "node test/checks.mjs && node test/public-feed-contract.mjs && node test/package-file-boundary.test.mjs && node --test test/codex-marketplace.test.mjs && node --test test/release-artifact-determinism.test.mjs && node ../../tools/generate_catalog.mjs --check && node test/home-check.mjs && node test/discovery.mjs && node test/mobile-degradation.mjs && node --test test/visualization-adapter.mjs && node --test test/use-case-inventory.mjs && node --test test/source-install-build.test.mjs && node --test test/live-smoke-policy.test.mjs && node --test test/smoke-default.test.mjs",
     "test": "npm run build && npm run check && node test/smoke.mjs",
     "install-unified": "node --input-type=commonjs -e \"const fs=require('node:fs'); const cp=require('node:child_process'); const run=(file,args=[])=>{const r=cp.spawnSync(process.execPath,[file,...args],{stdio:'inherit'}); if(r.error) throw r.error; if(r.status!==0) process.exit(r.status||1)}; if(fs.existsSync('builder.mjs')) run('builder.mjs'); run('install-unified.mjs',process.argv.slice(1));\" --",
     "install-codex": "node --input-type=commonjs -e \"const fs=require('node:fs'); const cp=require('node:child_process'); const run=(file,args=[])=>{const r=cp.spawnSync(process.execPath,[file,...args],{stdio:'inherit'}); if(r.error) throw r.error; if(r.status!==0) process.exit(r.status||1)}; if(fs.existsSync('builder.mjs')) run('builder.mjs'); run('install-codex.mjs',process.argv.slice(1));\" --",
