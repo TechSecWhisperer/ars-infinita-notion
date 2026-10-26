@@ -95,6 +95,23 @@ function gh(args) {
   return execFileSync('gh', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], timeout: 30_000 }).trim();
 }
 
+function readDetailedCommitStatuses(runGh, sha) {
+  try {
+    const pages = JSON.parse(runGh(['api', '--paginate', '--slurp',
+      `repos/${REPOSITORY}/commits/${sha}/statuses?per_page=100`]));
+    if (!Array.isArray(pages) || pages.length < 1 || pages.some((page) => !Array.isArray(page) || page.length > 100)) {
+      return { sha, complete: false, statuses: [] };
+    }
+    const statuses = pages.flat();
+    if (statuses.length > 10_000 || (pages.length === 100 && pages.at(-1).length === 100)) {
+      return { sha, complete: false, statuses: [] };
+    }
+    return { sha, complete: true, statuses };
+  } catch {
+    return { sha, complete: false, statuses: [] };
+  }
+}
+
 export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUIRED_CHECK_POLICY, allowDraft = false } = {}) {
   const api = (path) => JSON.parse(runGh(['api', `repos/${REPOSITORY}/${path}`]));
   if (!/^v\d+\.\d+\.\d+$/.test(String(tag || ''))) throw new Error('BLOCKED_RELEASE_TAG_INVALID');
@@ -140,7 +157,10 @@ export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUI
   const { required, digest: requiredCheckPolicyDigest } = readRequiredCheckPolicy(policyPath);
   const checkData = api(`commits/${pr.headRefOid}/check-runs?per_page=100`);
   const statusData = api(`commits/${pr.headRefOid}/status`);
-  const reviewOutcome = exactHeadReleaseReviewState(reviewRows, pr.author?.login, pr.headRefOid, statusData);
+  const detailedStatusData = readDetailedCommitStatuses(runGh, pr.headRefOid);
+  const expectedTargetUrl = `https://github.com/${REPOSITORY}/pull/${prNumber}`;
+  const reviewOutcome = exactHeadReleaseReviewState(reviewRows, pr.author?.login, pr.headRefOid,
+    detailedStatusData, expectedTargetUrl);
   if (reviewOutcome.state !== 'APPROVED') throw new Error('BLOCKED_RELEASE_EXACT_HEAD_REVIEW_UNKNOWN');
 
   const checkResult = evaluateRequiredReleaseChecks(required, checkData.check_runs, statusData.statuses);
@@ -153,8 +173,9 @@ export function verifyReleaseAuthorization(tag, { runGh = gh, policyPath = REQUI
     api(`commits/${pr.headRefOid}/check-runs?per_page=100`),
     api(`commits/${pr.headRefOid}/status`),
   ];
+  const latestDetailedStatusData = readDetailedCommitStatuses(runGh, latestPr.headRefOid);
   const latestReviewOutcome = exactHeadReleaseReviewState(latestReviewRows, latestPr.author?.login,
-    latestPr.headRefOid, latestStatusData);
+    latestPr.headRefOid, latestDetailedStatusData, expectedTargetUrl);
   const latestCheckResult = evaluateRequiredReleaseChecks(required, latestCheckData.check_runs, latestStatusData.statuses);
   if (latestPr.state !== 'MERGED' || !latestPr.mergedAt
       || latestPr.headRefOid !== pr.headRefOid
