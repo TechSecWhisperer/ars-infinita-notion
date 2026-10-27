@@ -108,15 +108,21 @@ codex plugin marketplace add TechSecWhisperer/ars-infinita-notion --ref <release
 codex plugin add the-system-player@ars-infinita-notion
 ```
 
-Before using it, open your project directory and duplicate the [A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630) into your workspace. Connect Notion to Codex with OAuth:
+Before using it, open your project directory and duplicate the [A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630) into your workspace. Connect Notion to Codex with OAuth. Adding a missing server starts the OAuth flow immediately:
 
 ```sh
-codex mcp add notion --url https://mcp.notion.com/mcp  # only if you do not already have this entry
+codex mcp add notion --url https://mcp.notion.com/mcp
+codex mcp list
+```
+
+Complete the browser sign-in and grant access to the workspace holding your Seed copy. If the Notion server is already configured but not logged in, use this path instead:
+
+```sh
 codex mcp login notion
 codex mcp list
 ```
 
-Complete the browser sign-in and grant access to the workspace holding your Seed copy. Start a fresh Codex session, verify the plugin with `codex plugin list`, run `/vitals`, then `/awaken`.
+Start a fresh Codex session, verify the plugin with `codex plugin list`, run `/vitals`, then `/awaken`.
 
 This is a repository marketplace source, not a listing in the universal public Plugins Directory. Choose a tag from the [published GitHub Releases](https://github.com/TechSecWhisperer/ars-infinita-notion/releases). See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugins/build/plugins) for current Codex marketplace behavior.
 
@@ -143,7 +149,7 @@ See [OpenAI's plugin and marketplace guide](https://developers.openai.com/plugin
    ```
    Your CLI reads `AGENTS.md`. Keep both `AGENTS.md` and `CLAUDE.md` that `/awaken` generates.
 2. **Duplicate the Seed** into your Notion workspace: open the **[A.I.N Notion Seed](https://www.notion.so/3a356d8e806b8196855aeb97d1b0a630)** while signed into Notion → **Duplicate** → choose your workspace. *(If logged out, click "Sign up or login" first; Notion displays "Duplicate" once signed in).* Keep this link.
-3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` and complete OAuth sign-in, granting access to your Seed copy. For Codex, use `codex mcp add notion --url https://mcp.notion.com/mcp`, then `codex mcp login notion`; if the server is already configured, run the login command only. For Antigravity, add a Notion server to its MCP configuration file using the documented `serverUrl` field, then complete the OAuth prompt. See [Notion's current client setup guide](https://developers.notion.com/guides/mcp/get-started-with-mcp) for both hosts and their current steps.
+3. **Connect Notion.** Add Notion's hosted MCP endpoint `https://mcp.notion.com/mcp` and complete OAuth sign-in, granting access to your Seed copy. For Codex, `codex mcp add notion --url https://mcp.notion.com/mcp` starts OAuth when the entry is missing; if it is already configured but not logged in, run `codex mcp login notion`. Check `codex mcp list` after either path. For Antigravity, add a Notion server to its MCP configuration file using the documented `serverUrl` field, then complete the OAuth prompt. See [Notion's current client setup guide](https://developers.notion.com/guides/mcp/get-started-with-mcp) for both hosts and their current steps.
 4. **Install the skills.** No clone needed; Node 18+, no dependencies:
    ```sh
    npx @ars-infinita-notion/system-skills install-agy    # Antigravity -> ~/.gemini/config/plugins

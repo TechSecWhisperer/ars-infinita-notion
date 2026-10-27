@@ -100,6 +100,23 @@ test('Codex marketplace updates select a new immutable release ref', () => {
   assert.doesNotMatch(readme, /marketplace upgrade ars-infinita-notion.*For another release/i);
 });
 
+test('Codex Notion setup does not run OAuth login twice after adding the server', () => {
+  const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
+  const start = readme.indexOf('#### Codex');
+  const end = readme.indexOf('### npx-installed skills', start);
+  assert.ok(start !== -1 && end > start, 'README must retain a distinct Codex setup section');
+  const codexSetup = readme.slice(start, end);
+  const shellBlocks = [...codexSetup.matchAll(/```sh\n([\s\S]*?)```/g)].map((match) => match[1]);
+  assert.ok(shellBlocks.some((block) => /codex mcp add notion --url https:\/\/mcp\.notion\.com\/mcp/.test(block)));
+  assert.ok(shellBlocks.some((block) => /codex mcp login notion/.test(block)));
+  assert.ok(shellBlocks.every((block) => !(/codex mcp add notion/.test(block) && /codex mcp login notion/.test(block))),
+    'add starts OAuth in the current CLI; only login an already configured server separately');
+  assert.match(codexSetup, /adding a missing server starts the OAuth flow immediately/i);
+  assert.match(codexSetup, /already configured but not logged in/i);
+  assert.doesNotMatch(readme, /codex mcp add notion[^\n]*, then `codex mcp login notion`/i,
+    'the standalone npx setup path must not tell users to start a second OAuth flow');
+});
+
 test('standalone installer help describes host options without inventing account or schedule requirements', () => {
   const help = execFileSync(process.execPath, [path.join(repoRoot, 'packages/system-skills/cli.mjs'), '--help'], {
     encoding: 'utf8',
