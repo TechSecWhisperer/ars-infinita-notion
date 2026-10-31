@@ -1,6 +1,6 @@
 {
   "name": "the-system-player",
-  "version": "2.0.23",
+  "version": "2.0.24",
   "description": "The System — Player Edition. Your job hunt becomes a solo-leveling RPG inside your own Notion workspace: postings become quests, interviews become boss fights, follow-ups have SLAs, and every action banks XP that is never re-scored. Start with /awaken to build your workspace. Drafts stay drafts: the plugin never sends applications or messages. Notion is the source of truth; an AI assistant may process task-relevant content with its configured provider when you ask it to work on that content.",
   "author": {
     "name": "Ars Infinita Contributors"

@@ -31,16 +31,21 @@ test('release tag verification reads package manifests from the explicit immutab
 
 test('CLI accepts an explicit release tag with default or explicit source directory', () => {
   const script = path.join(repositoryRoot, 'tools/verify_release_tag.mjs');
+  const versions = releaseVersions(repositoryRoot);
+  assert.equal(versions.pluginVersion, versions.pkgVersion,
+    'the command-line fixture must use the repository release version');
+  const tag = `v${versions.pluginVersion}`;
+  const expected = `tag, plugin.json and package.json all say ${versions.pluginVersion}`;
   const invocations = [
-    ['v2.0.23'],
-    ['v2.0.23', '--source-dir', repositoryRoot],
-    ['--source-dir', repositoryRoot, 'v2.0.23'],
+    [tag],
+    [tag, '--source-dir', repositoryRoot],
+    ['--source-dir', repositoryRoot, tag],
   ];
   for (const args of invocations) {
     const output = execFileSync(process.execPath, [script, ...args], {
       cwd: repositoryRoot, encoding: 'utf8',
     });
     assert.match(output, /PASS verify-release-tag/);
-    assert.match(output, /tag, plugin\.json and package\.json all say 2\.0\.23/);
+    assert.ok(output.includes(expected), `release verification should report ${versions.pluginVersion}`);
   }
 });

@@ -67,12 +67,54 @@ test('public privacy copy distinguishes the Notion source of truth from AI-provi
   assert.match(readme, /Notion workspace is the source of truth/i);
 });
 
-test('public release guidance separates beta source from published packages without future release promises', () => {
+test('public release guidance points to live destinations instead of stale version snapshots', () => {
   const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
+  const feed = JSON.parse(fs.readFileSync(path.join(repoRoot, 'feed.json'), 'utf8'));
+  const changelog = fs.readFileSync(path.join(repoRoot, 'CHANGELOG.md'), 'utf8');
   assert.match(readme, /Beta/i);
-  assert.match(readme, /draft release.*not proof that npm has published/i);
-  assert.match(readme, /Check the release availability table above before using a release tag/i);
-  assert.doesNotMatch(readme, /--ref v2\.0\.23/);
+  assert.match(readme, /npmjs\.com\/package\/\@ars-infinita-notion\/system-skills/i);
+  assert.match(readme, /github\.com\/TechSecWhisperer\/ars-infinita-notion\/releases/i);
+  assert.match(readme, /mechanics badge at the top follows the repository's\s+`feed\.json` source on `main`/i);
+  assert.doesNotMatch(readme, /Release availability \(checked \d{4}-\d{2}-\d{2}\)/i);
+  assert.doesNotMatch(readme, /Latest version in the npm registry|still a draft and npm has no/i);
+  assert.doesNotMatch(readme, /coming stable|stable target|v2\.1\.0/i);
+  assert.equal(feed.head, '2.0.24');
+  assert.equal(feed.mechanics_version, feed.head);
+  assert.equal(feed.patches.at(-1).version, feed.head);
+  assert.ok(!feed.patches.some((patch) => patch.version === '2.0.22'),
+    'the unpublished v2.0.22 draft must not be presented as a shipped player patch');
+  assert.doesNotMatch(changelog, /^## v2\.0\.22\b/m,
+    'an unpublished v2.0.22 draft must not appear in player release notes');
+  assert.match(changelog, /^## v2\.0\.24\b/m);
+});
+
+test('Codex marketplace updates select a new immutable release ref', () => {
+  const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
+  const guide = fs.readFileSync(path.join(repoRoot, 'docs/PLAYERS-GUIDE.md'), 'utf8');
+  assert.match(readme, /codex plugin marketplace add TechSecWhisperer\/ars-infinita-notion --ref <release-tag>/);
+  assert.match(readme, /marketplace upgrade[\s\S]{0,120}refreshes the configured\s+marketplace at its existing Git ref/i);
+  assert.match(readme, /does not select a different release tag/i);
+  assert.match(readme, /remove the current plugin and marketplace source/i);
+  assert.match(readme, /codex plugin marketplace remove ars-infinita-notion/);
+  assert.match(guide, /does not select a new tag/i);
+  assert.doesNotMatch(readme, /marketplace upgrade ars-infinita-notion.*For another release/i);
+});
+
+test('Codex Notion setup does not run OAuth login twice after adding the server', () => {
+  const readme = fs.readFileSync(path.join(repoRoot, 'README.md'), 'utf8');
+  const start = readme.indexOf('#### Codex');
+  const end = readme.indexOf('### npx-installed skills', start);
+  assert.ok(start !== -1 && end > start, 'README must retain a distinct Codex setup section');
+  const codexSetup = readme.slice(start, end);
+  const shellBlocks = [...codexSetup.matchAll(/```sh\n([\s\S]*?)```/g)].map((match) => match[1]);
+  assert.ok(shellBlocks.some((block) => /codex mcp add notion --url https:\/\/mcp\.notion\.com\/mcp/.test(block)));
+  assert.ok(shellBlocks.some((block) => /codex mcp login notion/.test(block)));
+  assert.ok(shellBlocks.every((block) => !(/codex mcp add notion/.test(block) && /codex mcp login notion/.test(block))),
+    'add starts OAuth in the current CLI; only login an already configured server separately');
+  assert.match(codexSetup, /adding a missing server starts the OAuth flow immediately/i);
+  assert.match(codexSetup, /already configured but not logged in/i);
+  assert.doesNotMatch(readme, /codex mcp add notion[^\n]*, then `codex mcp login notion`/i,
+    'the standalone npx setup path must not tell users to start a second OAuth flow');
 });
 
 test('standalone installer help describes host options without inventing account or schedule requirements', () => {

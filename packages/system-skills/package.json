@@ -1,6 +1,6 @@
 {
   "name": "@ars-infinita-notion/system-skills",
-  "version": "2.0.23",
+  "version": "2.0.24",
   "description": "The System (Player Edition) standalone skills for Antigravity, with an optional Codex fallback. Codex and Claude plugin installs are documented in the main setup guide.",
   "license": "MIT",
   "author": "Ars Infinita Contributors",

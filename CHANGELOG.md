@@ -6,19 +6,19 @@ Version numbers here are the **plugin version** — set in `plugins/the-system-p
 
 **What each digit means** (from v2.0.0): the **major** is a release line — Alpha was 1.x, Beta is 2.x — and also moves when an existing install must be re-run to keep working. The **minor** is a change to the game's rules: XP values, level thresholds, badge criteria, unlocks, new commands. The **patch** is everything else that reaches you — fixes, copy, delivery. A major here is a phase marker first, not a promise that something broke.
 
+## v2.0.24 — 2026-10-27
+
+**Release availability and Codex marketplace updates are clearer.** The guide links to the live GitHub Releases and npm destinations instead of a dated version snapshot. Codex instructions explain how to select a newer immutable marketplace tag, and the player release history no longer lists the unpublished v2.0.22 draft as shipped. No XP, progression, or player data changes.
+
+**Note on numbering:** plugin, package, and Patch Feed move to 2.0.24 in lockstep. Installation guidance and public release-history correction only.
+
 ## v2.0.23 — 2026-10-26
 
 **Codex users can install the Player Edition from this repository's plugin marketplace.** The standalone npm skill installer remains available for users who prefer individual skills. Setup notes clarify Notion sign-in, starting a fresh session after install, and how AI provider processing relates to your Notion workspace. No XP, progression, or player data changes.
 
-**Version availability:** repository source, a GitHub draft release, and the npm registry are separate destinations. Check the registry and published Releases before assuming a source version is available through npm. The repository marketplace is a repo-scoped distribution source, not a listing in the universal public Plugins Directory.
+**Version availability:** repository source, published GitHub Releases, the npm registry, and the repository marketplace are separate destinations. Check the published Releases and registry to confirm availability. The marketplace is a repository-scoped installation source, not a listing in the universal public Plugins Directory.
 
 **Note on numbering:** plugin, package, and Patch Feed move to 2.0.23 in lockstep. Copy, installation, and data-handling documentation only.
-
-## v2.0.22 — 2026-10-22
-
-**Codex and Antigravity setup now works from a checkout and the published package.** The setup instructions include all required project context, and each install path uses the files available in that distribution. Run `npx @ars-infinita-notion/system-skills install` for combined setup. No XP, progression, or player data changes.
-
-**Note on numbering:** plugin, package, and Patch Feed move to 2.0.22 in lockstep.
 
 ## v2.0.21 — 2026-10-15
 
