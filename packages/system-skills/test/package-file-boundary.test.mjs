@@ -28,6 +28,7 @@ test('published package excludes release-control internals', () => {
     'lib/install-manifest.mjs',
     'lib/paths.mjs',
     'lib/player-home-check.mjs',
+    'lib/routine-drafts.mjs',
     'lib/swap.mjs',
     'lib/transform.mjs',
     'lib/visualization-adapter.mjs',

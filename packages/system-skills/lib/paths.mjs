@@ -90,3 +90,16 @@ export function agyPluginsDir() {
 export function agyStagingRoot() {
   return path.join(agyConfigRoot(), '.ars-infinita-staging');
 }
+
+// The player's own System home: a folder in the player's own account, never a
+// backend location. SYSTEM_HOME overrides it (same idea as CODEX_HOME above).
+export function systemHome() {
+  return process.env.SYSTEM_HOME || path.join(homedir(), '.the-system');
+}
+
+// Where The System's routine-message drafts are saved. They stay in the
+// player's own workspace and are never sent from here. SYSTEM_DRAFTS_DIR
+// overrides the location.
+export function draftsDir() {
+  return process.env.SYSTEM_DRAFTS_DIR || path.join(systemHome(), 'routine-drafts');
+}
