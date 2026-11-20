@@ -34,3 +34,22 @@
 #
 # If either sealed value appears again in player-facing surfaces, it is
 # an unintended leak — grep should find it with leak_check.py unchanged.
+
+# [BACKEND-INTERNALS RULE GROUP, 2026-11-21]
+#
+# Each entry below is a 32-hex token that is NOT a Notion page ID of ours, or
+# is the one public Notion page the install steps deliberately link to.
+# Entries are keyed by line number; if the line moves, the entry must move too.
+
+# The public A.I.N Notion Seed template — the page players duplicate. Linking
+# it is the setup step itself; it is not an admin page.
+MAINTAINERS.md:134  # public Seed template link, player-facing by design
+README.md:78  # public Seed template link in the install steps
+README.md:96  # public Seed template link in the install steps
+README.md:111  # public Seed template link in the install steps
+README.md:151  # public Seed template link in the install steps
+
+# Not Notion IDs at all: a truncated SHA-256 and a synthetic test nonce.
+packages/system-skills/test/checks.mjs:269  # truncated sha256 pin of marketplace.json authored fields
+packages/system-skills/test/live-smoke-policy.test.mjs:155  # synthetic all-zero test nonce, not a Notion ID
+packages/system-skills/test/live-smoke-policy.test.mjs:180  # synthetic all-zero test nonce, not a Notion ID
