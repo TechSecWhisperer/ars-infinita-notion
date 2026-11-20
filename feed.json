@@ -1,7 +1,7 @@
 {
-  "mechanics_version": "2.0.24",
-  "head": "2.0.24",
-  "generated": "2026-10-26",
+  "mechanics_version": "2.0.25",
+  "head": "2.0.25",
+  "generated": "2026-11-21",
   "source": "The System — Nexus Patch Feed",
   "patches": [
     {
@@ -309,6 +309,15 @@
       "min_level": 0,
       "title": "v2.0.24 — Clearer release availability and marketplace updates",
       "player_facing_summary": "Installation guidance now points to live package and published release destinations, and Codex users can select a specific repository marketplace tag when they update. No XP, progression, or player data changes."
+    },
+    {
+      "version": "2.0.25",
+      "date": "2026-11-21",
+      "type": "Patch",
+      "applies_to": "Forward-only",
+      "min_level": 0,
+      "title": "v2.0.25 — Drafts for your routine messages",
+      "player_facing_summary": "The System can now draft routine messages for you in the tone you prefer (warm, direct, playful or formal). Drafts are saved in your own System folder for you to read and edit. Nothing is ever sent for you. No XP, progression, or player data changes."
     }
   ],
   "commands_count": 27,

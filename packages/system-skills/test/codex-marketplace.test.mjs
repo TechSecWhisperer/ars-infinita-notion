@@ -78,7 +78,7 @@ test('public release guidance points to live destinations instead of stale versi
   assert.doesNotMatch(readme, /Release availability \(checked \d{4}-\d{2}-\d{2}\)/i);
   assert.doesNotMatch(readme, /Latest version in the npm registry|still a draft and npm has no/i);
   assert.doesNotMatch(readme, /coming stable|stable target|v2\.1\.0/i);
-  assert.equal(feed.head, '2.0.24');
+  assert.equal(feed.head, '2.0.25');
   assert.equal(feed.mechanics_version, feed.head);
   assert.equal(feed.patches.at(-1).version, feed.head);
   assert.ok(!feed.patches.some((patch) => patch.version === '2.0.22'),
