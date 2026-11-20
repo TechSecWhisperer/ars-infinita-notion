@@ -340,6 +340,162 @@ PATTERNS = [
 # these admin pages — that's covered by SEALED_ADMIN_PAGE_IDS.
 
 
+# ---------------------------------------------------------------------------
+# Backend internals (owner ruling, 2026-11-21)
+#
+# The public plane carries no internal agent names, no private repository names,
+# no backend paths, ports or environment variables, no workflow or execution
+# IDs, no Notion IDs and no JSON comment-annotation keys. The sealed-mechanics
+# rules above guard game design; these guard the machinery behind it.
+#
+# THE VOCABULARY IS STORED AS SHA-256 DIGESTS ON PURPOSE. This file is public.
+# A rule that spelled its own terms — whole, or split into string fragments that
+# a reader can join back together — would publish exactly the names it exists to
+# keep out. So no term appears here in any form. Each rule has two halves:
+#
+#   1. a GENERIC candidate shape (a capitalised word, `<x>-runtime`, a
+#      five-digit port after a colon, ...) that extracts a token from the text;
+#   2. a frozen set of digests, compared against the SHA-256 of the normalised
+#      candidate (lower-cased; see _term_digest).
+#
+# Only a candidate whose digest is in the set is a hit. Ordinary words that
+# merely fit the shape pass.
+#
+# To add a term: compute its digest locally and add ONLY the digest to the
+# right set below — never the term itself, in this file, in a test, or in a
+# commit message:
+#
+#   python3 -c "import hashlib,sys;print(hashlib.sha256(sys.argv[1].lower().encode()).hexdigest())" '<term>'
+#
+# For a repository name hash the whole token (prefix included); for a path,
+# port, variable or key hash just the captured value (the group the rule
+# extracts). The tests use a made-up vocabulary, so they never need the real
+# terms either.
+def _term_digest(value):
+    """SHA-256 of a candidate token, lower-cased."""
+    return hashlib.sha256(value.lower().encode()).hexdigest()
+
+
+BACKEND_DIGESTS = {
+    # Internal persona names (capitalised words).
+    "persona": frozenset({
+        "8bdb247a2a76e166450e193f185f0deeceedee6550589de2cd964e7ce36c9de6",
+        "1c85bf7d3c260817db543a95c0e52d02563b5dd4dbd8bd656de82c8a0c0610b2",
+        "dde6e8974b46a1eddcd7ea3bbb899342f48cad896b47275a6f806062ec5ca14c",
+        "2a09783b1c474294d122b82b93b01c3701bc9e4d65b3ae60da211a4121152a43",
+        "7f69807c3aa9a58dd92a068df164409f46d09827c741ae1aa5f7827e3beb1a22",
+        "ce40a8882fd16339c9a7e40c34cde432a73c422ccf4fb2519cb47cd1f504e59e",
+        "8cfde6efdfc4ed5ab1f6acbbd1ba49bf31932f84d0a4c090eb41c7d151e8b180",
+        "76faa0295e4f0a68c6ab2dac601d308a7170260be3f245eb3b63a784e4a03824",
+    }),
+    # Private repository names (whole token, public prefix included).
+    "repo": frozenset({
+        "a3cac876fb925c085dc1ece6ed7633b87c8d76253158b4cffc86c11feb4544a5",
+        "5a3570c67b2d5ed31b534ee0192d465b1daf76ac5b86717bd8ed572dc349c461",
+    }),
+    # Backend directory segment after the user config directory.
+    "config-dir": frozenset({
+        "abc42f1c89829b4d374c4164bf648fb6b15ec89a12289e05ffd628280695498b",
+    }),
+    # Backend runtime-directory name, the word before the runtime suffix.
+    "runtime-name": frozenset({
+        "abc42f1c89829b4d374c4164bf648fb6b15ec89a12289e05ffd628280695498b",
+    }),
+    # Backend state-directory environment variable.
+    "state-var": frozenset({
+        "7927e084ed4b65e95e047f74c23d6789cadfdc9c34e3c4e3a729b48263c3bc74",
+    }),
+    # Backend service ports.
+    "port": frozenset({
+        "e61911bf2f8a91c600b4c7863e60e2549a91056f2c096b9598c29ab1fc4da8f9",
+        "3bfbf6aedb461a89a352d73dd026a0fd921ac88060a517e5b01a35775e7c3cd0",
+    }),
+    # Backend journal-file stem, the word before the journal suffix.
+    "journal-name": frozenset({
+        "17f29b073143d8cd97b5bbe492bdeffec1c5fee55cc1fe2112c8b9335f8b6121",
+    }),
+    # JSON comment-annotation key (quoted, underscore-prefixed).
+    "comment-key": frozenset({
+        "191960b03843f0c19cad80b7c664c38f2eb3d6f0d6584403d9c997aa702e76b9",
+    }),
+}
+
+# (category, vocabulary key, generic candidate regex, group holding the value).
+# The regexes name shapes only; every one of them matches plenty of innocent
+# text, and the digest comparison decides.
+BACKEND_DIGEST_RULES = [
+    ("backend-persona-name", "persona", re.compile(r"\b[A-Z][a-z]+\b"), 0),
+    ("backend-private-repo", "repo", re.compile(r"\bars-infinita-\w+", re.IGNORECASE), 0),
+    ("backend-path-or-port", "config-dir", re.compile(r"\.config/(\w+)"), 1),
+    ("backend-path-or-port", "runtime-name", re.compile(r"(\w+)-runtime"), 1),
+    ("backend-path-or-port", "state-var", re.compile(r"\b[A-Z][A-Z_]*_STATE_DIR\b"), 0),
+    ("backend-path-or-port", "port", re.compile(r":(\d{5})\b"), 1),
+    ("backend-path-or-port", "journal-name", re.compile(r"(\w+)-journal"), 1),
+    ("backend-comment-key", "comment-key", re.compile(r'"(_[A-Za-z]\w*)"'), 1),
+]
+
+# Rules that need no vocabulary: the shape alone is the leak.
+BACKEND_PATTERNS = [
+    (
+        "backend-workflow-id",
+        # A 16-char token with at least one lower-case and one upper-case
+        # letter, directly after "workflow"/"workflowId" or inside an n8n URL
+        # path. The lookaheads keep ordinary long words and all-lower-case file
+        # names from matching.
+        re.compile(
+            r"(?:(?i:\bworkflow(?:Id)?\b)[\s\"':=]{1,8}|(?i:https?://\S*?/workflows?/)|(?i:\bn8n\b\S*?/workflows?/))"
+            r"(?<![A-Za-z0-9])(?=[A-Za-z0-9]{16}(?![A-Za-z0-9]))"
+            r"(?=[A-Za-z0-9]*[a-z])(?=[A-Za-z0-9]*[A-Z])[A-Za-z0-9]{16}"
+        ),
+    ),
+]
+
+
+def backend_digest_hits(text, vocabulary=None):
+    """Flag candidates whose digest is in the vocabulary.
+
+    `vocabulary` maps a BACKEND_DIGEST_RULES key to a set of digests; it
+    defaults to BACKEND_DIGESTS. Tests inject a synthetic one.
+    """
+    vocabulary = BACKEND_DIGESTS if vocabulary is None else vocabulary
+    lines = text.splitlines()
+    hits = []
+    for category, key, regex, group in BACKEND_DIGEST_RULES:
+        digests = vocabulary.get(key)
+        if not digests:
+            continue
+        for match in regex.finditer(text):
+            if _term_digest(match.group(group)) in digests:
+                line_no = text.count("\n", 0, match.start()) + 1
+                line_text = lines[line_no - 1] if 0 < line_no <= len(lines) else ""
+                hits.append((category, line_no, line_text.strip()))
+    return hits
+
+
+# The Notion-ID rule is separate because it needs a path exemption and the
+# digest comparison above already reports the sealed ones.
+NOTION_ID_EXEMPT_NAMES = {".mcp.json"}
+
+
+def notion_uuid_hits(text, path=None):
+    """Flag every 32-hex Notion-ID-shaped token that is not a sealed ID.
+
+    Sealed IDs are reported by their own category, so they are skipped here.
+    The connector config file legitimately names the workspace it connects to.
+    """
+    if path is not None and path.name in NOTION_ID_EXEMPT_NAMES:
+        return []
+    lines = text.splitlines()
+    hits = []
+    for match in NOTION_ID_CANDIDATE.finditer(text):
+        if _id_digest(match.group(0)) in SEALED_ADMIN_PAGE_ID_HASHES:
+            continue
+        line_no = text.count("\n", 0, match.start()) + 1
+        line_text = lines[line_no - 1] if 0 < line_no <= len(lines) else ""
+        hits.append(("backend-notion-uuid", line_no, line_text.strip()))
+    return hits
+
+
 def load_allowlist():
     """Parse tools/leak_allowlist.txt.
 
@@ -510,7 +666,7 @@ def scan_text(text, patterns=None):
     # reported the very comment that prompted this whole check as clean. It was
     # caught by replaying the real 2026-08-13 text instead of a synthetic
     # sample — which is the only reason it is not still true.
-    default = PATTERNS + COVERAGE_DISCLOSURE_PATTERNS
+    default = PATTERNS + COVERAGE_DISCLOSURE_PATTERNS + BACKEND_PATTERNS
     for category, pattern in (patterns if patterns is not None else default):
         for match in pattern.finditer(text):
             line_no = text.count("\n", 0, match.start()) + 1
@@ -521,6 +677,9 @@ def scan_text(text, patterns=None):
             line_no = text.count("\n", 0, match.start()) + 1
             line_text = lines[line_no - 1] if 0 < line_no <= len(lines) else ""
             hits.append(("sealed-admin-page-id", line_no, line_text.strip()))
+    if patterns is None:
+        hits.extend(notion_uuid_hits(text))
+        hits.extend(backend_digest_hits(text))
     return hits
 
 
@@ -564,6 +723,12 @@ def scan_file(path, mode="full"):
     # Safe to run unconditionally because the patterns are split-literal.
     if not binary:
         active = active + COVERAGE_DISCLOSURE_PATTERNS
+        # Backend internals are never acceptable in a public file, whatever its
+        # mode. Their vocabulary is stored as digests, so this file and its
+        # tests are scanned in full without tripping.
+        active = active + BACKEND_PATTERNS
+        hits.extend(notion_uuid_hits(text, path))
+        hits.extend(backend_digest_hits(text))
 
     for category, pattern in active:
         for match in pattern.finditer(text):
@@ -606,13 +771,13 @@ def scan_file(path, mode="full"):
 # digests replaced literal substrings), a run-together match in compiled
 # bytecode where \b never holds, and the opposite failure of reporting every
 # ID-shaped string as sealed.
-_FIXTURE_ID = "0123456789abcdef0123456789abcdef"
+_FIXTURE_ID = "01234567" "89abcdef" "01234567" "89abcdef"
 _FIXTURE_SPELLINGS = (
     ("undashed", _FIXTURE_ID),
-    ("dashed", "01234567-89ab-cdef-0123-456789abcdef"),
+    ("dashed", "01234567-" "89ab-" "cdef-" "0123-" "456789abcdef"),
     ("uppercase", _FIXTURE_ID.upper()),
 )
-_CONTROL_ID = "fedcba9876543210fedcba9876543210"
+_CONTROL_ID = "fedcba98" "76543210" "fedcba98" "76543210"
 
 
 def self_test_sealed_id_path():
