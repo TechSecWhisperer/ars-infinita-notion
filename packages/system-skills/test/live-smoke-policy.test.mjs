@@ -11,6 +11,7 @@ import {
   LIVE_SMOKE_RECEIPT_FILENAME,
   markLiveSmokeInvocationStarted,
   readLiveSmokeReceipt,
+  readLiveSmokeLock,
   reserveLiveSmokeAttempt,
   resolveLiveSmokePolicy,
 } from './live-smoke-policy.mjs';
@@ -226,4 +227,15 @@ test('live smoke fails closed on a corrupt receipt or unknown completion state',
   assert.throws(() => completeLiveSmokeAttempt({
     stateDir, reservationId: reservation.reservationId, status: 'response text', durationMs: 1,
   }), { code: 'LIVE_SMOKE_COMPLETION_INVALID' });
+});
+
+test('a lock released between its lstat and its read is no lock, not an invalid one', (t) => {
+  const stateDir = tempStateDir(t);
+  const ownerPath = path.join(stateDir, 'owner.json');
+  writeFileSync(ownerPath, JSON.stringify({ pid: 321, nonce: '00000000-0000-4000-8000-000000000001' }));
+  const gone = () => { throw Object.assign(new Error('gone'), { code: 'ENOENT' }); };
+  assert.equal(readLiveSmokeLock(ownerPath, { readFile: gone }), null, 'the holder released it: the caller tries again');
+  const denied = () => { throw Object.assign(new Error('denied'), { code: 'EACCES' }); };
+  assert.throws(() => readLiveSmokeLock(ownerPath, { readFile: denied }), { code: 'LIVE_SMOKE_LOCK_INVALID' });
+  assert.deepEqual(readLiveSmokeLock(ownerPath), { pid: 321, nonce: '00000000-0000-4000-8000-000000000001' });
 });

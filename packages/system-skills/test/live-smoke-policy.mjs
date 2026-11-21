@@ -106,7 +106,7 @@ function processIsAlive(pid) {
   }
 }
 
-function readLock(lockPath) {
+export function readLiveSmokeLock(lockPath, { readFile = readFileSync } = {}) {
   let stat;
   try { stat = lstatSync(lockPath); }
   catch (error) {
@@ -114,8 +114,16 @@ function readLock(lockPath) {
     throw error;
   }
   if (!stat.isFile() || stat.isSymbolicLink()) throw fail('LIVE_SMOKE_LOCK_INVALID');
+  // The holder can release the lock between the lstat above and this read. A file that is gone is no lock, so the caller
+  // tries again; only a file that is there and unreadable is invalid.
+  let text;
+  try { text = readFile(lockPath, 'utf8'); }
+  catch (error) {
+    if (error.code === 'ENOENT') return null;
+    throw fail('LIVE_SMOKE_LOCK_INVALID');
+  }
   try {
-    const lock = JSON.parse(readFileSync(lockPath, 'utf8'));
+    const lock = JSON.parse(text);
     if (!lock || !Number.isSafeInteger(lock.pid) || lock.pid < 1
         || !/^[a-f0-9-]{36}$/i.test(String(lock.nonce || ''))) throw new Error('invalid');
     return lock;
@@ -190,7 +198,7 @@ function acquireLock(stateDir, isAlive) {
       continue;
     }
 
-    const existing = readLock(ownerPath);
+    const existing = readLiveSmokeLock(ownerPath);
     if (!existing) continue;
     if (isAlive(existing.pid)) return null;
     try { unlinkSync(ownerPath); }
@@ -202,7 +210,7 @@ function acquireLock(stateDir, isAlive) {
 }
 
 function releaseLock({ lockDir, ownerPath, lock }) {
-  const current = readLock(ownerPath);
+  const current = readLiveSmokeLock(ownerPath);
   if (current?.nonce === lock.nonce && current.pid === lock.pid) {
     unlinkSync(ownerPath);
     rmdirSync(lockDir);
