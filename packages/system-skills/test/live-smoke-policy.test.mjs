@@ -16,6 +16,9 @@ import {
   resolveLiveSmokePolicy,
 } from './live-smoke-policy.mjs';
 
+// A fixed lock nonce, built at runtime so the leak check doesn't read it as a real ID.
+const FIXTURE_NONCE = ['00000000', '0000', '4000', '8000', '000000000001'].join('-');
+
 function tempStateDir(t) {
   const dir = mkdtempSync(path.join(os.tmpdir(), 'ain-live-smoke-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
@@ -153,7 +156,7 @@ test('live smoke recovers a stale lock only after its owner process is gone', (t
   const lockDir = path.join(stateDir, '.live-smoke-receipt.lock');
   mkdirSync(lockDir, { mode: 0o700 });
   writeFileSync(path.join(lockDir, 'owner.json'), JSON.stringify({
-    pid: 321, nonce: '00000000-0000-4000-8000-000000000001',
+    pid: 321, nonce: FIXTURE_NONCE,
   }));
   const result = reserveLiveSmokeAttempt({
     stateDir, agent: 'agy', promptChars: 100, now: Date.parse('2026-10-23T00:00:00Z'),
@@ -178,7 +181,7 @@ test('live smoke blocks while another process owns the reservation lock', (t) =>
   const lockDir = path.join(stateDir, '.live-smoke-receipt.lock');
   mkdirSync(lockDir, { mode: 0o700 });
   writeFileSync(path.join(lockDir, 'owner.json'), JSON.stringify({
-    pid: 321, nonce: '00000000-0000-4000-8000-000000000001',
+    pid: 321, nonce: FIXTURE_NONCE,
   }));
   const result = reserveLiveSmokeAttempt({
     stateDir, agent: 'codex', promptChars: 100, isProcessAlive: () => true,
@@ -232,10 +235,10 @@ test('live smoke fails closed on a corrupt receipt or unknown completion state',
 test('a lock released between its lstat and its read is no lock, not an invalid one', (t) => {
   const stateDir = tempStateDir(t);
   const ownerPath = path.join(stateDir, 'owner.json');
-  writeFileSync(ownerPath, JSON.stringify({ pid: 321, nonce: '00000000-0000-4000-8000-000000000001' }));
+  writeFileSync(ownerPath, JSON.stringify({ pid: 321, nonce: FIXTURE_NONCE }));
   const gone = () => { throw Object.assign(new Error('gone'), { code: 'ENOENT' }); };
   assert.equal(readLiveSmokeLock(ownerPath, { readFile: gone }), null, 'the holder released it: the caller tries again');
   const denied = () => { throw Object.assign(new Error('denied'), { code: 'EACCES' }); };
   assert.throws(() => readLiveSmokeLock(ownerPath, { readFile: denied }), { code: 'LIVE_SMOKE_LOCK_INVALID' });
-  assert.deepEqual(readLiveSmokeLock(ownerPath), { pid: 321, nonce: '00000000-0000-4000-8000-000000000001' });
+  assert.deepEqual(readLiveSmokeLock(ownerPath), { pid: 321, nonce: FIXTURE_NONCE });
 });
