@@ -2,7 +2,7 @@ name: Delivery freshness
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, "release/**"]
   push:
     branches: [main]
 
